@@ -50,7 +50,7 @@ namespace SFDScripts
             if (ct != null && TextF == false && gonein == false)
             {
                 TimeCTD--;
-                ct.SetText("Time Remaining: " + PrintMinutes(TimeCTD));
+                ct.SetText("Time Remasining: " + PrintMinutes(TimeCTD));
             }
             if (TimeCTD < 1 && !gonein)
             {
