@@ -14,7 +14,7 @@ namespace SFDScripts
 
         List<IPlayer> marios = new List<IPlayer>();
         int mariosNumber = 0;
-        int TimeCTD = 30;
+        int TimeCTD = 5 * 60;
         bool TextF = false;
         int vRedKills = 0;
         int vBluKills = 0;
@@ -311,17 +311,11 @@ namespace SFDScripts
                     cdpl = m_deadPlayers[i];
                     if (cdpl.Timestamp + USER_RESPAWN_DELAY_MS < Game.TotalElapsedGameTime)
                     {
+                        
                         m_deadPlayers.RemoveAt(i);
                         if (cdpl.DeadBody != null)
                         {
-                            if (GIB_CORPSES)
-                            {
-                                cdpl.DeadBody.Gib();
-                            }
-                            else
-                            {
-                                (cdpl.DeadBody).Remove();
-                            }
+                            cdpl.DeadBody.SetWorldPosition(Game.GetSingleObjectByCustomID("PlayerPeach").GetWorldPosition());
                         }
                         cpl2 = cdpl.User.GetPlayer();
                         if (((cpl2 == null) || (cpl2.IsDead)))
@@ -552,7 +546,7 @@ namespace SFDScripts
             positions[1] = Game.GetSingleObjectByCustomID("BallonsTwo").GetWorldPosition();
             positions[2] = Game.GetSingleObjectByCustomID("BallonsThree").GetWorldPosition();
 
-            for (int i = 0; i < 20; i++)
+            for (int i = 0; i < 1; i++)
             {
                  IObject ballon = Game.CreateObject("Balloon00", positions[RandNumber(0, 3)]);
             }
