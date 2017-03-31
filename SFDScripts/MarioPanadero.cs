@@ -88,7 +88,7 @@ namespace SFDScripts
                 
                 foreach (IPlayer p in Game.GetPlayers())
                 {
-                    if (p.GetTeam() == PlayerTeam.Team2)
+                    if (p.GetTeam() == PlayerTeam.Team1)
                     {
                         p.SetWorldPosition(Game.GetSingleObjectByCustomID("PlayerPeach").GetWorldPosition());
                     }
@@ -362,7 +362,6 @@ namespace SFDScripts
         }
         private void SpawnUser(IUser user, PlayerTeam team)
         {
-            Game.WriteToConsole("SpawnUser has been called! ");
             if (CheckUserStillActive(user) && !user.IsSpectator)
             {
                 cpl2 = Game.CreatePlayer(cve);
@@ -371,11 +370,9 @@ namespace SFDScripts
                 {
                     cpl2.SetTeam(PlayerTeam.Team1);
                     cve = Game.GetSingleObjectByCustomId(BlueRnd()).GetWorldPosition();
-                    Game.WriteToConsole("SpawnUser has been called for a blue player! THE WINNER IS: ");
-                    Game.WriteToConsole(winner.ToString());
+
                     if (winner == PlayerTeam.Team1)
                     {
-                        Game.WriteToConsole("Winner is blue and dead blue player is sent to peach");
                         cve = Game.GetSingleObjectByCustomID("PlayerPeach").GetWorldPosition();
                     }
                     SetPlayerToMarioOne(cpl2);
