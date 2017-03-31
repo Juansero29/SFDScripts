@@ -8,9 +8,7 @@ namespace SFDScripts
     class MarioPanadero : GameScriptInterface
     {
 
-
         public MarioPanadero() : base(null) { }
-
 
         List<IPlayer> marios = new List<IPlayer>();
         int mariosNumber = 0;
@@ -90,7 +88,7 @@ namespace SFDScripts
                 
                 foreach (IPlayer p in Game.GetPlayers())
                 {
-                    if (p.GetTeam() == PlayerTeam.Team1)
+                    if (p.GetTeam() == PlayerTeam.Team2)
                     {
                         p.SetWorldPosition(Game.GetSingleObjectByCustomID("PlayerPeach").GetWorldPosition());
                     }
@@ -545,7 +543,6 @@ namespace SFDScripts
                  IObjectGroupMarker groupTwo = (IObjectGroupMarker) Game.GetSingleObjectByCustomID("BalloonsGroupTwo");
                  IObjectGroupMarker groupThree = (IObjectGroupMarker) Game.GetSingleObjectByCustomID("BalloonsGroupThree");
 
-                 Game.WriteToConsole("Spawning balloons! ");
                  groupOne.Trigger();
                  groupTwo.Trigger();
                  groupThree.Trigger();             
