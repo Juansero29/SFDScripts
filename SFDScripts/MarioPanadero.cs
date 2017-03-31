@@ -315,7 +315,7 @@ namespace SFDScripts
                         m_deadPlayers.RemoveAt(i);
                         if (cdpl.DeadBody != null)
                         {
-                            cdpl.DeadBody.SetWorldPosition(Game.GetSingleObjectByCustomID("PlayerPeach").GetWorldPosition());
+                            cdpl.DeadBody.SetWorldPosition(Game.GetSingleObjectByCustomID("ThePit").GetWorldPosition());
                         }
                         cpl2 = cdpl.User.GetPlayer();
                         if (((cpl2 == null) || (cpl2.IsDead)))
@@ -539,19 +539,16 @@ namespace SFDScripts
             peachPlayer.SetNametagVisible(false);
         }
 
-        public void BallonsParty(TriggerArgs args)
+        public void BalloonsParty(TriggerArgs args)
         {
-            Vector2[] positions = new Vector2[3];
-            positions[0] = Game.GetSingleObjectByCustomID("BallonsOne").GetWorldPosition();
-            positions[1] = Game.GetSingleObjectByCustomID("BallonsTwo").GetWorldPosition();
-            positions[2] = Game.GetSingleObjectByCustomID("BallonsThree").GetWorldPosition();
+                 IObjectGroupMarker groupOne = (IObjectGroupMarker) Game.GetSingleObjectByCustomID("BalloonsGroupOne");
+                 IObjectGroupMarker groupTwo = (IObjectGroupMarker) Game.GetSingleObjectByCustomID("BalloonsGroupTwo");
+                 IObjectGroupMarker groupThree = (IObjectGroupMarker) Game.GetSingleObjectByCustomID("BalloonsGroupThree");
 
-            for (int i = 0; i < 1; i++)
-            {
-                 IObject ballon = Game.CreateObject("Balloon00", positions[RandNumber(0, 3)]);
-            }
-           
-            
+                 Game.WriteToConsole("Spawning balloons! ");
+                 groupOne.Trigger();
+                 groupTwo.Trigger();
+                 groupThree.Trigger();             
         }
     }
 }
