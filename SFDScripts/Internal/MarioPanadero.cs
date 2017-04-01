@@ -108,20 +108,22 @@ namespace SFDScripts
         private IPlayer plyExit = null;
         private bool allowOpen = false;
         int rand;
-        string[] GetposB = new string[] {
- "BluBase",
- "BluBase2",
- "MarioTwoBase",
- "BluBase4",
- "BluBase5"
-};
-        string[] GetposR = new string[] {
- "MarioOneBase",
- "RedBase2",
- "RedBase3",
- "RedBase4",
- "RedBase5"
-};
+        string[] GetposB = new string[] 
+        {
+            "BluBase",
+            "BluBase2",
+            "MarioTwoBase",
+            "BluBase4",
+            "BluBase5"
+        };
+        string[] GetposR = new string[] 
+        {
+        "MarioOneBase",
+        "RedBase2",
+        "RedBase3",
+        "RedBase4",
+        "RedBase5"
+        };
         public void CheckEnter(TriggerArgs args)
         {
             if (args.Sender != null && args.Sender is IPlayer)
