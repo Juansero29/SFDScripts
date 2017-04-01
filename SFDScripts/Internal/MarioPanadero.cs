@@ -272,6 +272,7 @@ namespace SFDScripts
         private List<DeadPlayer> m_deadPlayers = new List<DeadPlayer>();
         private int deathNum = 0;
         private int usersConnectedTickDelay = 15;
+
         public void Tick(TriggerArgs args)
         {
             RespawnTick(args);
@@ -279,6 +280,7 @@ namespace SFDScripts
             if (Staffplayer != null)
                 Staffplayer.SetHealth(100);
         }
+        
         public void Death(TriggerArgs args)
         {
             cpl2 = (IPlayer)args.Sender;
