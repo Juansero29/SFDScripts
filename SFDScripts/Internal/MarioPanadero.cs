@@ -174,7 +174,6 @@ namespace SFDScripts
             cve = cob.GetWorldPosition();
             ply.SetWorldPosition(cve);
         }
-        private IPlayer Staffplayer = null;
         int bluTeam = 0;
         int redTeam = 0;
 
@@ -277,10 +276,8 @@ namespace SFDScripts
         {
             RespawnTick(args);
             ConnectedPlayersTick(args);
-            if (Staffplayer != null)
-                Staffplayer.SetHealth(100);
         }
-        
+
         public void Death(TriggerArgs args)
         {
             cpl2 = (IPlayer)args.Sender;
