@@ -390,6 +390,11 @@ namespace SFDScripts
                     }
                     SetPlayerToMarioOne(cpl2);
                 }
+                if (team.Equals(PlayerTeam.Team3))
+                {
+                    cpl2.SetTeam(PlayerTeam.Team3);
+                    cve = Game.GetSingleObjectByCustomID("Middle").GetWorldPosition();
+                }
                 cpl2.SetUser(user);
                 cpl2.SetWorldPosition(cve);
             }
