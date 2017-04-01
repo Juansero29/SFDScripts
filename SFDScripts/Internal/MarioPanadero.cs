@@ -377,7 +377,7 @@ namespace SFDScripts
                     {
                         cve = Game.GetSingleObjectByCustomID("PlayerPeach").GetWorldPosition();
                     }
-                    SetPlayerToMarioOne(cpl2);
+                    SetPlayerToMarioTwo(cpl2);
                 }
                 if (team == PlayerTeam.Team2)
                 {
@@ -388,7 +388,7 @@ namespace SFDScripts
                         Game.WriteToConsole("Winner is read and dead red player is sent to peach");
                         cve = Game.GetSingleObjectByCustomID("PlayerPeach").GetWorldPosition();
                     }
-                    SetPlayerToMarioTwo(cpl2);
+                    SetPlayerToMarioOne(cpl2);
                 }
                 cpl2.SetUser(user);
                 cpl2.SetWorldPosition(cve);
