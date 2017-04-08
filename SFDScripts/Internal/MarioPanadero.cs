@@ -13,8 +13,7 @@ namespace SFDScripts
         List<IPlayer> marios = new List<IPlayer>();
         int mariosNumber = 0;
         
-        // int TimeCTD = 5 * 60;
-        int TimeCTD = 10;
+        int TimeCTD = 5 * 60;
         bool TextF = false;
         int vRedKills = 0;
         int vBluKills = 0;
