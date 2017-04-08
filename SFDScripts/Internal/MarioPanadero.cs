@@ -12,7 +12,9 @@ namespace SFDScripts
 
         List<IPlayer> marios = new List<IPlayer>();
         int mariosNumber = 0;
-        int TimeCTD = 5 * 60;
+        
+        // int TimeCTD = 5 * 60;
+        int TimeCTD = 10;
         bool TextF = false;
         int vRedKills = 0;
         int vBluKills = 0;
@@ -98,7 +100,7 @@ namespace SFDScripts
             {
                 Game.SetGameOver("Draw!");
                 TextF = true;
-                //ExplodePeach();
+                ExplodePeach();
             }
         }
         private IObjectTrigger trig2 = null;
@@ -549,6 +551,14 @@ namespace SFDScripts
                  groupOne.Trigger();
                  groupTwo.Trigger();
                  groupThree.Trigger();             
+        }
+
+        public void ExplodePeach(){
+            IObjectExplosionTrigger explode = (IObjectExplosionTrigger) Game.GetSingleObjectByCustomID("Explode");
+            explode.Trigger();
+            explode.Trigger();
+            explode.Trigger();
+            explode.Trigger();
         }
     }
 }
