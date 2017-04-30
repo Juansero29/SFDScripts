@@ -71,7 +71,7 @@ namespace SFDScripts
             ct = (IObjectText)Game.GetSingleObjectByCustomId("TextCD");
             if (vRedKills > vBluKills)
             {
-                Game.SetGameOver("The Red wins");
+                Game.SetGameOver("RED MARIOS WIN");
                 winner = PlayerTeam.Team2;
                 Game.WriteToConsole(winner.ToString());
                 foreach (IPlayer p in Game.GetPlayers())
@@ -84,7 +84,7 @@ namespace SFDScripts
             }
             else if (vRedKills < vBluKills)
             {
-                Game.SetGameOver("The Blue wins");
+                Game.SetGameOver("BLUE MARIOS WIN");
                 winner = PlayerTeam.Team1;
                 
                 foreach (IPlayer p in Game.GetPlayers())
@@ -97,7 +97,7 @@ namespace SFDScripts
             }
             else
             {
-                Game.SetGameOver("Draw!");
+                Game.SetGameOver("DRAW!");
                 TextF = true;
                 ExplodePeach();
             }
