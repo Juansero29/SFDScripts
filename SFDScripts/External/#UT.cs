@@ -82,9 +82,6 @@ WeaponItem[] MakeShiftWeaponsClass = new WeaponItem[]{
 Random rand = new Random();
 
 public void OnStartup(){
-Area area = Game.GetBorderArea();
-if (area.Width > 1500 ){
-Game.RunCommand("/MSG Nice map choice !");
 }
 
 if (CreateFireCircleOnImpact || CreateExplosionOnImpact || CreateRandomImpact ){
