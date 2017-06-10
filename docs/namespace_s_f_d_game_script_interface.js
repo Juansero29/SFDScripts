@@ -24,6 +24,7 @@ var namespace_s_f_d_game_script_interface =
     [ "IObjectAlterCollisionTile", "class_s_f_d_game_script_interface_1_1_i_object_alter_collision_tile.html", "class_s_f_d_game_script_interface_1_1_i_object_alter_collision_tile" ],
     [ "IObjectAreaTrigger", "class_s_f_d_game_script_interface_1_1_i_object_area_trigger.html", "class_s_f_d_game_script_interface_1_1_i_object_area_trigger" ],
     [ "IObjectButtonTrigger", "class_s_f_d_game_script_interface_1_1_i_object_button_trigger.html", "class_s_f_d_game_script_interface_1_1_i_object_button_trigger" ],
+    [ "IObjectCameraAreaTrigger", "class_s_f_d_game_script_interface_1_1_i_object_camera_area_trigger.html", "class_s_f_d_game_script_interface_1_1_i_object_camera_area_trigger" ],
     [ "IObjectChangeBodyTypeTrigger", "class_s_f_d_game_script_interface_1_1_i_object_change_body_type_trigger.html", "class_s_f_d_game_script_interface_1_1_i_object_change_body_type_trigger" ],
     [ "IObjectConveyorBelt", "class_s_f_d_game_script_interface_1_1_i_object_conveyor_belt.html", "class_s_f_d_game_script_interface_1_1_i_object_conveyor_belt" ],
     [ "IObjectDestroyTargets", "class_s_f_d_game_script_interface_1_1_i_object_destroy_targets.html", "class_s_f_d_game_script_interface_1_1_i_object_destroy_targets" ],

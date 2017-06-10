@@ -100,6 +100,18 @@ Inheritance diagram for IGame:</div>
 <tr class="memitem:a4edd70ed4e23f144ac38676f3f0b0f72"><td class="memItemLeft" align="right" valign="top">abstract bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_game.html#a4edd70ed4e23f144ac38676f3f0b0f72">DeathSequenceEnabled</a><code> [get, set]</code></td></tr>
 <tr class="memdesc:a4edd70ed4e23f144ac38676f3f0b0f72"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets or Sets if the death sequence of the map is enabled. The death sequence will show a text "YOU ARE DEAD" + play sound.  <a href="#a4edd70ed4e23f144ac38676f3f0b0f72">More...</a><br /></td></tr>
 <tr class="separator:a4edd70ed4e23f144ac38676f3f0b0f72"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa340a5f5007bf1fe838a416302e1e61e"><td class="memItemLeft" align="right" valign="top">abstract bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_game.html#aa340a5f5007bf1fe838a416302e1e61e">SuddenDeathEnabled</a><code> [get]</code></td></tr>
+<tr class="memdesc:aa340a5f5007bf1fe838a416302e1e61e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets if sudden death is enabled.  <a href="#aa340a5f5007bf1fe838a416302e1e61e">More...</a><br /></td></tr>
+<tr class="separator:aa340a5f5007bf1fe838a416302e1e61e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c024c86eab21d1cb9fbc85879035427"><td class="memItemLeft" align="right" valign="top">abstract bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_game.html#a6c024c86eab21d1cb9fbc85879035427">SuddenDeathActive</a><code> [get]</code></td></tr>
+<tr class="memdesc:a6c024c86eab21d1cb9fbc85879035427"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets if sudden death is currently active.  <a href="#a6c024c86eab21d1cb9fbc85879035427">More...</a><br /></td></tr>
+<tr class="separator:a6c024c86eab21d1cb9fbc85879035427"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1990062eb1ec22c939e7e4b9c8e759c4"><td class="memItemLeft" align="right" valign="top">abstract bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_game.html#a1990062eb1ec22c939e7e4b9c8e759c4">TimeLimitActive</a><code> [get]</code></td></tr>
+<tr class="memdesc:a1990062eb1ec22c939e7e4b9c8e759c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets if time limit is active and ticking. Remaining time can be retrieved via GetTimeLimitRemaining().  <a href="#a1990062eb1ec22c939e7e4b9c8e759c4">More...</a><br /></td></tr>
+<tr class="separator:a1990062eb1ec22c939e7e4b9c8e759c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a624dc56f7107d09d51c1ed3bb442fa4c"><td class="memItemLeft" align="right" valign="top">abstract TimeSpan&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_game.html#a624dc56f7107d09d51c1ed3bb442fa4c">GetRemainingTimeLimit</a> ()</td></tr>
+<tr class="memdesc:a624dc56f7107d09d51c1ed3bb442fa4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns time limit remaining. Returns TimeSpan.Zero if TimeLimitActive is false.  <a href="#a624dc56f7107d09d51c1ed3bb442fa4c">More...</a><br /></td></tr>
+<tr class="separator:a624dc56f7107d09d51c1ed3bb442fa4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a97266577708534b26a042c44101a2e02"><td class="memItemLeft" align="right" valign="top">abstract <a class="el" href="namespace_s_f_d_game_script_interface.html#a4c73d8aa04c5b31558f468b95d4748b3">MapType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_game.html#a97266577708534b26a042c44101a2e02">GetMapType</a> ()</td></tr>
 <tr class="memdesc:a97266577708534b26a042c44101a2e02"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current map type  <a href="#a97266577708534b26a042c44101a2e02">More...</a><br /></td></tr>
 <tr class="separator:a97266577708534b26a042c44101a2e02"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -200,29 +212,17 @@ Inheritance diagram for IGame:</div>
 <tr class="memdesc:a4f91e5edd3531683b9997ab8d1b924a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the current camera mode to be used. This overrides allowed camera modes.  <a href="#a4f91e5edd3531683b9997ab8d1b924a0">More...</a><br /></td></tr>
 <tr class="separator:a4f91e5edd3531683b9997ab8d1b924a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac169b834bbe24244ece20c9c12051079"><td class="memItemLeft" align="right" valign="top">abstract <a class="el" href="struct_s_f_d_game_script_interface_1_1_area.html">Area</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_game.html#ac169b834bbe24244ece20c9c12051079">GetCameraArea</a> ()</td></tr>
-<tr class="memdesc:ac169b834bbe24244ece20c9c12051079"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current camera area.  <a href="#ac169b834bbe24244ece20c9c12051079">More...</a><br /></td></tr>
+<tr class="memdesc:ac169b834bbe24244ece20c9c12051079"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current camera area. This is the minimum allowed camera area after aspect correction and max zoom limits.  <a href="#ac169b834bbe24244ece20c9c12051079">More...</a><br /></td></tr>
 <tr class="separator:ac169b834bbe24244ece20c9c12051079"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab212bab935caf87dab37ee5bbff085d7"><td class="memItemLeft" align="right" valign="top">abstract <a class="el" href="struct_s_f_d_game_script_interface_1_1_area.html">Area</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_game.html#ab212bab935caf87dab37ee5bbff085d7">GetCameraMaxArea</a> ()</td></tr>
+<tr class="memdesc:ab212bab935caf87dab37ee5bbff085d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current camera max area. This is the maximum possible camera area depending on users resolution.  <a href="#ab212bab935caf87dab37ee5bbff085d7">More...</a><br /></td></tr>
+<tr class="separator:ab212bab935caf87dab37ee5bbff085d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afef3dfd834944c3c4fb8523d4f833a15"><td class="memItemLeft" align="right" valign="top">abstract void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_game.html#afef3dfd834944c3c4fb8523d4f833a15">SetCameraArea</a> (<a class="el" href="struct_s_f_d_game_script_interface_1_1_area.html">Area</a> area)</td></tr>
-<tr class="memdesc:afef3dfd834944c3c4fb8523d4f833a15"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the camera area.  <a href="#afef3dfd834944c3c4fb8523d4f833a15">More...</a><br /></td></tr>
+<tr class="memdesc:afef3dfd834944c3c4fb8523d4f833a15"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the world's camera area. Only applicable if there's no active CameraAreaTrigger. Too small areas will expand to be within aspect ratio and max zoom levels.  <a href="#afef3dfd834944c3c4fb8523d4f833a15">More...</a><br /></td></tr>
 <tr class="separator:afef3dfd834944c3c4fb8523d4f833a15"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4caa04086c7aad1acf90389d69e24046"><td class="memItemLeft" align="right" valign="top">abstract void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_game.html#a4caa04086c7aad1acf90389d69e24046">SetCameraArea</a> (int top, int left, int bottom, int right)</td></tr>
-<tr class="memdesc:a4caa04086c7aad1acf90389d69e24046"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the camera area.  <a href="#a4caa04086c7aad1acf90389d69e24046">More...</a><br /></td></tr>
+<tr class="memdesc:a4caa04086c7aad1acf90389d69e24046"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the world's camera area. Only applicable if there's no active CameraAreaTrigger. Too small areas will expand to be within aspect ratio and max zoom levels.  <a href="#a4caa04086c7aad1acf90389d69e24046">More...</a><br /></td></tr>
 <tr class="separator:a4caa04086c7aad1acf90389d69e24046"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afc42961e90ad54d630b59e81abc7eaab"><td class="memItemLeft" align="right" valign="top">abstract void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_game.html#afc42961e90ad54d630b59e81abc7eaab">SetCameraArea</a> (<a class="el" href="class_s_f_d_game_script_interface_1_1_i_object.html">IObject</a> obj)</td></tr>
-<tr class="memdesc:afc42961e90ad54d630b59e81abc7eaab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the camera area.  <a href="#afc42961e90ad54d630b59e81abc7eaab">More...</a><br /></td></tr>
-<tr class="separator:afc42961e90ad54d630b59e81abc7eaab"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1482456fe2f615fae2a1c65e832dbad6"><td class="memItemLeft" align="right" valign="top">abstract <a class="el" href="struct_s_f_d_game_script_interface_1_1_area.html">Area</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_game.html#a1482456fe2f615fae2a1c65e832dbad6">GetBorderArea</a> ()</td></tr>
-<tr class="memdesc:a1482456fe2f615fae2a1c65e832dbad6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current border area.  <a href="#a1482456fe2f615fae2a1c65e832dbad6">More...</a><br /></td></tr>
-<tr class="separator:a1482456fe2f615fae2a1c65e832dbad6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8930e50b79396139d7a62782838d3dd4"><td class="memItemLeft" align="right" valign="top">abstract void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_game.html#a8930e50b79396139d7a62782838d3dd4">SetBorderArea</a> (<a class="el" href="struct_s_f_d_game_script_interface_1_1_area.html">Area</a> area)</td></tr>
-<tr class="memdesc:a8930e50b79396139d7a62782838d3dd4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the border area.  <a href="#a8930e50b79396139d7a62782838d3dd4">More...</a><br /></td></tr>
-<tr class="separator:a8930e50b79396139d7a62782838d3dd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a50c2d03587e86a0e1b348dab87f1f0ed"><td class="memItemLeft" align="right" valign="top">abstract void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_game.html#a50c2d03587e86a0e1b348dab87f1f0ed">SetBorderArea</a> (int top, int left, int bottom, int right)</td></tr>
-<tr class="memdesc:a50c2d03587e86a0e1b348dab87f1f0ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the border area.  <a href="#a50c2d03587e86a0e1b348dab87f1f0ed">More...</a><br /></td></tr>
-<tr class="separator:a50c2d03587e86a0e1b348dab87f1f0ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a32f256defd29f1de16361e079be2f537"><td class="memItemLeft" align="right" valign="top">abstract void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_game.html#a32f256defd29f1de16361e079be2f537">SetBorderArea</a> (<a class="el" href="class_s_f_d_game_script_interface_1_1_i_object.html">IObject</a> obj)</td></tr>
-<tr class="memdesc:a32f256defd29f1de16361e079be2f537"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the border area.  <a href="#a32f256defd29f1de16361e079be2f537">More...</a><br /></td></tr>
-<tr class="separator:a32f256defd29f1de16361e079be2f537"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5beceae4528cc66a34eb349a854428af"><td class="memItemLeft" align="right" valign="top">abstract int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_game.html#a5beceae4528cc66a34eb349a854428af">GetWorldBottom</a> ()</td></tr>
 <tr class="memdesc:a5beceae4528cc66a34eb349a854428af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the world bottom height.  <a href="#a5beceae4528cc66a34eb349a854428af">More...</a><br /></td></tr>
 <tr class="separator:a5beceae4528cc66a34eb349a854428af"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -245,23 +245,8 @@ Inheritance diagram for IGame:</div>
 <tr class="memdesc:ab9df081230b09647b9e85dd3b9303621"><td class="mdescLeft">&#160;</td><td class="mdescRight">Spawns several fire nodes in the world in a circle.  <a href="#ab9df081230b09647b9e85dd3b9303621">More...</a><br /></td></tr>
 <tr class="separator:ab9df081230b09647b9e85dd3b9303621"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a15ae0574eed6acbaec95588c57c01c38"><td class="memItemLeft" align="right" valign="top">abstract <a class="el" href="class_s_f_d_game_script_interface_1_1_base_object.html">BaseObject</a>[]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_game.html#a15ae0574eed6acbaec95588c57c01c38">GetFocusedCameraObjects</a> ()</td></tr>
-<tr class="memdesc:a15ae0574eed6acbaec95588c57c01c38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns current focused camera objects.  <a href="#a15ae0574eed6acbaec95588c57c01c38">More...</a><br /></td></tr>
+<tr class="memdesc:a15ae0574eed6acbaec95588c57c01c38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns current objects the camera should keep focus on. Union for all PrimaryTarget, SecondaryTargets and InfoTargets from current active CameraAreaTrigger. (The final camera view depend on the end user, where he/she is and active camera mode (static/dynamic))  <a href="#a15ae0574eed6acbaec95588c57c01c38">More...</a><br /></td></tr>
 <tr class="separator:a15ae0574eed6acbaec95588c57c01c38"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaea45a879144777845e282507e1dcca2"><td class="memItemLeft" align="right" valign="top">abstract void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_game.html#aaea45a879144777845e282507e1dcca2">ClearCameraFocusObjects</a> ()</td></tr>
-<tr class="memdesc:aaea45a879144777845e282507e1dcca2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears all current camera focus objects.  <a href="#aaea45a879144777845e282507e1dcca2">More...</a><br /></td></tr>
-<tr class="separator:aaea45a879144777845e282507e1dcca2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab64a9d7b790927745e236da7b58625e7"><td class="memItemLeft" align="right" valign="top">abstract void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_game.html#ab64a9d7b790927745e236da7b58625e7">AddCameraFocus</a> (<a class="el" href="class_s_f_d_game_script_interface_1_1_i_object.html">IObject</a> objectToFocus)</td></tr>
-<tr class="memdesc:ab64a9d7b790927745e236da7b58625e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds an object to be focused by the camera.  <a href="#ab64a9d7b790927745e236da7b58625e7">More...</a><br /></td></tr>
-<tr class="separator:ab64a9d7b790927745e236da7b58625e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a803eb718e35c2b76b081b606dce008c5"><td class="memItemLeft" align="right" valign="top">abstract void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_game.html#a803eb718e35c2b76b081b606dce008c5">AddCameraFocus</a> (<a class="el" href="class_s_f_d_game_script_interface_1_1_i_player.html">IPlayer</a> playerToFocus)</td></tr>
-<tr class="memdesc:a803eb718e35c2b76b081b606dce008c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a player to be focused by the camera.  <a href="#a803eb718e35c2b76b081b606dce008c5">More...</a><br /></td></tr>
-<tr class="separator:a803eb718e35c2b76b081b606dce008c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a264196e9ed40f44b3d572b00846f12e4"><td class="memItemLeft" align="right" valign="top">abstract void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_game.html#a264196e9ed40f44b3d572b00846f12e4">RemoveCameraFocus</a> (<a class="el" href="class_s_f_d_game_script_interface_1_1_i_object.html">IObject</a> objectToUnfocus)</td></tr>
-<tr class="memdesc:a264196e9ed40f44b3d572b00846f12e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes an object to be focused by the camera.  <a href="#a264196e9ed40f44b3d572b00846f12e4">More...</a><br /></td></tr>
-<tr class="separator:a264196e9ed40f44b3d572b00846f12e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a61f8badd44e7cb86561e17ce855544ba"><td class="memItemLeft" align="right" valign="top">abstract void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_game.html#a61f8badd44e7cb86561e17ce855544ba">RemoveCameraFocus</a> (<a class="el" href="class_s_f_d_game_script_interface_1_1_i_player.html">IPlayer</a> playerToUnfocus)</td></tr>
-<tr class="memdesc:a61f8badd44e7cb86561e17ce855544ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes a player to be focused by the camera.  <a href="#a61f8badd44e7cb86561e17ce855544ba">More...</a><br /></td></tr>
-<tr class="separator:a61f8badd44e7cb86561e17ce855544ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa531319d1d0e7dd340a1e234e5c9034c"><td class="memItemLeft" align="right" valign="top">abstract <a class="el" href="class_s_f_d_game_script_interface_1_1_i_dialogue.html">IDialogue</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_game.html#aa531319d1d0e7dd340a1e234e5c9034c">CreateDialogue</a> (string text, <a class="el" href="struct_s_f_d_game_script_interface_1_1_vector2.html">Vector2</a> worldPosition, string name=&quot;&quot;, float duration=-1)</td></tr>
 <tr class="memdesc:aa531319d1d0e7dd340a1e234e5c9034c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new dialogue item and returns newly created dialogue.  <a href="#aa531319d1d0e7dd340a1e234e5c9034c">More...</a><br /></td></tr>
 <tr class="separator:aa531319d1d0e7dd340a1e234e5c9034c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -317,97 +302,6 @@ Inheritance diagram for IGame:</div>
  }
 */
 /**</pre> </div><h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="ab64a9d7b790927745e236da7b58625e7"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">abstract void AddCameraFocus </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_object.html">IObject</a>&#160;</td>
-          <td class="paramname"><em>objectToFocus</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Adds an object to be focused by the camera. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">objectToFocus</td><td>Object to add to focus.</td></tr>
-  </table>
-  </dd>
-</dl>
-<p>Don't apply to static camera.</p>
-
-</div>
-</div>
-<a class="anchor" id="a803eb718e35c2b76b081b606dce008c5"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">abstract void AddCameraFocus </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_player.html">IPlayer</a>&#160;</td>
-          <td class="paramname"><em>playerToFocus</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Adds a player to be focused by the camera. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">playerToFocus</td><td>Player to add to focus.</td></tr>
-  </table>
-  </dd>
-</dl>
-<p>Don't apply to static camera.</p>
-
-</div>
-</div>
-<a class="anchor" id="aaea45a879144777845e282507e1dcca2"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">abstract void ClearCameraFocusObjects </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Clears all current camera focus objects. </p>
-
-</div>
-</div>
 <a class="anchor" id="aa531319d1d0e7dd340a1e234e5c9034c"></a>
 <div class="memitem">
 <div class="memproto">
@@ -835,32 +729,6 @@ Inheritance diagram for IGame:</div>
 
 </div>
 </div>
-<a class="anchor" id="a1482456fe2f615fae2a1c65e832dbad6"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">abstract <a class="el" href="struct_s_f_d_game_script_interface_1_1_area.html">Area</a> GetBorderArea </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Gets the current border area. </p>
-<dl class="section return"><dt>Returns</dt><dd><a class="el" href="struct_s_f_d_game_script_interface_1_1_area.html" title="Area ">Area</a> the border area covers</dd></dl>
-
-</div>
-</div>
 <a class="anchor" id="ac169b834bbe24244ece20c9c12051079"></a>
 <div class="memitem">
 <div class="memproto">
@@ -882,7 +750,33 @@ Inheritance diagram for IGame:</div>
 </table>
 </div><div class="memdoc">
 
-<p>Gets the current camera area. </p>
+<p>Gets the current camera area. This is the minimum allowed camera area after aspect correction and max zoom limits. </p>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="struct_s_f_d_game_script_interface_1_1_area.html" title="Area ">Area</a> the camera area covers</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ab212bab935caf87dab37ee5bbff085d7"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">abstract <a class="el" href="struct_s_f_d_game_script_interface_1_1_area.html">Area</a> GetCameraMaxArea </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the current camera max area. This is the maximum possible camera area depending on users resolution. </p>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="struct_s_f_d_game_script_interface_1_1_area.html" title="Area ">Area</a> the camera area covers</dd></dl>
 
 </div>
@@ -1099,7 +993,7 @@ Inheritance diagram for IGame:</div>
 </table>
 </div><div class="memdoc">
 
-<p>Returns current focused camera objects. </p>
+<p>Returns current objects the camera should keep focus on. Union for all PrimaryTarget, SecondaryTargets and InfoTargets from current active CameraAreaTrigger. (The final camera view depend on the end user, where he/she is and active camera mode (static/dynamic)) </p>
 <dl class="section return"><dt>Returns</dt><dd></dd></dl>
 
 </div>
@@ -1478,6 +1372,32 @@ Inheritance diagram for IGame:</div>
 
 </div>
 </div>
+<a class="anchor" id="a624dc56f7107d09d51c1ed3bb442fa4c"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">abstract TimeSpan GetRemainingTimeLimit </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns time limit remaining. Returns TimeSpan.Zero if TimeLimitActive is false. </p>
+<dl class="section return"><dt>Returns</dt><dd>TimeSpan over remaining time. TimeSpan.Zero if TimeLimitActive is false.</dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="aca6a43e903306c1d812398e59c2c8330"></a>
 <div class="memitem">
 <div class="memproto">
@@ -1738,72 +1658,6 @@ Inheritance diagram for IGame:</div>
 
 </div>
 </div>
-<a class="anchor" id="a264196e9ed40f44b3d572b00846f12e4"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">abstract void RemoveCameraFocus </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_object.html">IObject</a>&#160;</td>
-          <td class="paramname"><em>objectToUnfocus</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Removes an object to be focused by the camera. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">objectToUnfocus</td><td>Object to remove from focus.</td></tr>
-  </table>
-  </dd>
-</dl>
-<p>Don't apply to static camera.</p>
-
-</div>
-</div>
-<a class="anchor" id="a61f8badd44e7cb86561e17ce855544ba"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">abstract void RemoveCameraFocus </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_player.html">IPlayer</a>&#160;</td>
-          <td class="paramname"><em>playerToUnfocus</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Removes a player to be focused by the camera. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">playerToUnfocus</td><td>Player to remove from focus.</td></tr>
-  </table>
-  </dd>
-</dl>
-<p>Don't apply to static camera.</p>
-
-</div>
-</div>
 <a class="anchor" id="a4971cc43e71dd5bd3840f10623f4656e"></a>
 <div class="memitem">
 <div class="memproto">
@@ -1868,127 +1722,6 @@ Inheritance diagram for IGame:</div>
 
 </div>
 </div>
-<a class="anchor" id="a8930e50b79396139d7a62782838d3dd4"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">abstract void SetBorderArea </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="struct_s_f_d_game_script_interface_1_1_area.html">Area</a>&#160;</td>
-          <td class="paramname"><em>area</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Sets the border area. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">area</td><td><a class="el" href="struct_s_f_d_game_script_interface_1_1_area.html" title="Area ">Area</a> the border area should cover</td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="a50c2d03587e86a0e1b348dab87f1f0ed"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">abstract void SetBorderArea </td>
-          <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>top</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>left</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>bottom</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>right</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Sets the border area. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">top</td><td>World coordinate for top border</td></tr>
-    <tr><td class="paramname">left</td><td>World coordinate for left border</td></tr>
-    <tr><td class="paramname">bottom</td><td>World coordinate for bottom border</td></tr>
-    <tr><td class="paramname">right</td><td>World coordinate for right border</td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="a32f256defd29f1de16361e079be2f537"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">abstract void SetBorderArea </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_object.html">IObject</a>&#160;</td>
-          <td class="paramname"><em>obj</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Sets the border area. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">obj</td><td>Object to try to set area to</td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 <a class="anchor" id="afef3dfd834944c3c4fb8523d4f833a15"></a>
 <div class="memitem">
 <div class="memproto">
@@ -2011,7 +1744,7 @@ Inheritance diagram for IGame:</div>
 </table>
 </div><div class="memdoc">
 
-<p>Sets the camera area. </p>
+<p>Sets the world's camera area. Only applicable if there's no active CameraAreaTrigger. Too small areas will expand to be within aspect ratio and max zoom levels. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">area</td><td><a class="el" href="struct_s_f_d_game_script_interface_1_1_area.html" title="Area ">Area</a> the camera area should cover</td></tr>
@@ -2065,45 +1798,13 @@ Inheritance diagram for IGame:</div>
 </table>
 </div><div class="memdoc">
 
-<p>Sets the camera area. </p>
+<p>Sets the world's camera area. Only applicable if there's no active CameraAreaTrigger. Too small areas will expand to be within aspect ratio and max zoom levels. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">top</td><td>Top world coordinate for the camera border</td></tr>
     <tr><td class="paramname">left</td><td>Left world coordinate for the camera border</td></tr>
     <tr><td class="paramname">bottom</td><td>Bottom world coordinate for the camera border</td></tr>
     <tr><td class="paramname">right</td><td>Right world coordinate for the camera border</td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="afc42961e90ad54d630b59e81abc7eaab"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">abstract void SetCameraArea </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_object.html">IObject</a>&#160;</td>
-          <td class="paramname"><em>obj</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Sets the camera area. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">obj</td><td>Object to try to set area to</td></tr>
   </table>
   </dd>
 </dl>
@@ -2967,6 +2668,72 @@ Inheritance diagram for IGame:</div>
 
 </div>
 </div>
+<a class="anchor" id="a6c024c86eab21d1cb9fbc85879035427"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">abstract bool SuddenDeathActive</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets if sudden death is currently active. </p>
+
+</div>
+</div>
+<a class="anchor" id="aa340a5f5007bf1fe838a416302e1e61e"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">abstract bool SuddenDeathEnabled</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets if sudden death is enabled. </p>
+
+</div>
+</div>
+<a class="anchor" id="a1990062eb1ec22c939e7e4b9c8e759c4"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">abstract bool TimeLimitActive</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets if time limit is active and ticking. Remaining time can be retrieved via GetTimeLimitRemaining(). </p>
+
+</div>
+</div>
 <a class="anchor" id="aadd9a29c0078c133bff2ee0f333a33e2"></a>
 <div class="memitem">
 <div class="memproto">
@@ -2995,7 +2762,7 @@ Inheritance diagram for IGame:</div>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespace_s_f_d_game_script_interface.html">SFDGameScriptInterface</a></li><li class="navelem"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_game.html">IGame</a></li>
-    <li class="footer">Generated on Wed Mar 1 2017 20:46:43 by
+    <li class="footer">Generated on Sun Jun 4 2017 14:39:23 by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

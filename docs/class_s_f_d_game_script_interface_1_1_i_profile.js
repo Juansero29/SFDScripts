@@ -11,5 +11,5 @@ var class_s_f_d_game_script_interface_1_1_i_profile =
     [ "Legs", "class_s_f_d_game_script_interface_1_1_i_profile.html#a2c1477a01617c3b9168bc1bef83c840e", null ],
     [ "Name", "class_s_f_d_game_script_interface_1_1_i_profile.html#a7ee9065718e6628dc7791b756fa6c0f9", null ],
     [ "Skin", "class_s_f_d_game_script_interface_1_1_i_profile.html#a79623d5b6b0c4a6caa84254df36ee546", null ],
-    [ "Waits", "class_s_f_d_game_script_interface_1_1_i_profile.html#a073ba1779245126804630b59d48a6a0f", null ]
+    [ "Waist", "class_s_f_d_game_script_interface_1_1_i_profile.html#ac6644e0ee36bad491deb9eb7a5865181", null ]
 ];

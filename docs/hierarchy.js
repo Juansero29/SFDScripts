@@ -51,6 +51,7 @@ var hierarchy =
             [ "IObjectActivateTrigger", "class_s_f_d_game_script_interface_1_1_i_object_activate_trigger.html", null ],
             [ "IObjectAreaTrigger", "class_s_f_d_game_script_interface_1_1_i_object_area_trigger.html", null ],
             [ "IObjectButtonTrigger", "class_s_f_d_game_script_interface_1_1_i_object_button_trigger.html", null ],
+            [ "IObjectCameraAreaTrigger", "class_s_f_d_game_script_interface_1_1_i_object_camera_area_trigger.html", null ],
             [ "IObjectChangeBodyTypeTrigger", "class_s_f_d_game_script_interface_1_1_i_object_change_body_type_trigger.html", null ],
             [ "IObjectDestroyTrigger", "class_s_f_d_game_script_interface_1_1_i_object_destroy_trigger.html", null ],
             [ "IObjectDialogueTrigger", "class_s_f_d_game_script_interface_1_1_i_object_dialogue_trigger.html", null ],
