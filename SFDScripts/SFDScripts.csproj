@@ -45,14 +45,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BattleOfTeams.cs" />
-    <Compile Include="Bloot.cs" />
-    <Compile Include="ChaletCode.cs" />
-    <Compile Include="Fly.cs" />
-    <Compile Include="MarioPanadero.cs" />
-    <Compile Include="NoGrav.cs" />
+    <Compile Include="External\#B.cs" />
+    <Compile Include="External\#F.cs" />
+    <Compile Include="External\#UK.cs" />
+    <Compile Include="External\#UOP.cs" />
+    <Compile Include="External\#UT.cs" />
+    <Compile Include="External\#W.cs" />
+    <Compile Include="External\Uberkick.cs" />
+    <Compile Include="Internal\BOT5dot0.cs" />
+    <Compile Include="Internal\DBMap.cs" />
+    <Compile Include="Internal\MarioPanadero.cs" />
+    <Compile Include="Internal\NoGrav.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Uberkick.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
