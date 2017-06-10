@@ -1,6 +1,10 @@
-using SFDGameScriptInterface;
 using System;
 using System.Linq;
+using System.Collections;
+using System.Collections.Generic;
+using System.Text;
+using System.Text.RegularExpressions;
+using SFDGameScriptInterface;
 
 namespace SFDScripts
 {
@@ -13,31 +17,68 @@ namespace SFDScripts
         /// </summary>
         public Uberthrow() : base(null) { }
 
+        #region ScriptToCopy
         /* SCRIPT STARTS HERE */
 
-        float ThrowSpeedMulitpy = (float)1.45f;
+        /// <summary>
+        /// This number controls the speed of the objects that are launched.
+        /// </summary>
+        float ThrowSpeedMultiply = 1.45f;
 
-        bool DisableThrownWeaponsCollision = false; // if true grenades and mines will not impact with any player unless hit from a shory distance.
 
-        bool AccelerateThrownWeapons = false; // if false thrown weapons such as grenades / molotovs /  mines will not be accelerated through script.
+        /// <summary>
+        /// if this is true, grenades and mines will not impact with any player unless they are hit from a short distance.
+        /// </summary>
+        bool DisableThrownWeaponsCollision = false;
 
-        bool SetMissileOnFire = true;   // set any flammable thrown missile (chairs, cuesticks, Suitcase...) to burn in mid air .
 
-        bool IncreaseMeleeWeaponMass = false; // Melee weapons is ten times heavier when thrown.
+        /// <summary>
+        /// If false, thrown weapons such as grenades, molotovs and  mines will not be accelerated through script.
+        /// </summary>
+        bool AccelerateThrownWeapons = false;
 
-        bool GiveWeaponDefault = true;       // gives each player a certain weapons (cuestick as default).
 
-        public WeaponItem DefaultWeapon = WeaponItem.KNIFE;// you can change this to any weapon you wish
+        /// <summary>
+        /// Set any flammable thrown missile (chairs, cuesticks, Suitcase...) to burn in mid air .
+        /// </summary>
+        bool SetMissileOnFire = true;
 
-        //  You can find a list of weapons bellow 
+        /// <summary>
+        /// Melee weapons are ten times heavier when thrown.
+        /// </summary>
+        bool IncreaseMeleeWeaponMass = false;
 
-        bool DisableThrowning = false;  // missile will not collide do any damage and will be  decelerated (if thrown). might not work in close distances
+        /// <summary>
+        /// Gives each player a certain weapons (knife if the default weapon).
+        /// </summary>
+        bool GiveWeaponDefault = true;
 
-        bool CreateFireCircleOnImpact = false;  // create a fire circle when the missile is slowed down or no longer  a missle and destroys the missile.
+        /// <summary>
+        /// Contains the enum for the default weapon given to players if <see cref="GiveWeaponDefault"/> is set to true. Users can change this to any weapon they wish.
+        /// </summary>
+        public WeaponItem DefaultWeapon = WeaponItem.KNIFE;        ///***  YOU CAN FIND A LIST OF WEAPONS BELOW ***///
 
-        bool CreateExplosionOnImpact = false;//  create a explosion when the missile is slowed down or no longer  a missle and destroys the missile.
+        /// <summary>
+        /// Missiles will not collide, won't do any damage and will be decelerated (if thrown). This might not work for close distances.
+        /// </summary>
+        bool DisableThrowning = false;
 
-        bool CreateRandomImpact = false;//  
+
+        /// <summary>
+        /// Creates a fire circle when the missile is slowed down or no longer a missile. Then it destroys the missile.
+        /// </summary>
+        bool CreateFireCircleOnImpact = false;
+
+
+        /// <summary>
+        /// Creates an explosion when the missile is slowed down or when it is not longer a missile. Then it destroyes the missile.
+        /// </summary>
+        bool CreateExplosionOnImpact = false;
+
+        /// <summary>
+        /// Creates a random impact.
+        /// </summary>
+        bool CreateRandomImpact = false;
 
         int RandomProb = 1; // 
 
@@ -45,33 +86,44 @@ namespace SFDScripts
 
         string[] ThrownWeapons = new string[] { "WpnGrenadesThrown", "WpnMolotovsThrown", "WpnMineThrown" };
 
-        WeaponItem[] ThrownWeaponsClass = new WeaponItem[] { WeaponItem.GRENADES, WeaponItem.MOLOTOVS, WeaponItem.MINES, };
-
-
-        WeaponItem[] RifleWeaponsClass = new WeaponItem[]{
-            WeaponItem.SHOTGUN,WeaponItem.TOMMYGUN,WeaponItem.M60,WeaponItem.SNIPER,WeaponItem.SAWED_OFF,
-            WeaponItem.BAZOOKA,WeaponItem.ASSAULT,WeaponItem.FLAMETHROWER,WeaponItem.GRENADE_LAUNCHER,
-            WeaponItem.SMG,WeaponItem.SUB_MACHINEGUN,
-        };
-
-        WeaponItem[] HandWeaponsClass = new WeaponItem[]{WeaponItem.PISTOL,WeaponItem.MAGNUM,WeaponItem.UZI,
-            WeaponItem.FLAREGUN,WeaponItem.REVOLVER,WeaponItem.SILENCEDPISTOL,WeaponItem.SILENCEDUZI,
+        WeaponItem[] ThrownWeaponsClass = new WeaponItem[]
+        {
+            WeaponItem.GRENADES, WeaponItem.MOLOTOVS, WeaponItem.MINES,
         };
 
 
-        WeaponItem[] MeleeWeaponsClass = new WeaponItem[]{
-            WeaponItem.KATANA,WeaponItem.PIPE,WeaponItem.MACHETE,WeaponItem.BAT,WeaponItem.AXE,WeaponItem.HAMMER,
-            WeaponItem.BATON,WeaponItem.KNIFE,WeaponItem.CHAIN,
+        WeaponItem[] RifleWeaponsClass = new WeaponItem[]
+        {
+            WeaponItem.SHOTGUN,WeaponItem.TOMMYGUN,WeaponItem.M60,WeaponItem.SNIPER,
+            WeaponItem.SAWED_OFF,WeaponItem.BAZOOKA,WeaponItem.ASSAULT,WeaponItem.FLAMETHROWER,
+            WeaponItem.GRENADE_LAUNCHER,WeaponItem.SMG,WeaponItem.SUB_MACHINEGUN,
+        };
+
+        WeaponItem[] HandWeaponsClass = new WeaponItem[]
+        {
+            WeaponItem.PISTOL,WeaponItem.MAGNUM,WeaponItem.UZI,WeaponItem.FLAREGUN,
+            WeaponItem.REVOLVER,WeaponItem.SILENCEDPISTOL,WeaponItem.SILENCEDUZI,
         };
 
 
-        WeaponItem[] MakeShiftWeaponsClass = new WeaponItem[]{
+        WeaponItem[] MeleeWeaponsClass = new WeaponItem[]
+        {
+            WeaponItem.KATANA,WeaponItem.PIPE,WeaponItem.MACHETE,WeaponItem.BAT,WeaponItem.AXE,
+            WeaponItem.HAMMER,WeaponItem.BATON,WeaponItem.KNIFE,WeaponItem.CHAIN,
+        };
+
+
+        WeaponItem[] MakeShiftWeaponsClass = new WeaponItem[]
+        {
             WeaponItem.CHAIR,WeaponItem.CHAIR_LEG,WeaponItem.BOTTLE,WeaponItem.BROKEN_BOTTLE,WeaponItem.CUESTICK,
             WeaponItem.CUESTICK_SHAFT,WeaponItem.SUITCASE,WeaponItem.PILLOW,WeaponItem.FLAGPOLE,WeaponItem.TEAPOT,
         };
 
-        Random rand = new Random();
+        Random Rnd = new Random();
 
+        /// <summary>
+        /// This method is executed when map starts
+        /// </summary>
         public void OnStartup()
         {
 
@@ -80,14 +132,14 @@ namespace SFDScripts
                 IObjectTimerTrigger Timer0 = (IObjectTimerTrigger)Game.CreateObject("TimerTrigger");
                 Timer0.SetIntervalTime(75);
                 Timer0.SetRepeatCount(0);
-                Timer0.SetScriptMethod("veryfast");
+                Timer0.SetScriptMethod("VeryFast");
                 Timer0.Trigger();
             }
 
             IObjectTimerTrigger Timer = (IObjectTimerTrigger)Game.CreateObject("TimerTrigger");
             Timer.SetIntervalTime(100);
             Timer.SetRepeatCount(0);
-            Timer.SetScriptMethod("fast");
+            Timer.SetScriptMethod("Fast");
             Timer.Trigger();
 
             IObjectTimerTrigger Timer2 = (IObjectTimerTrigger)Game.CreateObject("TimerTrigger");
@@ -99,40 +151,49 @@ namespace SFDScripts
 
 
             Timer2.SetRepeatCount(0);
-            Timer2.SetScriptMethod("slow");
+            Timer2.SetScriptMethod("Slow");
             Timer2.Trigger();
 
             if (GiveWeaponDefault)
             {
+                Game.WriteToConsole("Weapon " + GiveWeaponDefault + " is going to be given to players!");
+
                 IObjectTimerTrigger Timer3 = (IObjectTimerTrigger)Game.CreateObject("TimerTrigger");
                 Timer3.SetIntervalTime(15000);
                 Timer3.SetRepeatCount(0);
+
+                
                 if (ThrownWeaponsClass.Contains(DefaultWeapon))
                 {
-                    Timer3.SetScriptMethod("mid1");
+                    // Chosen weapon is a thrown weapon.
+                    Timer3.SetScriptMethod("MidOne");
                 }
                 if (RifleWeaponsClass.Contains(DefaultWeapon))
                 {
-                    Timer3.SetScriptMethod("mid2");
+                    // Chosen weapon is a rifle.
+                    Timer3.SetScriptMethod("MidTwo");
                 }
                 if (HandWeaponsClass.Contains(DefaultWeapon))
                 {
-                    Timer3.SetScriptMethod("mid3");
+                    // Chosen weapon is a hand weapon.
+                    Timer3.SetScriptMethod("MidThree");
                 }
                 if (MeleeWeaponsClass.Contains(DefaultWeapon))
                 {
-                    Timer3.SetScriptMethod("mid4");
+                    // Chosen weapon is a melee weapon.
+                    Timer3.SetScriptMethod("MidFour");
                 }
                 if (MakeShiftWeaponsClass.Contains(DefaultWeapon))
                 {
-                    Timer3.SetScriptMethod("mid5");
+                    // Chosen weapon is a throwable weak weapon.
+                    Timer3.SetScriptMethod("MidFive");
                 }
                 Timer3.Trigger();
             }
         }
 
 
-        public void fast(TriggerArgs args)
+        public void Fast(TriggerArgs args)
         {
             foreach (IObject missile in Game.GetMissileObjects())
             {
@@ -141,17 +202,19 @@ namespace SFDScripts
                     float speed = 100;
                     if ((speed > 1 || ((IObjectWeaponItem)missile).WeaponItemType == WeaponItemType.Rifle) && !(missile.CustomId == "ScriptMarkedMissile") && (!(ThrownWeapons.Contains(missile.Name)) || AccelerateThrownWeapons) && !DisableThrowning)
                     {
-                        missile.SetLinearVelocity(missile.GetLinearVelocity() * ThrowSpeedMulitpy);
+                        missile.SetLinearVelocity(missile.GetLinearVelocity() * ThrowSpeedMultiply);
                         missile.CustomId = "ScriptMarkedMissile";
+
                         if ((CreateFireCircleOnImpact || CreateExplosionOnImpact))
                         {
                             IObjectTargetObjectJoint targetjoint = (IObjectTargetObjectJoint)Game.CreateObject("TargetObjectJoint", missile.GetWorldPosition(), 0f, missile.GetLinearVelocity(), missile.GetAngularVelocity());
                             targetjoint.SetTargetObject(missile);
                             targetjoint.CustomId = "destructjoint";
                         }
-                        if (CreateRandomImpact && rand.Next(0, RandomProb) == 0)
+
+                        if (CreateRandomImpact && Rnd.Next(0, RandomProb) == 0)
                         {
-                            int x = rand.Next(0, 25);       //////////////////////////////////
+                            int x = Rnd.Next(0, 25);       //////////////////////////////////
                             IObjectTargetObjectJoint targetjoint = (IObjectTargetObjectJoint)Game.CreateObject("TargetObjectJoint", missile.GetWorldPosition(), 0f, missile.GetLinearVelocity(), missile.GetAngularVelocity());
                             targetjoint.SetTargetObject(missile);
 
@@ -239,7 +302,7 @@ namespace SFDScripts
                 }
             }
         }
-        public void slow(TriggerArgs args)
+        public void Slow(TriggerArgs args)
         {
             foreach (IObjectTargetObjectJoint joint in Game.GetObjectsByCustomId("Electricjoint"))
             {
@@ -258,7 +321,7 @@ namespace SFDScripts
                 }
             }
         }
-        public void mid1(TriggerArgs args)
+        public void MidOne(TriggerArgs args)
         {
             foreach (IPlayer ply in Game.GetPlayers())
             {
@@ -268,7 +331,7 @@ namespace SFDScripts
                 }
             }
         }
-        public void mid2(TriggerArgs args)
+        public void MidTwo(TriggerArgs args)
         {
             foreach (IPlayer ply in Game.GetPlayers())
             {
@@ -278,7 +341,7 @@ namespace SFDScripts
                 }
             }
         }
-        public void mid3(TriggerArgs args)
+        public void MidThree(TriggerArgs args)
         {
             foreach (IPlayer ply in Game.GetPlayers())
             {
@@ -288,7 +351,7 @@ namespace SFDScripts
                 }
             }
         }
-        public void mid4(TriggerArgs args)
+        public void MidFour(TriggerArgs args)
         {
             foreach (IPlayer ply in Game.GetPlayers())
             {
@@ -298,7 +361,7 @@ namespace SFDScripts
                 }
             }
         }
-        public void mid5(TriggerArgs args)
+        public void MidFive(TriggerArgs args)
         {
             foreach (IPlayer ply in Game.GetPlayers())
             {
@@ -318,7 +381,7 @@ namespace SFDScripts
                 {
                     if (joint != null)
                     {
-                        Vector2 vec = new Vector2(rand.Next(-3, 3), rand.Next(-3, 3)) * 4;
+                        Vector2 vec = new Vector2(Rnd.Next(-3, 3), Rnd.Next(-3, 3)) * 4;
                         Game.CreateObject("WpnMineThrown", joint.GetWorldPosition() + vec, 0f, joint.GetLinearVelocity() + vec, 0f);
                     }
                 }
@@ -330,7 +393,7 @@ namespace SFDScripts
             }
         }
 
-        public void grenade(TriggerArgs args)
+        public void Grenade(TriggerArgs args)
         {
             foreach (IObjectTargetObjectJoint joint in Game.GetObjectsByCustomId("Grenadejoint"))
             {
@@ -338,7 +401,7 @@ namespace SFDScripts
                 {
                     if (joint != null)
                     {
-                        Vector2 vec = new Vector2(rand.Next(-3, 3), rand.Next(-3, 3)) * 4;
+                        Vector2 vec = new Vector2(Rnd.Next(-3, 3), Rnd.Next(-3, 3)) * 4;
                         Game.CreateObject("WpnGrenadesThrown", joint.GetWorldPosition() + vec, 0f, joint.GetLinearVelocity() + vec, 0f);
                     }
                 }
@@ -350,7 +413,7 @@ namespace SFDScripts
             }
         }
 
-        public void bazooka(TriggerArgs args)
+        public void Bazooka(TriggerArgs args)
         {
             foreach (IObjectTargetObjectJoint joint in Game.GetObjectsByCustomId("Bazookajoint"))
             {
@@ -369,7 +432,7 @@ namespace SFDScripts
             }
         }
 
-        public void veryfast(TriggerArgs args)
+        public void VeryFast(TriggerArgs args)
         {
             if (CreateRandomImpact)
             {
@@ -390,8 +453,8 @@ namespace SFDScripts
                         {
                             if (joint != null)
                             {
-                                Game.PlayEffect("Electric", joint.GetWorldPosition() + new Vector2(rand.Next(-8, 8), rand.Next(-8, 8)) * 4);
-                                Game.TriggerExplosion(joint.GetWorldPosition() + new Vector2(rand.Next(-8, 8), rand.Next(-8, 8)) * 4);
+                                Game.PlayEffect("Electric", joint.GetWorldPosition() + new Vector2(Rnd.Next(-8, 8), Rnd.Next(-8, 8)) * 4);
+                                Game.TriggerExplosion(joint.GetWorldPosition() + new Vector2(Rnd.Next(-8, 8), Rnd.Next(-8, 8)) * 4);
                             }
                         }
                         joint.Destroy();
@@ -452,5 +515,6 @@ namespace SFDScripts
         }
 
         /* AND ENDS HERE */
+        #endregion ScriptToCopy
     }
 }
