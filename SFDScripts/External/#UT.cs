@@ -49,7 +49,7 @@ namespace SFDScripts
         bool IncreaseMeleeWeaponMass = false;
 
         /// <summary>
-        /// Gives each player a certain weapons (knife if the default weapon).
+        /// Gives each player a certain weapon every 15 seconds. (knife if the default weapon)
         /// </summary>
         bool GiveWeaponDefault = true;
 
@@ -78,10 +78,9 @@ namespace SFDScripts
         /// <summary>
         /// Creates a random impact.
         /// </summary>
-        bool CreateRandomImpact = false;
+        bool CreateRandomImpact = true;
 
-        int RandomProb = 1; // 
-
+        int RandomProb = 1;
         string effect = "S_P";
 
         string[] ThrownWeapons = new string[] { "WpnGrenadesThrown", "WpnMolotovsThrown", "WpnMineThrown" };
@@ -129,6 +128,7 @@ namespace SFDScripts
 
             if (CreateFireCircleOnImpact || CreateExplosionOnImpact || CreateRandomImpact)
             {
+                /* This timer controls fire circles, explosions on impact and/or random impacts */
                 IObjectTimerTrigger Timer0 = (IObjectTimerTrigger)Game.CreateObject("TimerTrigger");
                 Timer0.SetIntervalTime(75);
                 Timer0.SetRepeatCount(0);
@@ -148,15 +148,13 @@ namespace SFDScripts
             {
                 Timer2.SetIntervalTime(100);
             }
-
-
             Timer2.SetRepeatCount(0);
             Timer2.SetScriptMethod("Slow");
             Timer2.Trigger();
 
             if (GiveWeaponDefault)
             {
-                Game.WriteToConsole("Weapon " + GiveWeaponDefault + " is going to be given to players!");
+                Game.WriteToConsole("Weapon " + GiveWeaponDefault.ToString() + " is going to be given to players!");
 
                 IObjectTimerTrigger Timer3 = (IObjectTimerTrigger)Game.CreateObject("TimerTrigger");
                 Timer3.SetIntervalTime(15000);
@@ -214,7 +212,7 @@ namespace SFDScripts
 
                         if (CreateRandomImpact && Rnd.Next(0, RandomProb) == 0)
                         {
-                            int x = Rnd.Next(0, 25);       //////////////////////////////////
+                            int x = Rnd.Next(0, 25);
                             IObjectTargetObjectJoint targetjoint = (IObjectTargetObjectJoint)Game.CreateObject("TargetObjectJoint", missile.GetWorldPosition(), 0f, missile.GetLinearVelocity(), missile.GetAngularVelocity());
                             targetjoint.SetTargetObject(missile);
 
