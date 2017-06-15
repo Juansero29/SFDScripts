@@ -121,7 +121,7 @@ namespace SFDScripts
 
                 }
                 bool jeton = (ply.IsWalking && !ply.IsDead && !ply.IsStaggering && !ply.IsRolling && (!ply.IsBlocking || ply.IsInMidAir) && !ply.IsManualAiming);
-                bool mapborder = WorkOutsideBorders || Game.GetBorderArea().Contains(ply.GetWorldPosition());
+                bool mapborder = WorkOutsideBorders || Game.GetCameraArea().Contains(ply.GetWorldPosition());
                 if (jeton)
                 {
                     if (book.ContainsKey(ply))

@@ -625,7 +625,7 @@ namespace SFDScripts
                     else
                     {
                         ply.SetInputEnabled(false);
-                        ply.RunToPosition(ply.GetWorldPosition(), ply.FacingDirection);
+                        ply.AddCommand(new PlayerCommand(PlayerCommandType.StartMoveToPosition, ply.GetWorldPosition(), 0));
                     }
                 }
             }
@@ -878,7 +878,8 @@ namespace SFDScripts
                 case "Defender":
                     PlayerTeam defendingTeam = ply.GetTeam();
                     IPlayer defender = Game.CreatePlayer(ply.GetWorldPosition() + new Vector2(ply.FacingDirection * 25, 0f));
-                    defender.SetBotType(BotType.TutorialA);
+                    BotBehavior bb = new BotBehavior(){ TutorialMelee = true};
+                    defender.SetBotBehavior(bb);
                     defender.SetTeam(defendingTeam);
                     break;
                 /*case "Block":
@@ -1233,7 +1234,7 @@ namespace SFDScripts
                 }
                 else
                 {
-                    ply.SetBotType(BotType.None);
+                    ply.SetBotBehavior(new BotBehavior());
                 }
                 Game.PlayEffect("Electric", ply.GetWorldPosition() + new Vector2(0, 8f));
             }
