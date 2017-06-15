@@ -9,13 +9,13 @@ using SFDGameScriptInterface;
 namespace SFDScripts
 {
 
-    class Uberthrow : GameScriptInterface
+    class UberThrow : GameScriptInterface
     {
 
         /// <summary>
         /// Placeholder constructor that's not to be included in the ScriptWindow!
         /// </summary>
-        public Uberthrow() : base(null) { }
+        public UberThrow() : base(null) { }
 
         #region ScriptToCopy
         /* SCRIPT STARTS HERE */
