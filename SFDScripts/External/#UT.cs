@@ -41,7 +41,7 @@ namespace SFDScripts
         /// <summary>
         /// Set any flammable thrown missile (chairs, cuesticks, Suitcase...) to burn in mid air .
         /// </summary>
-        bool SetMissileOnFire = true;
+        bool SetMissileOnFire = false;
 
         /// <summary>
         /// Melee weapons are ten times heavier when thrown.
@@ -78,7 +78,7 @@ namespace SFDScripts
         /// <summary>
         /// Creates a random impact.
         /// </summary>
-        bool CreateRandomImpact = true;
+        bool CreateRandomImpact = false;
 
         int RandomProb = 1;
         string effect = "S_P";
