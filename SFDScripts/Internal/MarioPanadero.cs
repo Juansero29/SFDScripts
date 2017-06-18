@@ -187,7 +187,7 @@ namespace SFDScripts
                 switch (mCallerObject.CustomId)
                 {
                     case "MarioOne":
-                        if (Game.GetActiveUsers().Length * 5 > mNumberOfRedTeamPlayers * 10)
+                        if (mNumberOfBluTeamPlayers >= mNumberOfRedTeamPlayers)
                         {
                             getAway(RedRnd(), mCallerPlayer);
                             mCallerPlayer.SetTeam(PlayerTeam.Team2);
@@ -200,7 +200,7 @@ namespace SFDScripts
                         }
                         break;
                     case "MarioTwo":
-                        if (Game.GetActiveUsers().Length * 5 > mNumberOfBluTeamPlayers * 10)
+                        if (mNumberOfRedTeamPlayers >= mNumberOfBluTeamPlayers)
                         {
                             getAway(BlueRnd(), mCallerPlayer);
                             mCallerPlayer.SetTeam(PlayerTeam.Team1);
@@ -231,14 +231,6 @@ namespace SFDScripts
         public int RandNumber(int Low, int High)
         {
             return rnd.Next(Low, High);
-        }
-        public void XstroyGun(TriggerArgs args)
-        {
-            if (args.Sender is IObjectWeaponItem)
-            {
-                mCallerObject = (IObject)args.Sender;
-                mCallerObject.Remove();
-            }
         }
         public void removeWeapons(IPlayer ply)
         {
@@ -300,6 +292,8 @@ namespace SFDScripts
                 }
             }
         }
+
+        
         public void RespawnTick(TriggerArgs args)
         {
             if (m_deadPlayers.Count > 0)
