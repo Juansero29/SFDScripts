@@ -9,10 +9,9 @@ namespace SFDScripts
     {
 
         public MarioPanadero() : base(null) { }
-
         List<IPlayer> marios = new List<IPlayer>();
         int mariosNumber = 0;
-        
+
         int TimeCTD = 5 * 60;
         bool TextF = false;
         int vRedKills = 0;
@@ -54,7 +53,7 @@ namespace SFDScripts
             if (TimeCTD < 1 && !gonein)
             {
                 gonein = true;
-                WhoWins(args);          
+                WhoWins(args);
             }
         }
         public void TimeVerdin(TriggerArgs args)
@@ -71,7 +70,7 @@ namespace SFDScripts
             ct = (IObjectText)Game.GetSingleObjectByCustomId("TextCD");
             if (vRedKills > vBluKills)
             {
-                Game.SetGameOver("RED MARIOS WIN");
+                Game.SetGameOver("The Red wins");
                 winner = PlayerTeam.Team2;
                 Game.WriteToConsole(winner.ToString());
                 foreach (IPlayer p in Game.GetPlayers())
@@ -84,9 +83,9 @@ namespace SFDScripts
             }
             else if (vRedKills < vBluKills)
             {
-                Game.SetGameOver("BLUE MARIOS WIN");
+                Game.SetGameOver("The Blue wins");
                 winner = PlayerTeam.Team1;
-                
+
                 foreach (IPlayer p in Game.GetPlayers())
                 {
                     if (p.GetTeam() == PlayerTeam.Team1)
@@ -97,7 +96,7 @@ namespace SFDScripts
             }
             else
             {
-                Game.SetGameOver("DRAW!");
+                Game.SetGameOver("Draw!");
                 TextF = true;
                 ExplodePeach();
             }
@@ -109,7 +108,7 @@ namespace SFDScripts
         private IPlayer plyExit = null;
         private bool allowOpen = false;
         int rand;
-        string[] GetposB = new string[] 
+        string[] GetposB = new string[]
         {
             "BluBase",
             "BluBase2",
@@ -117,7 +116,7 @@ namespace SFDScripts
             "BluBase4",
             "BluBase5"
         };
-        string[] GetposR = new string[] 
+        string[] GetposR = new string[]
         {
         "MarioOneBase",
         "RedBase2",
@@ -311,7 +310,7 @@ namespace SFDScripts
                     cdpl = m_deadPlayers[i];
                     if (cdpl.Timestamp + USER_RESPAWN_DELAY_MS < Game.TotalElapsedGameTime)
                     {
-                        
+
                         m_deadPlayers.RemoveAt(i);
                         if (cdpl.DeadBody != null)
                         {
@@ -384,7 +383,7 @@ namespace SFDScripts
                     cpl2.SetTeam(PlayerTeam.Team2);
                     cve = Game.GetSingleObjectByCustomId(RedRnd()).GetWorldPosition();
                     if (winner == PlayerTeam.Team2)
-                    {     
+                    {
                         Game.WriteToConsole("Winner is read and dead red player is sent to peach");
                         cve = Game.GetSingleObjectByCustomID("PlayerPeach").GetWorldPosition();
                     }
@@ -543,17 +542,18 @@ namespace SFDScripts
 
         public void BalloonsParty(TriggerArgs args)
         {
-                 IObjectGroupMarker groupOne = (IObjectGroupMarker) Game.GetSingleObjectByCustomID("BalloonsGroupOne");
-                 IObjectGroupMarker groupTwo = (IObjectGroupMarker) Game.GetSingleObjectByCustomID("BalloonsGroupTwo");
-                 IObjectGroupMarker groupThree = (IObjectGroupMarker) Game.GetSingleObjectByCustomID("BalloonsGroupThree");
+            IObjectGroupMarker groupOne = (IObjectGroupMarker)Game.GetSingleObjectByCustomID("BalloonsGroupOne");
+            IObjectGroupMarker groupTwo = (IObjectGroupMarker)Game.GetSingleObjectByCustomID("BalloonsGroupTwo");
+            IObjectGroupMarker groupThree = (IObjectGroupMarker)Game.GetSingleObjectByCustomID("BalloonsGroupThree");
 
-                 groupOne.Trigger();
-                 groupTwo.Trigger();
-                 groupThree.Trigger();             
+            groupOne.Trigger();
+            groupTwo.Trigger();
+            groupThree.Trigger();
         }
 
-        public void ExplodePeach(){
-            IObjectExplosionTrigger explode = (IObjectExplosionTrigger) Game.GetSingleObjectByCustomID("Explode");
+        public void ExplodePeach()
+        {
+            IObjectExplosionTrigger explode = (IObjectExplosionTrigger)Game.GetSingleObjectByCustomID("Explode");
             explode.Trigger();
             explode.Trigger();
             explode.Trigger();
