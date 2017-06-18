@@ -16,14 +16,14 @@ namespace SFDScripts
         bool TextF = false;
         int vRedKills = 0;
         int vBluKills = 0;
-        IPlayer cpl;
+        IPlayer mCallerPlayer;
         IPlayer cpl2;
         IUser cus;
         IUser[] users;
         IObjectText ct;
         IObjectText ct2;
         IObject[] coba;
-        IObject cob;
+        IObject mCallerObject;
         Vector2 cve;
         Vector2 cve2;
         DeadPlayer cdpl;
@@ -42,7 +42,7 @@ namespace SFDScripts
             SpawnPeach();
         }
 
-        public void TimeRemain(TriggerArgs args)
+        public void TimeRemaining(TriggerArgs args)
         {
             ct = (IObjectText)Game.GetSingleObjectByCustomId("TextCD");
             if (ct != null && TextF == false && gonein == false)
@@ -56,12 +56,12 @@ namespace SFDScripts
                 WhoWins(args);
             }
         }
-        public void TimeVerdin(TriggerArgs args)
+        public void TimerGreenPlayerIn(TriggerArgs args)
         {
-            cpl = (IPlayer)args.Sender;
-            cpl.SetTeam(PlayerTeam.Team3);
+            mCallerPlayer = (IPlayer)args.Sender;
+            mCallerPlayer.SetTeam(PlayerTeam.Team3);
         }
-        public void ClearPopup(TriggerArgs args)
+        public void ClearPopupMessage(TriggerArgs args)
         {
             Game.HidePopupMessage();
         }
@@ -159,40 +159,40 @@ namespace SFDScripts
         }
         public void refil(TriggerArgs args)
         {
-            cpl = (IPlayer)args.Sender;
-            cpl.GiveWeaponItem(WeaponItem.PILLS);
-            cpl.GiveWeaponItem(cpl.CurrentSecondaryWeapon.WeaponItem);
-            if (cpl.CurrentPrimaryWeapon.WeaponItem != WeaponItem.MAGNUM)
+            mCallerPlayer = (IPlayer)args.Sender;
+            mCallerPlayer.GiveWeaponItem(WeaponItem.PILLS);
+            mCallerPlayer.GiveWeaponItem(mCallerPlayer.CurrentSecondaryWeapon.WeaponItem);
+            if (mCallerPlayer.CurrentPrimaryWeapon.WeaponItem != WeaponItem.MAGNUM)
             {
-                cpl.GiveWeaponItem(cpl.CurrentPrimaryWeapon.WeaponItem);
+                mCallerPlayer.GiveWeaponItem(mCallerPlayer.CurrentPrimaryWeapon.WeaponItem);
             }
         }
 
         public void getAway(String id, IPlayer ply)
         {
-            cob = Game.GetSingleObjectByCustomId(id);
-            cve = cob.GetWorldPosition();
+            mCallerObject = Game.GetSingleObjectByCustomId(id);
+            cve = mCallerObject.GetWorldPosition();
             ply.SetWorldPosition(cve);
         }
-        int bluTeam = 0;
-        int redTeam = 0;
+        int mNumberOfBluTeamPlayers = 0;
+        int mNumberOfRedTeamPlayers = 0;
 
         public void MovetoBase(TriggerArgs args)
         {
-            cpl = (IPlayer)args.Sender;
-            if ((cpl != null) && (cpl is IPlayer) && (!cpl.IsDiving))
+            mCallerPlayer = (IPlayer)args.Sender;
+            if ((mCallerPlayer != null) && (mCallerPlayer is IPlayer) && (!mCallerPlayer.IsDiving))
             {
-                cob = (IObject)args.Caller;
-                cpl = (IPlayer)args.Sender;
-                switch (cob.CustomId)
+                mCallerObject = (IObject)args.Caller;
+                mCallerPlayer = (IPlayer)args.Sender;
+                switch (mCallerObject.CustomId)
                 {
                     case "MarioOne":
-                        if (Game.GetActiveUsers().Length * 5 > redTeam * 10)
+                        if (Game.GetActiveUsers().Length * 5 > mNumberOfRedTeamPlayers * 10)
                         {
-                            getAway(RedRnd(), cpl);
-                            cpl.SetTeam(PlayerTeam.Team2);
-                            redTeam++;
-                            SetPlayerToMarioOne(cpl);
+                            getAway(RedRnd(), mCallerPlayer);
+                            mCallerPlayer.SetTeam(PlayerTeam.Team2);
+                            mNumberOfRedTeamPlayers++;
+                            SetPlayerToMarioOne(mCallerPlayer);
                         }
                         else
                         {
@@ -200,12 +200,12 @@ namespace SFDScripts
                         }
                         break;
                     case "MarioTwo":
-                        if (Game.GetActiveUsers().Length * 5 > bluTeam * 10)
+                        if (Game.GetActiveUsers().Length * 5 > mNumberOfBluTeamPlayers * 10)
                         {
-                            getAway(BlueRnd(), cpl);
-                            cpl.SetTeam(PlayerTeam.Team1);
-                            bluTeam++;
-                            SetPlayerToMarioTwo(cpl);
+                            getAway(BlueRnd(), mCallerPlayer);
+                            mCallerPlayer.SetTeam(PlayerTeam.Team1);
+                            mNumberOfBluTeamPlayers++;
+                            SetPlayerToMarioTwo(mCallerPlayer);
                         }
                         else
                         {
@@ -221,11 +221,11 @@ namespace SFDScripts
         {
             if (team == PlayerTeam.Team1)
             {
-                bluTeam--;
+                mNumberOfBluTeamPlayers--;
             }
             if (team == PlayerTeam.Team2)
             {
-                redTeam--;
+                mNumberOfRedTeamPlayers--;
             }
         }
         public int RandNumber(int Low, int High)
@@ -237,8 +237,8 @@ namespace SFDScripts
         {
             if (args.Sender is IObjectWeaponItem)
             {
-                cob = (IObject)args.Sender;
-                cob.Remove();
+                mCallerObject = (IObject)args.Sender;
+                mCallerObject.Remove();
             }
         }
         public void removeWeapons(IPlayer ply)
