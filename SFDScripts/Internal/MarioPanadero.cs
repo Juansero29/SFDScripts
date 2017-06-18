@@ -217,7 +217,7 @@ namespace SFDScripts
                 }
             }
         }
-        public void CheckTeams(PlayerTeam team)
+        public void SubstractPlayerFromThisTeam(PlayerTeam team)
         {
             if (team == PlayerTeam.Team1)
             {
@@ -230,8 +230,7 @@ namespace SFDScripts
         }
         public int RandNumber(int Low, int High)
         {
-            rand = rnd.Next(Low, High);
-            return rand;
+            return rnd.Next(Low, High);
         }
         public void XstroyGun(TriggerArgs args)
         {
@@ -399,7 +398,7 @@ namespace SFDScripts
             }
             else
             {
-                CheckTeams(team);
+                SubstractPlayerFromThisTeam(team);
             }
         }
         private void SpawnUser2(IUser user)
