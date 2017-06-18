@@ -61,7 +61,7 @@ namespace SFDScripts
             mCallerPlayer = (IPlayer)args.Sender;
             mCallerPlayer.SetTeam(PlayerTeam.Team3);
         }
-        public void ClearPopupMessage(TriggerArgs args)
+        public void ClearPopup(TriggerArgs args)
         {
             Game.HidePopupMessage();
         }
@@ -436,17 +436,6 @@ namespace SFDScripts
                     ct.SetText("Red score: " + value.ToString());
             }
         }
-        int buttonPressCount = 0;
-
-        public void Delete(TriggerArgs args)
-        {
-            coba = Game.GetObjectsByCustomId("Flying");
-            for (int i = 0; i < coba.Length; i++)
-            {
-                coba[i].Remove();
-            }
-        }
-
         private void SetPlayerToMarioOne(IPlayer player)
         {
             IProfile marioProfile = new IProfile()
