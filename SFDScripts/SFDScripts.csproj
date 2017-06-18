@@ -55,6 +55,7 @@
     <Compile Include="Internal\BOT5dot0.cs" />
     <Compile Include="Internal\MarioPanadero.cs" />
     <Compile Include="Internal\NoGrav.cs" />
+    <Compile Include="Internal\PirateWars.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
