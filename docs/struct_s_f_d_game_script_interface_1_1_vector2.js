@@ -19,6 +19,8 @@ var struct_s_f_d_game_script_interface_1_1_vector2 =
     [ "GetHashCode", "struct_s_f_d_game_script_interface_1_1_vector2.html#a77e1afa2b6dee1ed3640da81d7407b42", null ],
     [ "Length", "struct_s_f_d_game_script_interface_1_1_vector2.html#aad3844ad28d7ac4d504313c0037e11ac", null ],
     [ "LengthSquared", "struct_s_f_d_game_script_interface_1_1_vector2.html#a69c72fec33d724953b523e6997682e9c", null ],
+    [ "Lerp", "struct_s_f_d_game_script_interface_1_1_vector2.html#af12ac9f016f0ba67689f6dbfa1798bae", null ],
+    [ "Lerp", "struct_s_f_d_game_script_interface_1_1_vector2.html#a0468cb2dd1569777b9e90a4e6f493445", null ],
     [ "Max", "struct_s_f_d_game_script_interface_1_1_vector2.html#a1639996234818854b497216d244a1c1f", null ],
     [ "Max", "struct_s_f_d_game_script_interface_1_1_vector2.html#a99c0e519fcd5842d8649debefecfc2a7", null ],
     [ "Min", "struct_s_f_d_game_script_interface_1_1_vector2.html#a4e20422b65ced3f288f6b5d92545a16a", null ],

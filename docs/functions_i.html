@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
@@ -64,6 +64,7 @@
       <li><a href="functions_g.html#index_g"><span>g</span></a></li>
       <li><a href="functions_h.html#index_h"><span>h</span></a></li>
       <li class="current"><a href="functions_i.html#index_i"><span>i</span></a></li>
+      <li><a href="functions_j.html#index_j"><span>j</span></a></li>
       <li><a href="functions_k.html#index_k"><span>k</span></a></li>
       <li><a href="functions_l.html#index_l"><span>l</span></a></li>
       <li><a href="functions_m.html#index_m"><span>m</span></a></li>
@@ -106,6 +107,9 @@ $(document).ready(function(){initNavTree('functions_i.html','');});
 <li>ImpactDamageTakenModifier
 : <a class="el" href="class_s_f_d_game_script_interface_1_1_player_modifiers.html#a2ba79c1ada1deb3a9d3abaa6cfe072fa">PlayerModifiers</a>
 </li>
+<li>InfiniteAmmo
+: <a class="el" href="class_s_f_d_game_script_interface_1_1_player_modifiers.html#a9031213cb46e171a7247055a2eea9412">PlayerModifiers</a>
+</li>
 <li>Intersect()
 : <a class="el" href="struct_s_f_d_game_script_interface_1_1_area.html#a14f089e9fef5b34c98e62467199c0395">Area</a>
 </li>
@@ -116,8 +120,10 @@ $(document).ready(function(){initNavTree('functions_i.html','');});
 : <a class="el" href="class_s_f_d_game_script_interface_1_1_events_1_1_update_callback.html#a29ccfc787511bbf9cdff126e28e6d569">Events.UpdateCallback</a>
 </li>
 <li>Invoke()
-: <a class="el" href="class_s_f_d_game_script_interface_1_1_events_1_1_player_death_callback.html#a356da5c1e4c67fc9722cb04395960d2e">Events.PlayerDeathCallback</a>
+: <a class="el" href="class_s_f_d_game_script_interface_1_1_events_1_1_player_damage_callback.html#a185923da1bea948c03f7f83dd3beba3d">Events.PlayerDamageCallback</a>
+, <a class="el" href="class_s_f_d_game_script_interface_1_1_events_1_1_player_death_callback.html#a356da5c1e4c67fc9722cb04395960d2e">Events.PlayerDeathCallback</a>
 , <a class="el" href="class_s_f_d_game_script_interface_1_1_events_1_1_update_callback.html#aae79a213aa1eaa43197d79c6d8b83a3a">Events.UpdateCallback</a>
+, <a class="el" href="class_s_f_d_game_script_interface_1_1_events_1_1_user_message_callback.html#ab7d6421f8d29a71c6ea9356fe4f993c7">Events.UserMessageCallback</a>
 </li>
 <li>IProfile()
 : <a class="el" href="class_s_f_d_game_script_interface_1_1_i_profile.html#a66bc6ead11d2fd61f1b2c975a34ffad0">IProfile</a>
@@ -136,6 +142,7 @@ $(document).ready(function(){initNavTree('functions_i.html','');});
 </li>
 <li>IsBot
 : <a class="el" href="class_s_f_d_game_script_interface_1_1_i_player.html#aaee92383a21c032f732683bf2c33f3f0">IPlayer</a>
+, <a class="el" href="class_s_f_d_game_script_interface_1_1_i_user.html#aaee92383a21c032f732683bf2c33f3f0">IUser</a>
 </li>
 <li>IsBurning
 : <a class="el" href="class_s_f_d_game_script_interface_1_1_i_object.html#a0ee07a6e06fb62182316c5e2ed37b5c3">IObject</a>
@@ -148,6 +155,9 @@ $(document).ready(function(){initNavTree('functions_i.html','');});
 </li>
 <li>IsClimbing
 : <a class="el" href="class_s_f_d_game_script_interface_1_1_i_player.html#a3ad3d57b3e54b6d2cadf3eb3e231c330">IPlayer</a>
+</li>
+<li>IsCommand
+: <a class="el" href="class_s_f_d_game_script_interface_1_1_user_message_callback_args.html#aab64063585d0dd72079403b29ff758b7">UserMessageCallbackArgs</a>
 </li>
 <li>IsCrouching
 : <a class="el" href="class_s_f_d_game_script_interface_1_1_i_player.html#a55b10eb7c03d702b2783c11657dfa621">IPlayer</a>
@@ -166,6 +176,9 @@ $(document).ready(function(){initNavTree('functions_i.html','');});
 </li>
 <li>IsDrawingWeapon
 : <a class="el" href="class_s_f_d_game_script_interface_1_1_i_player.html#a49b217fbb1974fc378e031ed4853fab6">IPlayer</a>
+</li>
+<li>IsEditorTest
+: <a class="el" href="class_s_f_d_game_script_interface_1_1_i_game.html#a77e284c38a5ba52e59e6f6b817d9ac85">IGame</a>
 </li>
 <li>IsEmpty
 : <a class="el" href="struct_s_f_d_game_script_interface_1_1_area.html#aaaa6c7dd3bd14dc2ce7f0780de528bb1">Area</a>
@@ -236,6 +249,12 @@ $(document).ready(function(){initNavTree('functions_i.html','');});
 <li>IsOnGround
 : <a class="el" href="class_s_f_d_game_script_interface_1_1_i_player.html#a727ecfef85341f3fe77cca093fe38483">IPlayer</a>
 </li>
+<li>IsRecoveryKneeling
+: <a class="el" href="class_s_f_d_game_script_interface_1_1_i_player.html#ad557b03fb7c8f050377d6a1e98c9eae6">IPlayer</a>
+</li>
+<li>IsRecoveryRolling
+: <a class="el" href="class_s_f_d_game_script_interface_1_1_i_player.html#a3620eaae0cfcbcef7766aba079054639">IPlayer</a>
+</li>
 <li>IsReloading
 : <a class="el" href="class_s_f_d_game_script_interface_1_1_i_player.html#a5924b4df603d579a2ef39758c29a9963">IPlayer</a>
 </li>
@@ -243,14 +262,14 @@ $(document).ready(function(){initNavTree('functions_i.html','');});
 : <a class="el" href="class_s_f_d_game_script_interface_1_1_i_object.html#a967fab79b82e407ec8647552d8c86257">IObject</a>
 , <a class="el" href="class_s_f_d_game_script_interface_1_1_i_user.html#a967fab79b82e407ec8647552d8c86257">IUser</a>
 </li>
+<li>IsRocketRiding
+: <a class="el" href="class_s_f_d_game_script_interface_1_1_i_player.html#a16c14f22fafa78e5828a3706d8d50839">IPlayer</a>
+</li>
 <li>IsRolling
 : <a class="el" href="class_s_f_d_game_script_interface_1_1_i_player.html#a9af82df1538ffd1ea4f4ea85aed36077">IPlayer</a>
 </li>
 <li>IsRunning
 : <a class="el" href="class_s_f_d_game_script_interface_1_1_i_player.html#af6949d865264b834692a22add33c74d0">IPlayer</a>
-</li>
-<li>IsSpectator
-: <a class="el" href="class_s_f_d_game_script_interface_1_1_i_user.html#ab2740ecd537ef8a792763fcbfadfd5cb">IUser</a>
 </li>
 <li>IsSprinting
 : <a class="el" href="class_s_f_d_game_script_interface_1_1_i_player.html#a11301368e120d6c535e856140f5f4173">IPlayer</a>
@@ -269,6 +288,10 @@ $(document).ready(function(){initNavTree('functions_i.html','');});
 </li>
 <li>IsUser
 : <a class="el" href="class_s_f_d_game_script_interface_1_1_i_player.html#afebd76b5821e83e3897eaf0d819ea282">IPlayer</a>
+, <a class="el" href="class_s_f_d_game_script_interface_1_1_i_user.html#afebd76b5821e83e3897eaf0d819ea282">IUser</a>
+</li>
+<li>IsValidBotEliminateTarget
+: <a class="el" href="class_s_f_d_game_script_interface_1_1_i_player.html#abfb8ec3a1d8ce6263a1a84b022084474">IPlayer</a>
 </li>
 <li>IsVisible
 : <a class="el" href="class_s_f_d_game_script_interface_1_1_i_dialogue.html#a8e891a90441386b9c3f875c05be9c70d">IDialogue</a>
@@ -276,14 +299,19 @@ $(document).ready(function(){initNavTree('functions_i.html','');});
 <li>IsWalking
 : <a class="el" href="class_s_f_d_game_script_interface_1_1_i_player.html#a3bcda71b70db518ad6eab8b1ea73b1cf">IPlayer</a>
 </li>
+<li>ItemDropMode
+: <a class="el" href="class_s_f_d_game_script_interface_1_1_player_modifiers.html#a7150681e2725cd223205087f6a08dbb1">PlayerModifiers</a>
+</li>
+<li>ItemsToKeep
+: <a class="el" href="class_s_f_d_game_script_interface_1_1_stats_to_keep.html#a889bcb9226fe989694f1c428a2997db2">StatsToKeep</a>
+</li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Sun Jun 4 2017 14:39:24 by
-    <a href="http://www.doxygen.org/index.html">
+    <li class="footer">Generated by <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>
 </div>

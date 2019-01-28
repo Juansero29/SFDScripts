@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
@@ -88,15 +88,18 @@ abstract long&#160;</td><td class="memItemRight" valign="bottom"><b>UserID</b><c
 <tr class="memitem:a7b2bcfc10d0f58ee233cd46baca2caa8"><td class="memItemLeft" align="right" valign="top">abstract int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_user.html#a7b2bcfc10d0f58ee233cd46baca2caa8">UserIdentifier</a><code> [get]</code></td></tr>
 <tr class="memdesc:a7b2bcfc10d0f58ee233cd46baca2caa8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the unique user identifier.  <a href="#a7b2bcfc10d0f58ee233cd46baca2caa8">More...</a><br /></td></tr>
 <tr class="separator:a7b2bcfc10d0f58ee233cd46baca2caa8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af38422bff00fe57cceb7b3e05066135a"><td class="memItemLeft" align="right" valign="top">abstract int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_user.html#af38422bff00fe57cceb7b3e05066135a">GameSlotIndex</a><code> [get]</code></td></tr>
+<tr class="memdesc:af38422bff00fe57cceb7b3e05066135a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the game slot index (lobby slot index) this user occupies. Returns -1 for users not connected to any game slot (for example auto created bots in certain situations).  <a href="#af38422bff00fe57cceb7b3e05066135a">More...</a><br /></td></tr>
+<tr class="separator:af38422bff00fe57cceb7b3e05066135a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6e15ff1901ad2264a017cbe9b745684c"><td class="memItemLeft" align="right" valign="top">abstract bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_user.html#a6e15ff1901ad2264a017cbe9b745684c">IsHost</a><code> [get]</code></td></tr>
 <tr class="memdesc:a6e15ff1901ad2264a017cbe9b745684c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets if this is the host.  <a href="#a6e15ff1901ad2264a017cbe9b745684c">More...</a><br /></td></tr>
 <tr class="separator:a6e15ff1901ad2264a017cbe9b745684c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab2740ecd537ef8a792763fcbfadfd5cb"><td class="memItemLeft" align="right" valign="top">abstract bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_user.html#ab2740ecd537ef8a792763fcbfadfd5cb">IsSpectator</a><code> [get]</code></td></tr>
-<tr class="memdesc:ab2740ecd537ef8a792763fcbfadfd5cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets if this is a spectator. Spectators will not interact with the game other than chatting.  <a href="#ab2740ecd537ef8a792763fcbfadfd5cb">More...</a><br /></td></tr>
-<tr class="separator:ab2740ecd537ef8a792763fcbfadfd5cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af5021b9b841d3e2ab17a0549443caa54"><td class="memItemLeft" align="right" valign="top">abstract bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_user.html#af5021b9b841d3e2ab17a0549443caa54">Spectating</a><code> [get]</code></td></tr>
-<tr class="memdesc:af5021b9b841d3e2ab17a0549443caa54"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets if the user is currently spectating. This is always true when IsSpectator is true. This is true while a recently connected user is waiting for the next round.  <a href="#af5021b9b841d3e2ab17a0549443caa54">More...</a><br /></td></tr>
+<tr class="memdesc:af5021b9b841d3e2ab17a0549443caa54"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets if the user is currently spectating. This is true while a recently connected user is waiting for the next round.  <a href="#af5021b9b841d3e2ab17a0549443caa54">More...</a><br /></td></tr>
 <tr class="separator:af5021b9b841d3e2ab17a0549443caa54"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9759777d1aa51fcc2c465e2407e276f6"><td class="memItemLeft" align="right" valign="top">abstract bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_user.html#a9759777d1aa51fcc2c465e2407e276f6">JoinedAsSpectator</a><code> [get]</code></td></tr>
+<tr class="memdesc:a9759777d1aa51fcc2c465e2407e276f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets if this user joined as a spectator. Spectators will not interact with the game other than chatting. Note: Currently not possible to join as a spectator but may be in the future.  <a href="#a9759777d1aa51fcc2c465e2407e276f6">More...</a><br /></td></tr>
+<tr class="separator:a9759777d1aa51fcc2c465e2407e276f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6c3d3d2e154da864a87cee76a0fb3d00"><td class="memItemLeft" align="right" valign="top">abstract int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_user.html#a6c3d3d2e154da864a87cee76a0fb3d00">Ping</a><code> [get]</code></td></tr>
 <tr class="memdesc:a6c3d3d2e154da864a87cee76a0fb3d00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the ping (Average roundtrip time in ms to the server as the server sees it).  <a href="#a6c3d3d2e154da864a87cee76a0fb3d00">More...</a><br /></td></tr>
 <tr class="separator:a6c3d3d2e154da864a87cee76a0fb3d00"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -109,6 +112,18 @@ abstract long&#160;</td><td class="memItemRight" valign="bottom"><b>UserID</b><c
 <tr class="memitem:a211ade1198907824fc89e483884f97a4"><td class="memItemLeft" align="right" valign="top">abstract int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_user.html#a211ade1198907824fc89e483884f97a4">TotalLosses</a><code> [get]</code></td></tr>
 <tr class="memdesc:a211ade1198907824fc89e483884f97a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets score for total losses.  <a href="#a211ade1198907824fc89e483884f97a4">More...</a><br /></td></tr>
 <tr class="separator:a211ade1198907824fc89e483884f97a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46dc85b4d301ffaa414a66a4e3c3549d"><td class="memItemLeft" align="right" valign="top">abstract <a class="el" href="namespace_s_f_d_game_script_interface.html#a178aa8f69dbc9b957f799dd20b7afbf5">PlayerTeam</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_user.html#a46dc85b4d301ffaa414a66a4e3c3549d">GetTeam</a> ()</td></tr>
+<tr class="memdesc:a46dc85b4d301ffaa414a66a4e3c3549d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the player team. If this user isn't controlling any player the team assigned in the lobby will be returned.  <a href="#a46dc85b4d301ffaa414a66a4e3c3549d">More...</a><br /></td></tr>
+<tr class="separator:a46dc85b4d301ffaa414a66a4e3c3549d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaee92383a21c032f732683bf2c33f3f0"><td class="memItemLeft" align="right" valign="top">abstract bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_user.html#aaee92383a21c032f732683bf2c33f3f0">IsBot</a><code> [get]</code></td></tr>
+<tr class="memdesc:aaee92383a21c032f732683bf2c33f3f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets if this user is controlled by a bot. It's the bot assigned in the lobby. This will activate a predefined AI for the player upon spawning.  <a href="#aaee92383a21c032f732683bf2c33f3f0">More...</a><br /></td></tr>
+<tr class="separator:aaee92383a21c032f732683bf2c33f3f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a460bd84d4cc5e767171dc321ebb683b5"><td class="memItemLeft" align="right" valign="top">abstract <a class="el" href="namespace_s_f_d_game_script_interface.html#a4424baf746798fbe7af558e320b43e9a">PredefinedAIType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_user.html#a460bd84d4cc5e767171dc321ebb683b5">BotPredefinedAIType</a><code> [get]</code></td></tr>
+<tr class="memdesc:a460bd84d4cc5e767171dc321ebb683b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the predefinedAIType used by bot users.  <a href="#a460bd84d4cc5e767171dc321ebb683b5">More...</a><br /></td></tr>
+<tr class="separator:a460bd84d4cc5e767171dc321ebb683b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afebd76b5821e83e3897eaf0d819ea282"><td class="memItemLeft" align="right" valign="top">abstract bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_user.html#afebd76b5821e83e3897eaf0d819ea282">IsUser</a><code> [get]</code></td></tr>
+<tr class="memdesc:afebd76b5821e83e3897eaf0d819ea282"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets if this user is controlled by a real user.  <a href="#afebd76b5821e83e3897eaf0d819ea282">More...</a><br /></td></tr>
+<tr class="separator:afebd76b5821e83e3897eaf0d819ea282"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a49fbe950f9b6055f7e68f40c466a0bbf"><td class="memItemLeft" align="right" valign="top">abstract <a class="el" href="class_s_f_d_game_script_interface_1_1_i_player.html">IPlayer</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_user.html#a49fbe950f9b6055f7e68f40c466a0bbf">GetPlayer</a> ()</td></tr>
 <tr class="memdesc:a49fbe950f9b6055f7e68f40c466a0bbf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current player this user is controlling if any. Can be null.  <a href="#a49fbe950f9b6055f7e68f40c466a0bbf">More...</a><br /></td></tr>
 <tr class="separator:a49fbe950f9b6055f7e68f40c466a0bbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -180,6 +195,31 @@ abstract long&#160;</td><td class="memItemRight" valign="bottom"><b>UserID</b><c
 
 </div>
 </div>
+<a class="anchor" id="a46dc85b4d301ffaa414a66a4e3c3549d"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">abstract <a class="el" href="namespace_s_f_d_game_script_interface.html#a178aa8f69dbc9b957f799dd20b7afbf5">PlayerTeam</a> GetTeam </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the player team. If this user isn't controlling any player the team assigned in the lobby will be returned. </p>
+
+</div>
+</div>
 <a class="anchor" id="a52691838089163a3ecc418ae25e95e00"></a>
 <div class="memitem">
 <div class="memproto">
@@ -213,6 +253,50 @@ abstract long&#160;</td><td class="memItemRight" valign="bottom"><b>UserID</b><c
 </div>
 </div>
 <h2 class="groupheader">Property Documentation</h2>
+<a class="anchor" id="a460bd84d4cc5e767171dc321ebb683b5"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">abstract <a class="el" href="namespace_s_f_d_game_script_interface.html#a4424baf746798fbe7af558e320b43e9a">PredefinedAIType</a> BotPredefinedAIType</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the predefinedAIType used by bot users. </p>
+
+</div>
+</div>
+<a class="anchor" id="af38422bff00fe57cceb7b3e05066135a"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">abstract int GameSlotIndex</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the game slot index (lobby slot index) this user occupies. Returns -1 for users not connected to any game slot (for example auto created bots in certain situations). </p>
+
+</div>
+</div>
 <a class="anchor" id="a05617824754115d3fb81ed06b6aa4ba3"></a>
 <div class="memitem">
 <div class="memproto">
@@ -232,6 +316,28 @@ abstract long&#160;</td><td class="memItemRight" valign="bottom"><b>UserID</b><c
 </div><div class="memdoc">
 
 <p>Gets the current profile's Gender. </p>
+
+</div>
+</div>
+<a class="anchor" id="aaee92383a21c032f732683bf2c33f3f0"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">abstract bool IsBot</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets if this user is controlled by a bot. It's the bot assigned in the lobby. This will activate a predefined AI for the player upon spawning. </p>
 
 </div>
 </div>
@@ -279,7 +385,7 @@ abstract long&#160;</td><td class="memItemRight" valign="bottom"><b>UserID</b><c
 
 </div>
 </div>
-<a class="anchor" id="ab2740ecd537ef8a792763fcbfadfd5cb"></a>
+<a class="anchor" id="afebd76b5821e83e3897eaf0d819ea282"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -287,7 +393,7 @@ abstract long&#160;</td><td class="memItemRight" valign="bottom"><b>UserID</b><c
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">abstract bool IsSpectator</td>
+          <td class="memname">abstract bool IsUser</td>
         </tr>
       </table>
   </td>
@@ -297,7 +403,29 @@ abstract long&#160;</td><td class="memItemRight" valign="bottom"><b>UserID</b><c
 </table>
 </div><div class="memdoc">
 
-<p>Gets if this is a spectator. Spectators will not interact with the game other than chatting. </p>
+<p>Gets if this user is controlled by a real user. </p>
+
+</div>
+</div>
+<a class="anchor" id="a9759777d1aa51fcc2c465e2407e276f6"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">abstract bool JoinedAsSpectator</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets if this user joined as a spectator. Spectators will not interact with the game other than chatting. Note: Currently not possible to join as a spectator but may be in the future. </p>
 
 </div>
 </div>
@@ -364,7 +492,7 @@ abstract long&#160;</td><td class="memItemRight" valign="bottom"><b>UserID</b><c
 </table>
 </div><div class="memdoc">
 
-<p>Gets if the user is currently spectating. This is always true when IsSpectator is true. This is true while a recently connected user is waiting for the next round. </p>
+<p>Gets if the user is currently spectating. This is true while a recently connected user is waiting for the next round. </p>
 
 </div>
 </div>
@@ -462,8 +590,7 @@ abstract long&#160;</td><td class="memItemRight" valign="bottom"><b>UserID</b><c
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespace_s_f_d_game_script_interface.html">SFDGameScriptInterface</a></li><li class="navelem"><a class="el" href="class_s_f_d_game_script_interface_1_1_i_user.html">IUser</a></li>
-    <li class="footer">Generated on Sun Jun 4 2017 14:39:24 by
-    <a href="http://www.doxygen.org/index.html">
+    <li class="footer">Generated by <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>
 </div>

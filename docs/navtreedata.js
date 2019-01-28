@@ -13,7 +13,7 @@ var NAVTREE =
         [ "All", "functions.html", "functions_dup" ],
         [ "Functions", "functions_func.html", "functions_func" ],
         [ "Variables", "functions_vars.html", null ],
-        [ "Properties", "functions_prop.html", null ]
+        [ "Properties", "functions_prop.html", "functions_prop" ]
       ] ]
     ] ]
   ] ]
@@ -22,9 +22,11 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"class_s_f_d_game_script_interface_1_1_i_object_destroy_targets.html#a92ab90a33b4a80af5729544efeb03288",
-"class_s_f_d_game_script_interface_1_1_i_object_spawn_fire_circle_trigger.html#acb3a5255a8242bf12cbf9bbaeb9e4b3b",
-"functions_func_p.html"
+"class_s_f_d_game_script_interface_1_1_i_game.html#afef3dfd834944c3c4fb8523d4f833a15",
+"class_s_f_d_game_script_interface_1_1_i_object_elevator_attachment_joint.html#acf2ad2738db47fada03150a7e1b5ecef",
+"class_s_f_d_game_script_interface_1_1_i_object_rail_attachment_joint.html#a76da264967b6e1c168671e304fbceb29",
+"class_s_f_d_game_script_interface_1_1_i_player.html#acece310de7db6d88e7cc1ecd06dc56a0",
+"struct_s_f_d_game_script_interface_1_1_area.html#af173f26f68af22630528ecd5f0546949"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
