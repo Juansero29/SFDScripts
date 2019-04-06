@@ -94,7 +94,7 @@ namespace SFDScripts
             timerTrigger.Trigger();
         }
 
-    WeaponItem[] SpaceWeps ={
+        WeaponItem[] SpaceWeps ={
     WeaponItem.ASSAULT,
     WeaponItem.SUB_MACHINEGUN,
     WeaponItem.GRENADES,

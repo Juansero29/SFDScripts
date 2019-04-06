@@ -1,14 +1,15 @@
+﻿using SFDGameScriptInterface;
 using System;
 using System.Collections.Generic;
-using SFDGameScriptInterface;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-
-namespace SFDScripts
+namespace SFDScripts.Internal
 {
-    class BOT5dot0 : GameScriptInterface
+    class BOT3dot0 : GameScriptInterface
     {
-
-        public BOT5dot0() : base(null) { }
+        public BOT3dot0() : base(Game) { }
 
         #region Script To Copy
 
@@ -23,7 +24,7 @@ namespace SFDScripts
                 if (TextF == false)
                 {
                     TimeCDT--;
-                    TimeText.SetText("Time Reamain: " + TimeCDT.ToString());
+                    TimeText.SetText("Time Remaining: " + TimeCDT.ToString());
                 }
 
                 if (TimeCDT == 0)
@@ -645,9 +646,7 @@ namespace SFDScripts
             {
                 flyingobj[i].Remove();
             }
-        } 
+        }
         #endregion
-
-
     }
 }

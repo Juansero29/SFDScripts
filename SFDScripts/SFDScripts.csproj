@@ -34,7 +34,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="SFD.GameScriptInterface">
-      <HintPath>..\..\..\..\..\Games\Superfighters Deluxe\SFD.GameScriptInterface.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Superfighters Deluxe\SFD.GameScriptInterface.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -52,8 +52,11 @@
     <Compile Include="External\#UOP.cs" />
     <Compile Include="External\#UT.cs" />
     <Compile Include="External\#W.cs" />
+    <Compile Include="Internal\BOT3dot0.cs" />
     <Compile Include="Internal\BOT5dot0.cs" />
-    <Compile Include="Internal\MarioPanadero.cs" />
+    <Compile Include="Internal\Coroutine.cs" />
+    <Compile Include="Internal\DataStorageTest\DataStorageTest.cs" />
+    <Compile Include="Internal\MarioPanadero\MarioPanadero.cs" />
     <Compile Include="Internal\NoGrav.cs" />
     <Compile Include="Internal\PirateWars.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
