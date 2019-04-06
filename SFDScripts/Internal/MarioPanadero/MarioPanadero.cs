@@ -10,6 +10,8 @@ namespace SFDScripts
 
         public MarioPanadero() : base(null) { }
 
+
+        #region Script To Copy
         #region Constants
 
         #region ObjectIds
@@ -18,12 +20,12 @@ namespace SFDScripts
         private const string CRATE_OBJECT_ID = "Crate";
         private const string PLAYER_MIDDLE_SPAWN_BLOCK_ID = "PlayerSpawnBlock";
 
-        private const string PEACH_POSITION_BLOCK_ID = "PeachCenter";
+        private const string PEACH_POSITION_BLOCK_ID = "PeachPositionBlock";
 
         private const string BLUE_KILLS_COUNT_TEXT_ID = "BlueKillsCountText";
         private const string RED_KILLS_COUNT_TEXT_ID = "RedKillsCountText";
-        private const string USERS_LIST_TEXT_ID = "UsersListText";
         private const string USERS_COUNT_TEXT_ID = "UsersCountText";
+        private const string USERS_LIST_TEXT_ID = "UsersListText";
 
         #endregion
 
@@ -33,11 +35,11 @@ namespace SFDScripts
         /// </summary>
         private readonly string[] RedSpawnPositions = new string[]
         {
-        "MarioOneBase",
-        "RedBase2",
-        "RedBase3",
-        "RedBase4",
-        "RedBase5"
+                "RedBase",
+                "RedBase2",
+                "RedBase3",
+                "RedBase4",
+                "RedBase5"
         };
 
         /// <summary>
@@ -45,11 +47,11 @@ namespace SFDScripts
         /// </summary>
         private readonly string[] BlueSpawnPositions = new string[]
         {
-            "MarioTwoBase",
-            "BluBase2",
-            "BluBase3",
-            "BluBase4",
-            "BluBase5"
+                    "BlueBase",
+                    "BlueBase2",
+                    "BlueBase3",
+                    "BlueBase4",
+                    "BlueBase5"
         };
         #endregion
 
@@ -118,11 +120,6 @@ namespace SFDScripts
         private IObjectText mTimeRemainingText;
 
         /// <summary>
-        /// The text object showing the number of kills the blue team has made
-        /// </summary>
-        private IObjectText mRedKillsCountText;
-
-        /// <summary>
         /// The list of all the players marked as marios in this game
         /// </summary>
         private List<IPlayer> mMarios = new List<IPlayer>();
@@ -155,7 +152,7 @@ namespace SFDScripts
         /// <summary>
         /// The number of blue team players
         /// </summary>
-        private int mNumberOfBluTeamPlayers = 0;
+        private int mNumberOfBlueTeamPlayers = 0;
 
         /// <summary>
         /// The number of red team players
@@ -190,39 +187,37 @@ namespace SFDScripts
             /// <summary>
             /// The death time of this dead player
             /// </summary>
-            public float DeathTimeStamp { get; set; } = 0f;
+            public float DeathTimeStamp { get; set; }
 
             /// <summary>
             /// The user tied to this dead player
             /// </summary>
-            public IUser User { get; set; } = null;
-
+            public IUser User { get; set; }
             /// <summary>
             /// The player
             /// </summary>
-            public IPlayer Player { get; set; } = null;
+            public IPlayer Player { get; set; }
 
             /// <summary>
             /// The team of this dead player
             /// </summary>
-            public PlayerTeam Team { get; set; } = PlayerTeam.Independent;
+            public PlayerTeam Team { get; set; }
 
-        } 
+        }
         #endregion
 
         #region Triggers
         public void Start(TriggerArgs args)
         {
-            CreateTrigger(300, 0, nameof(ShootFireball), null);
+            CreateTrigger(300, 0, "ShootFireball", "");
 
             ConnectedPlayersTick(args);
 
-            RefreshCounter(mBlueKillsCount, Teams.Blue);
-            RefreshCounter(mRedKillsCount, Teams.Red);
+            RefreshKillCounter(mBlueKillsCount, Teams.Blue);
+            RefreshKillCounter(mRedKillsCount, Teams.Red);
 
             mCrate = Game.GetSingleObjectByCustomId(CRATE_OBJECT_ID);
             mTimeRemainingText = Game.GetSingleObjectByCustomId(TIME_REMAINING_LABEL_ID) as IObjectText;
-
 
             SpawnPeach();
         }
@@ -300,7 +295,7 @@ namespace SFDScripts
                 mCratePosition = mCrate.GetWorldPosition();
             }
         }
-        public void MovetoBase(TriggerArgs args)
+        public void MoveToBase(TriggerArgs args)
         {
             var senderPlayer = (IPlayer)args.Sender;
             var caller = (IObject)args.Caller;
@@ -309,8 +304,8 @@ namespace SFDScripts
             {
                 switch (caller.CustomId)
                 {
-                    case "MarioOne":
-                        if (mNumberOfBluTeamPlayers >= mNumberOfRedTeamPlayers)
+                    case "SelectedRedButton":
+                        if (mNumberOfBlueTeamPlayers >= mNumberOfRedTeamPlayers)
                         {
                             SendToPosition(GetRedRandomPosition(), senderPlayer);
                             senderPlayer.SetTeam(PlayerTeam.Team2);
@@ -322,12 +317,12 @@ namespace SFDScripts
                             Game.ShowPopupMessage("Choose another team");
                         }
                         break;
-                    case "MarioTwo":
-                        if (mNumberOfRedTeamPlayers >= mNumberOfBluTeamPlayers)
+                    case "SelectedBlueButton":
+                        if (mNumberOfRedTeamPlayers >= mNumberOfBlueTeamPlayers)
                         {
                             SendToPosition(GetBlueRandomPosition(), senderPlayer);
                             senderPlayer.SetTeam(PlayerTeam.Team1);
-                            mNumberOfBluTeamPlayers++;
+                            mNumberOfBlueTeamPlayers++;
                             SetPlayerToMarioTwo(senderPlayer);
                         }
                         else
@@ -340,7 +335,7 @@ namespace SFDScripts
                 }
             }
         }
-        public void refil(TriggerArgs args)
+        public void Refill(TriggerArgs args)
         {
             var senderPlayer = (IPlayer)args.Sender;
             senderPlayer.GiveWeaponItem(WeaponItem.PILLS);
@@ -356,15 +351,16 @@ namespace SFDScripts
             if ((args.Sender != null) && (args.Sender is IPlayer))
             {
                 mDeadPlayersCount++;
+
                 if (senderPlayer.GetTeam() == PlayerTeam.Team1)
                 {
                     mRedKillsCount++;
-                    RefreshCounter(mRedKillsCount, Teams.Red);
+                    RefreshKillCounter(mRedKillsCount, Teams.Red);
                 }
                 if (senderPlayer.GetTeam() == PlayerTeam.Team2)
                 {
                     mBlueKillsCount++;
-                    RefreshCounter(mBlueKillsCount, Teams.Blue);
+                    RefreshKillCounter(mBlueKillsCount, Teams.Blue);
                 }
                 var user = senderPlayer.GetUser();
                 if (user != null)
@@ -398,7 +394,7 @@ namespace SFDScripts
                         var player = deadPlayer.User.GetPlayer();
                         if (((player == null) || (player.IsDead)))
                         {
-                            SpawnUser(deadPlayer.User, deadPlayer.Team);
+                            Respawn(deadPlayer.User, deadPlayer.Team);
                         }
                     }
                 }
@@ -421,7 +417,7 @@ namespace SFDScripts
                         for (int i = 0; i < allUsers.Length; i++)
                         {
                             var player = allUsers[i].GetPlayer();
-                            if ((player == null)) SpawnUser2(allUsers[i]);
+                            if ((player == null)) FirstSpawn(allUsers[i]);
                         }
                     }
                     mUsersConnectedCount = allUsers.Length;
@@ -457,6 +453,7 @@ namespace SFDScripts
                 }
             }
         }
+
         public void BalloonsParty(TriggerArgs args)
         {
             IObjectGroupMarker groupOne = (IObjectGroupMarker)Game.GetSingleObjectByCustomID("BalloonsGroupOne");
@@ -470,11 +467,21 @@ namespace SFDScripts
         #endregion
 
         #region Utility Methods
+
+        /// <summary>
+        /// Gets a random position for spawning a blue player
+        /// </summary>
+        /// <returns></returns>
         public string GetBlueRandomPosition()
         {
             var rand = RandNumber(0, 4);
             return (BlueSpawnPositions[rand]);
         }
+
+        /// <summary>
+        /// Gets a random position for spawning a red player
+        /// </summary>
+        /// <returns></returns>
         public string GetRedRandomPosition()
         {
             var rand = RandNumber(0, 4);
@@ -485,28 +492,45 @@ namespace SFDScripts
         /// </summary>
         /// <param name="id">The id of the desired position</param>
         /// <param name="ply">The player</param>
-        public void SendToPosition(String id, IPlayer ply)
+        public void SendToPosition(string id, IPlayer ply)
         {
             var mCallerObject = Game.GetSingleObjectByCustomId(id);
             var position = mCallerObject.GetWorldPosition();
             ply.SetWorldPosition(position);
         }
+
+        /// <summary>
+        /// Substracts a player from the team 
+        /// </summary>
+        /// <param name="team">The team</param>
         public void SubstractPlayerFromThisTeam(PlayerTeam team)
         {
             if (team == PlayerTeam.Team1)
             {
-                mNumberOfBluTeamPlayers--;
+                mNumberOfBlueTeamPlayers--;
             }
             if (team == PlayerTeam.Team2)
             {
                 mNumberOfRedTeamPlayers--;
             }
         }
-        public int RandNumber(int Low, int High)
+
+        /// <summary>
+        /// Returns a random int from low bound to high bound
+        /// </summary>
+        /// <param name="low">the lower value (included)</param>
+        /// <param name="high">the higher bound value (included)</param>
+        /// <returns></returns>
+        public int RandNumber(int low, int high)
         {
-            return rnd.Next(Low, High);
+            return rnd.Next(low, high);
         }
-        public void removeWeapons(IPlayer ply)
+
+        /// <summary>
+        /// Removes all weapons to this player
+        /// </summary>
+        /// <param name="ply"></param>
+        public void RemoveWeapons(IPlayer ply)
         {
             ply.RemoveWeaponItemType(WeaponItemType.Rifle);
             ply.RemoveWeaponItemType(WeaponItemType.Handgun);
@@ -514,7 +538,13 @@ namespace SFDScripts
             ply.RemoveWeaponItemType(WeaponItemType.Thrown);
             ply.SetHealth(100);
         }
-        private void SpawnUser(IUser user, PlayerTeam team)
+
+        /// <summary>
+        /// Spawns a player that has already spawned before
+        /// </summary>
+        /// <param name="user">The user</param>
+        /// <param name="team">The team for this user</param>
+        private void Respawn(IUser user, PlayerTeam team)
         {
             if (CheckUserStillActive(user) && !user.IsSpectator)
             {
@@ -537,7 +567,6 @@ namespace SFDScripts
                     mPlayerSpawnPosition = Game.GetSingleObjectByCustomId(GetRedRandomPosition()).GetWorldPosition();
                     if (winner == PlayerTeam.Team2)
                     {
-                        Game.WriteToConsole("Winner is read and dead red player is sent to peach");
                         mPlayerSpawnPosition = Game.GetSingleObjectByCustomID("PlayerPeach").GetWorldPosition();
                     }
                     SetPlayerToMarioOne(player);
@@ -555,7 +584,12 @@ namespace SFDScripts
                 SubstractPlayerFromThisTeam(team);
             }
         }
-        private void SpawnUser2(IUser user)
+
+        /// <summary>
+        /// Spawns the player in the middle of the map for it to choose a team
+        /// </summary>
+        /// <param name="user"></param>
+        private void FirstSpawn(IUser user)
         {
             if (CheckUserStillActive(user) && !user.IsSpectator)
             {
@@ -567,6 +601,12 @@ namespace SFDScripts
                 player.SetTeam(PlayerTeam.Team3);
             }
         }
+
+        /// <summary>
+        /// Checks whether the user is still active or not
+        /// </summary>
+        /// <param name="user">The user</param>
+        /// <returns> Whether the user is still active or not</returns>
         private bool CheckUserStillActive(IUser user)
         {
             foreach (IUser activeUser in Game.GetActiveUsers())
@@ -578,18 +618,30 @@ namespace SFDScripts
             }
             return false;
         }
-        private void RefreshCounter(int value, Teams team)
+
+        /// <summary>
+        /// Refreshes the kill counter for the specified team
+        /// </summary>
+        /// <param name="killCount">The number of kills of the team</param>
+        /// <param name="team">The team</param>
+        private void RefreshKillCounter(int killCount, Teams team)
         {
-            mTimeRemainingText = (IObjectText)Game.GetSingleObjectByCustomId(BLUE_KILLS_COUNT_TEXT_ID);
-            mRedKillsCountText = (IObjectText)Game.GetSingleObjectByCustomId(RED_KILLS_COUNT_TEXT_ID);
+            var blueKillCounterText = (IObjectText)Game.GetSingleObjectByCustomId(BLUE_KILLS_COUNT_TEXT_ID);
+            var redKillCounterTet = (IObjectText)Game.GetSingleObjectByCustomId(RED_KILLS_COUNT_TEXT_ID);
+
             if (mHasGameTimeFinished != true)
             {
-                if (mTimeRemainingText != null && team == Teams.Blue)
-                    mRedKillsCountText.SetText("Blue Kills: " + value.ToString());
-                if (mRedKillsCountText != null && team == Teams.Red)
-                    mTimeRemainingText.SetText("Red Kills: " + value.ToString());
+                if (blueKillCounterText != null && team == Teams.Blue)
+                    blueKillCounterText.SetText("Blue Score: " + killCount.ToString());
+                if (redKillCounterTet != null && team == Teams.Red)
+                    redKillCounterTet.SetText("Red Score: " + killCount.ToString());
             }
         }
+
+        /// <summary>
+        /// Sets the player to a white mario
+        /// </summary>
+        /// <param name="player">The player</param>
         private void SetPlayerToMarioOne(IPlayer player)
         {
             IProfile marioProfile = new IProfile()
@@ -606,6 +658,11 @@ namespace SFDScripts
             player.SetProfile(marioProfile);
             mMarios.Add(player);
         }
+
+        /// <summary>
+        /// Sets the player to a red mario
+        /// </summary>
+        /// <param name="player">The player</param>
         private void SetPlayerToMarioTwo(IPlayer player)
         {
             IProfile marioProfile = new IProfile()
@@ -622,6 +679,7 @@ namespace SFDScripts
             player.SetProfile(marioProfile);
             mMarios.Add(player);
         }
+
         /// <summary>
         /// Creates a new trigger
         /// </summary>
@@ -637,6 +695,7 @@ namespace SFDScripts
             timerTrigger.SetScriptMethod(method);
             timerTrigger.CustomId = id;
             timerTrigger.Trigger();
+            timerTrigger.SetWorldPosition(Game.GetSingleObjectByCustomId("TriggersPosition").GetWorldPosition());
         }
         private string PrintMinutes(int toConvertSeconds)
         {
@@ -662,6 +721,7 @@ namespace SFDScripts
             peach.Name = "Peach";
 
             IPlayer peachPlayer = Game.CreatePlayer(pos);
+            peachPlayer.CustomID = "PlayerPeach";
             peachPlayer.SetProfile(peach);
             peachPlayer.SetNametagVisible(false);
         }
@@ -672,7 +732,8 @@ namespace SFDScripts
             explode.Trigger();
             explode.Trigger();
             explode.Trigger();
-        } 
+        }
+        #endregion
         #endregion
     }
 }
