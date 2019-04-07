@@ -60,7 +60,7 @@ namespace SFDScripts
         /// <summary>
         /// The user respawn rate delay in miliseconds
         /// </summary>
-        private const int USER_RESPAWN_DELAY_MS = 10000;
+        private const int USER_RESPAWN_DELAY_MS = 5000;
 
         /// <summary>
         /// Whether we want to gib the corpses or not
@@ -70,7 +70,7 @@ namespace SFDScripts
         /// <summary>
         /// Total duration of the game declared in seconds
         /// </summary>
-        private const int TOTAL_GAME_TIME_IN_SECONDS = 5 * 60;
+        private const int TOTAL_GAME_TIME_IN_SECONDS = 4 * 60;
 
         /// <summary>
         /// Delay to connect a new player to the game
@@ -203,6 +203,8 @@ namespace SFDScripts
             /// </summary>
             public PlayerTeam Team { get; set; }
 
+            public bool IsBot { get; set; }
+
         }
         #endregion
 
@@ -210,7 +212,6 @@ namespace SFDScripts
         public void Start(TriggerArgs args)
         {
             CreateTrigger(300, 0, "ShootFireball", "");
-
             ConnectedPlayersTick(args);
 
             RefreshKillCounter(mBlueKillsCount, Teams.Blue);
@@ -221,6 +222,8 @@ namespace SFDScripts
 
             SpawnPeach();
         }
+
+
         public void Tick(TriggerArgs args)
         {
             RespawnTick(args);
@@ -241,8 +244,29 @@ namespace SFDScripts
         }
         public void PlayerEnteredTheGame(TriggerArgs args)
         {
-            var senderPlayer = (IPlayer)args.Sender;
-            senderPlayer.SetTeam(PlayerTeam.Team3);
+            var player = (IPlayer)args.Sender;
+            player.SetTeam(PlayerTeam.Team3);
+
+            // If we're not a bot, we don't need to do anything else
+            if (!player.IsBot)
+            {
+                return;
+            }
+
+            var caller = Game.GetSingleObjectByCustomID("SelectedBlueButton");
+            var args2 = new TriggerArgs(caller, player, false);
+            MoveToBase(args2);
+
+            // If now, we're not part of green team, the bot has spawned successfully
+            if (player.GetTeam() != PlayerTeam.Team3)
+            {
+                return;
+            }
+
+            caller = Game.GetSingleObjectByCustomID("SelectedRedButton");
+            var args3 = new TriggerArgs(caller, player, false);
+            MoveToBase(args3);
+
         }
         public void ClearPopup(TriggerArgs args)
         {
@@ -259,7 +283,7 @@ namespace SFDScripts
                 {
                     if (p.GetTeam() == PlayerTeam.Team2)
                     {
-                        p.SetWorldPosition(Game.GetSingleObjectByCustomID("PlayerPeach").GetWorldPosition());
+                        p.SetWorldPosition(Game.GetSingleObjectByCustomID("WinBlock").GetWorldPosition());
                     }
                 }
             }
@@ -272,15 +296,18 @@ namespace SFDScripts
                 {
                     if (p.GetTeam() == PlayerTeam.Team1)
                     {
-                        p.SetWorldPosition(Game.GetSingleObjectByCustomID("PlayerPeach").GetWorldPosition());
+                        p.SetWorldPosition(Game.GetSingleObjectByCustomID("WinBlock").GetWorldPosition());
                     }
                 }
             }
             else
             {
                 Game.SetGameOver("Draw!");
-                ExplodePeach();
+                Explode();
             }
+
+            var camera = Game.GetSingleObjectByCustomID("PeachCastleCamera") as IObjectCameraAreaTrigger;
+            camera.Trigger();
         }
         public void CheckIfCrateIsOpen(TriggerArgs args)
         {
@@ -347,34 +374,37 @@ namespace SFDScripts
         }
         public void Death(TriggerArgs args)
         {
-            var senderPlayer = (IPlayer)args.Sender;
-            if ((args.Sender != null) && (args.Sender is IPlayer))
-            {
-                mDeadPlayersCount++;
 
-                if (senderPlayer.GetTeam() == PlayerTeam.Team1)
-                {
-                    mRedKillsCount++;
-                    RefreshKillCounter(mRedKillsCount, Teams.Red);
-                }
-                if (senderPlayer.GetTeam() == PlayerTeam.Team2)
-                {
-                    mBlueKillsCount++;
-                    RefreshKillCounter(mBlueKillsCount, Teams.Blue);
-                }
-                var user = senderPlayer.GetUser();
-                if (user != null)
-                {
-                    mDeadPlayers.Add(
-                        new DeadPlayer()
-                        {
-                            DeathTimeStamp = Game.TotalElapsedGameTime,
-                            User = user,
-                            Player = senderPlayer,
-                            Team = senderPlayer.GetTeam()
-                        });
-                }
+            var senderPlayer = args.Sender as IPlayer;
+
+            if (senderPlayer == null || senderPlayer.IsRemoved) return;
+
+            mDeadPlayersCount++;
+
+            if (senderPlayer.GetTeam() == PlayerTeam.Team1)
+            {
+                mRedKillsCount++;
+                RefreshKillCounter(mRedKillsCount, Teams.Red);
             }
+            if (senderPlayer.GetTeam() == PlayerTeam.Team2)
+            {
+                mBlueKillsCount++;
+                RefreshKillCounter(mBlueKillsCount, Teams.Blue);
+            }
+            var user = senderPlayer.GetUser();
+            if (user != null)
+            {
+                mDeadPlayers.Add(
+                    new DeadPlayer()
+                    {
+                        DeathTimeStamp = Game.TotalElapsedGameTime,
+                        User = user,
+                        Player = senderPlayer,
+                        Team = senderPlayer.GetTeam(),
+                        IsBot = senderPlayer.IsBot
+                    });
+            }
+
         }
         public void RespawnTick(TriggerArgs args)
         {
@@ -394,7 +424,7 @@ namespace SFDScripts
                         var player = deadPlayer.User.GetPlayer();
                         if (((player == null) || (player.IsDead)))
                         {
-                            Respawn(deadPlayer.User, deadPlayer.Team);
+                            Respawn(deadPlayer.User, deadPlayer.Team, deadPlayer.IsBot);
                         }
                     }
                 }
@@ -431,7 +461,7 @@ namespace SFDScripts
                             playerList += " \n";
                     usersListText = (IObjectText)Game.GetSingleObjectByCustomId(USERS_LIST_TEXT_ID);
                     usersListText.SetText(playerList);
-                    mConnectPlayerDelay = 15;
+                    mConnectPlayerDelay = DELAY_TO_CONNECT_A_NEW_PLAYER;
                 }
             }
         }
@@ -457,12 +487,7 @@ namespace SFDScripts
         public void BalloonsParty(TriggerArgs args)
         {
             IObjectGroupMarker groupOne = (IObjectGroupMarker)Game.GetSingleObjectByCustomID("BalloonsGroupOne");
-            IObjectGroupMarker groupTwo = (IObjectGroupMarker)Game.GetSingleObjectByCustomID("BalloonsGroupTwo");
-            IObjectGroupMarker groupThree = (IObjectGroupMarker)Game.GetSingleObjectByCustomID("BalloonsGroupThree");
-
             groupOne.Trigger();
-            groupTwo.Trigger();
-            groupThree.Trigger();
         }
         #endregion
 
@@ -544,11 +569,18 @@ namespace SFDScripts
         /// </summary>
         /// <param name="user">The user</param>
         /// <param name="team">The team for this user</param>
-        private void Respawn(IUser user, PlayerTeam team)
+        /// <param name="isBot">Whether the player to respawn is a bot or not</param>
+        private void Respawn(IUser user, PlayerTeam team, bool isBot)
         {
             if (CheckUserStillActive(user) && !user.IsSpectator)
             {
                 var player = Game.CreatePlayer(mPlayerSpawnPosition);
+                if (isBot)
+                {
+                    var botBehavior = new BotBehavior(true, PredefinedAIType.BotB);
+                    player.SetBotBehavior(botBehavior);
+                }
+
                 player.SetProfile(user.GetProfile());
                 if (team == PlayerTeam.Team1)
                 {
@@ -656,6 +688,9 @@ namespace SFDScripts
                 Feet = new IProfileClothingItem("Boots", "ClothingBrown")
             };
             player.SetProfile(marioProfile);
+            player.GiveWeaponItem(WeaponItem.KNIFE);
+            player.GiveWeaponItem(WeaponItem.PISTOL45);
+            player.GiveWeaponItem(WeaponItem.STRENGTHBOOST);
             mMarios.Add(player);
         }
 
@@ -676,6 +711,9 @@ namespace SFDScripts
                 Legs = new IProfileClothingItem("Pants", "ClothingWhite"),
                 Feet = new IProfileClothingItem("Boots", "ClothingBrown")
             };
+            player.GiveWeaponItem(WeaponItem.KNIFE);
+            player.GiveWeaponItem(WeaponItem.PISTOL45);
+            player.GiveWeaponItem(WeaponItem.STRENGTHBOOST);
             player.SetProfile(marioProfile);
             mMarios.Add(player);
         }
@@ -725,7 +763,7 @@ namespace SFDScripts
             peachPlayer.SetProfile(peach);
             peachPlayer.SetNametagVisible(false);
         }
-        public void ExplodePeach()
+        public void Explode()
         {
             IObjectExplosionTrigger explode = (IObjectExplosionTrigger)Game.GetSingleObjectByCustomID("Explode");
             explode.Trigger();
