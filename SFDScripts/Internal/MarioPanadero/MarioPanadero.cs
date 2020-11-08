@@ -12,12 +12,48 @@ namespace SFDScripts
 
 
         #region Script To Copy
+
+        #region Declarations
+        private enum Teams
+        {
+            Blue,
+            Red
+        }
+
+        private class DeadPlayer
+        {
+            /// <summary>
+            /// The death time of this dead player
+            /// </summary>
+            public float DeathTimeStamp { get; set; }
+
+            /// <summary>
+            /// The user tied to this dead player
+            /// </summary>
+            public IUser User { get; set; }
+            /// <summary>
+            /// The player
+            /// </summary>
+            public IPlayer Player { get; set; }
+
+            /// <summary>
+            /// The team of this dead player
+            /// </summary>
+            public PlayerTeam Team { get; set; }
+
+            /// <summary>
+            /// Wether it is a bot or not
+            /// </summary>
+            public bool IsBot { get; set; }
+
+        }
+        #endregion
+
         #region Constants
 
         #region ObjectIds
         private const string TIME_REMAINING_LABEL_ID = "TimeRemainingLabel";
 
-        private const string CRATE_OBJECT_ID = "Crate";
         private const string PLAYER_MIDDLE_SPAWN_BLOCK_ID = "PlayerSpawnBlock";
 
         private const string PEACH_POSITION_BLOCK_ID = "PeachPositionBlock";
@@ -82,67 +118,49 @@ namespace SFDScripts
         /// <summary>
         /// The random generator for this map
         /// </summary>
-        private readonly Random rnd = new Random();
+        private readonly Random _Rnd = new Random();
         #endregion
 
         #endregion
 
         #region Private Fields
 
-        /// <summary>
-        /// The delay before connecting a new user to the game
-        /// </summary>
-        private int mConnectPlayerDelay = DELAY_TO_CONNECT_A_NEW_PLAYER;
 
         /// <summary>
         /// The total time remaining for this game in seconds
         /// </summary>
         private int mRemainingGameTimeInSeconds = TOTAL_GAME_TIME_IN_SECONDS;
 
-        /// <summary>
-        /// The crate object. When destroyed it will drop a weapon.
-        /// </summary>
-        private IObject mCrate;
 
         /// <summary>
-        /// The point in the map where the grenade launcher is going to spawn
+        /// The text object showing the time remaining
         /// </summary>
-        private Vector2 mCratePosition;
-
-        /// <summary>
-        /// Boolean indicating whether the crate has been destroyed or not
-        /// </summary>
-        private bool mHasCrateBeenDestroyed = false;
-
-        /// <summary>
-        /// The text object showing the number of kills the blue team has made
-        /// </summary>
-        private IObjectText mTimeRemainingText;
+        private IObjectText _TimeRemainingText;
 
         /// <summary>
         /// The list of all the players marked as marios in this game
         /// </summary>
-        private List<IPlayer> mMarios = new List<IPlayer>();
+        private List<IPlayer> _Marios = new List<IPlayer>();
 
         /// <summary>
         /// The number of kills the red team has made
         /// </summary>
-        private int mRedKillsCount = 0;
+        private int _RedKillsCount = 0;
 
         /// <summary>
         /// The number of kills the blue team has made
         /// </summary>
-        private int mBlueKillsCount = 0;
+        private int _BlueKillsCount = 0;
 
         /// <summary>
         /// The position at which players should spawn
         /// </summary>
-        private Vector2 mPlayerSpawnPosition;
+        private Vector2 _PlayerSpawnPosition;
 
         /// <summary>
         /// Boolean indicating whether the time has already elapsed or not
         /// </summary>
-        private bool mHasGameTimeFinished = false;
+        private bool _HasGameTimeFinished = false;
 
         /// <summary>
         /// Indicates the winner team
@@ -152,102 +170,227 @@ namespace SFDScripts
         /// <summary>
         /// The number of blue team players
         /// </summary>
-        private int mNumberOfBlueTeamPlayers = 0;
+        private int _NumberOfBlueTeamPlayers = 0;
 
         /// <summary>
         /// The number of red team players
         /// </summary>
-        private int mNumberOfRedTeamPlayers = 0;
+        private int _NumberOfRedTeamPlayers = 0;
 
         /// <summary>
         /// The list of dead players in the game
         /// </summary>
-        private List<DeadPlayer> mDeadPlayers = new List<DeadPlayer>();
+        private List<DeadPlayer> _DeadPlayers = new List<DeadPlayer>();
 
         /// <summary>
         /// The number of dead players in the game
         /// </summary>
-        private int mDeadPlayersCount = 0;
+        private int _DeadPlayersCount = 0;
 
         /// <summary>
         /// The number of users connected to the game
         /// </summary>
-        private int mUsersConnectedCount = 0;
-        #endregion
-
-        #region Declarations
-        private enum Teams
-        {
-            Blue,
-            Red
-        }
-
-        private class DeadPlayer
-        {
-            /// <summary>
-            /// The death time of this dead player
-            /// </summary>
-            public float DeathTimeStamp { get; set; }
-
-            /// <summary>
-            /// The user tied to this dead player
-            /// </summary>
-            public IUser User { get; set; }
-            /// <summary>
-            /// The player
-            /// </summary>
-            public IPlayer Player { get; set; }
-
-            /// <summary>
-            /// The team of this dead player
-            /// </summary>
-            public PlayerTeam Team { get; set; }
-
-            public bool IsBot { get; set; }
-
-        }
+        private int _UsersConnectedCount = 0;
         #endregion
 
         #region Triggers
+
+        #region Lifecycle Triggers
+
+        /// <summary>
+        /// Tick called at the start of the game
+        /// </summary>
+        /// <param name="args"></param>
         public void Start(TriggerArgs args)
         {
+            // can't use nameof(ShootFireball)
             CreateTrigger(300, 0, "ShootFireball", "");
-            ConnectedPlayersTick(args);
+            CreateTrigger(5000, 0, "ClearPopup", "");
 
-            RefreshKillCounter(mBlueKillsCount, Teams.Blue);
-            RefreshKillCounter(mRedKillsCount, Teams.Red);
+            RefreshKillCounter(_BlueKillsCount, Teams.Blue);
+            RefreshKillCounter(_RedKillsCount, Teams.Red);
 
-            mCrate = Game.GetSingleObjectByCustomId(CRATE_OBJECT_ID);
-            mTimeRemainingText = Game.GetSingleObjectByCustomId(TIME_REMAINING_LABEL_ID) as IObjectText;
+            _TimeRemainingText = Game.GetSingleObjectByCustomId(TIME_REMAINING_LABEL_ID) as IObjectText;
 
             SpawnPeach();
         }
 
 
+        /// <summary>
+        /// General game tick
+        /// </summary>
+        /// <param name="args"></param>
         public void Tick(TriggerArgs args)
         {
             RespawnTick(args);
             ConnectedPlayersTick(args);
         }
-        public void TimeRemaining(TriggerArgs args)
+
+
+        /// <summary>
+        /// Checks if there's any death players to respawn
+        /// </summary>
+        /// <param name="args"></param>
+        public void RespawnTick(TriggerArgs args)
         {
-            if (mTimeRemainingText != null && mHasGameTimeFinished == false)
+            if (_DeadPlayers.Count <= 0) return;
+
+
+            for (int i = _DeadPlayers.Count - 1; i >= 0; i--)
             {
-                mRemainingGameTimeInSeconds--;
-                mTimeRemainingText.SetText("Time Remaining: " + PrintMinutes(mRemainingGameTimeInSeconds));
-            }
-            if (mRemainingGameTimeInSeconds < 1 && !mHasGameTimeFinished)
-            {
-                mHasGameTimeFinished = true;
-                WhoWins(args);
+                var deadPlayer = _DeadPlayers[i];
+                if (deadPlayer.DeathTimeStamp + USER_RESPAWN_DELAY_MS < Game.TotalElapsedGameTime)
+                {
+                    _DeadPlayers.RemoveAt(i);
+                    if (deadPlayer.Player != null)
+                    {
+                        deadPlayer.Player.SetWorldPosition(Game.GetSingleObjectByCustomID("ThePit").GetWorldPosition());
+                    }
+                    var player = deadPlayer.User.GetPlayer();
+                    if (((player == null) || (player.IsDead)))
+                    {
+                        Respawn(deadPlayer.User, deadPlayer.Team, deadPlayer.IsBot);
+                    }
+                }
             }
         }
+
+        /// <summary>
+        /// Checks if there are any new active users that haven't been spawned
+        /// </summary>
+        /// <param name="args"></param>
+        public void ConnectedPlayersTick(TriggerArgs args)
+        {
+            var allUsers = Game.GetActiveUsers();
+            if (_UsersConnectedCount <= 0)
+            {
+                _UsersConnectedCount = allUsers.Length;
+            }
+            else if (allUsers.Length > _UsersConnectedCount)
+            {
+                for (int i = 0; i < allUsers.Length; i++)
+                {
+                    var player = allUsers[i].GetPlayer();
+                    if ((player == null)) FirstSpawn(allUsers[i]);
+                }
+            }
+            _UsersConnectedCount = allUsers.Length;
+            var usersListText = (IObjectText)Game.GetSingleObjectByCustomId(USERS_COUNT_TEXT_ID);
+            usersListText.SetText(_UsersConnectedCount.ToString());
+            string playerList = "";
+            for (int i = 0; i < allUsers.Length; i++)
+            {
+                playerList += allUsers[i].GetProfile().Name + "\n";
+            }
+
+            if (allUsers.Length < 8)
+            {
+                for (int i = allUsers.Length - 1; i < 8; i++)
+                {
+                    playerList += " \n";
+                }
+            }
+            usersListText = (IObjectText)Game.GetSingleObjectByCustomId(USERS_LIST_TEXT_ID);
+            usersListText.SetText(playerList);
+        }
+
+        /// <summary>
+        /// Tick called when a player dies
+        /// </summary>
+        /// <param name="args"></param>
+        public void Death(TriggerArgs args)
+        {
+
+            var senderPlayer = args.Sender as IPlayer;
+
+            if (senderPlayer == null || senderPlayer.IsRemoved) return;
+
+            _DeadPlayersCount++;
+
+            if (senderPlayer.GetTeam() == PlayerTeam.Team1)
+            {
+                _RedKillsCount++;
+                RefreshKillCounter(_RedKillsCount, Teams.Red);
+            }
+            if (senderPlayer.GetTeam() == PlayerTeam.Team2)
+            {
+                _BlueKillsCount++;
+                RefreshKillCounter(_BlueKillsCount, Teams.Blue);
+            }
+            var user = senderPlayer.GetUser();
+            if (user != null)
+            {
+                _DeadPlayers.Add(
+                    new DeadPlayer()
+                    {
+                        DeathTimeStamp = Game.TotalElapsedGameTime,
+                        User = user,
+                        Player = senderPlayer,
+                        Team = senderPlayer.GetTeam(),
+                        IsBot = senderPlayer.IsBot
+                    });
+            }
+
+        }
+
+        /// <summary>
+        /// Trigger called to update the time remaining
+        /// </summary>
+        /// <param name="args"></param>
+        public void TimeRemaining(TriggerArgs args)
+        {
+            if (_TimeRemainingText != null && _HasGameTimeFinished == false)
+            {
+                mRemainingGameTimeInSeconds--;
+                _TimeRemainingText.SetText("Time Remaining: " + GetRemainingMinutesAndSecondsString(mRemainingGameTimeInSeconds));
+            }
+            if (mRemainingGameTimeInSeconds < 1 && !_HasGameTimeFinished)
+            {
+                _HasGameTimeFinished = true;
+                OnTimeFinished(args);
+            }
+        }
+
+        #endregion
+
+
+        #region Utility Triggers
+
+        /// <summary>
+        /// Tick called to see if we need to spawn a fireball
+        /// </summary>
+        /// <param name="args"></param>
+        public void ShootFireball(TriggerArgs args)
+        {
+            foreach (IPlayer ply in _Marios)
+            {
+                if (ply != null)
+                {
+                    if (ply.IsBlocking && ply.IsWalking)
+                    {
+                        Vector2 pos = ply.GetWorldPosition();
+                        int dir = ply.FacingDirection;
+                        for (int i = 1; i >= 1; i--)
+                        {
+                            Game.SpawnProjectile(ProjectileItem.FLAREGUN, pos + new Vector2(6f * dir, 9f), new Vector2(150f * dir, i));
+                        }
+                    }
+                }
+            }
+        }
+
+
+
+        /// <summary>
+        /// Tick called when a player has entered the area with the two spawn buttons
+        /// </summary>
+        /// <param name="args"></param>
         public void PlayerEnteredTheGame(TriggerArgs args)
         {
             var player = (IPlayer)args.Sender;
             player.SetTeam(PlayerTeam.Team3);
 
-            // If we're not a bot, we don't need to do anything else
+            // If it's not a bot, we don't need to do anything else
             if (!player.IsBot)
             {
                 return;
@@ -268,15 +411,109 @@ namespace SFDScripts
             MoveToBase(args3);
 
         }
+
+
+        /// <summary>
+        /// Triggers the ballons group, making them go up
+        /// </summary>
+        /// <remarks>
+        /// Tick called by an area trigger when players are moved to the peach area
+        /// </remarks>
+        /// <param name="args">The tick arguments</param>
+        public void BalloonsParty(TriggerArgs args)
+        {
+            IObjectGroupMarker groupOne = (IObjectGroupMarker)Game.GetSingleObjectByCustomID("BalloonsGroupOne");
+            groupOne.Trigger();
+        }
+
+        /// <summary>
+        /// Tick called to clear the game popup message
+        /// </summary>
+        /// <param name="args"></param>
         public void ClearPopup(TriggerArgs args)
         {
             Game.HidePopupMessage();
         }
-        public void WhoWins(TriggerArgs args)
+        #endregion
+        #endregion
+
+
+        #region Buttons
+
+        /// <summary>
+        /// Called when a player presses one of the buttons to spawn as mario
+        /// </summary>
+        /// <param name="args"></param>
+        public void MoveToBase(TriggerArgs args)
         {
-            if (mRedKillsCount > mBlueKillsCount)
+            var senderPlayer = (IPlayer)args.Sender;
+            var caller = (IObject)args.Caller;
+
+            if ((senderPlayer != null) && (senderPlayer is IPlayer) && (!senderPlayer.IsDiving))
             {
-                Game.SetGameOver("The Red wins");
+                switch (caller.CustomId)
+                {
+                    case "SelectedRedButton":
+                        if (_NumberOfBlueTeamPlayers >= _NumberOfRedTeamPlayers)
+                        {
+                            SendToPosition(GetRedRandomPosition(), senderPlayer);
+                            senderPlayer.SetTeam(PlayerTeam.Team2);
+                            _NumberOfRedTeamPlayers++;
+                            SetPlayerToMarioOne(senderPlayer);
+                        }
+                        else
+                        {
+                            Game.ShowPopupMessage("Choose another team");
+                        }
+                        break;
+                    case "SelectedBlueButton":
+                        if (_NumberOfRedTeamPlayers >= _NumberOfBlueTeamPlayers)
+                        {
+                            SendToPosition(GetBlueRandomPosition(), senderPlayer);
+                            senderPlayer.SetTeam(PlayerTeam.Team1);
+                            _NumberOfBlueTeamPlayers++;
+                            SetPlayerToMarioTwo(senderPlayer);
+                        }
+                        else
+                        {
+                            Game.ShowPopupMessage("Choose another team");
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Called when a player presses a refill button
+        /// </summary>
+        /// <param name="args"></param>
+        public void Refill(TriggerArgs args)
+        {
+            var senderPlayer = (IPlayer)args.Sender;
+            senderPlayer.GiveWeaponItem(WeaponItem.PILLS);
+            senderPlayer.GiveWeaponItem(senderPlayer.CurrentSecondaryWeapon.WeaponItem);
+            if (senderPlayer.CurrentPrimaryWeapon.WeaponItem != WeaponItem.MAGNUM)
+            {
+                senderPlayer.GiveWeaponItem(senderPlayer.CurrentPrimaryWeapon.WeaponItem);
+            }
+        }
+
+        #endregion
+
+
+        #region Specific Utility Methods
+
+        /// <summary>
+        /// Called when the game time has elapsed
+        /// </summary>
+        /// <param name="args"></param>
+        public void OnTimeFinished(TriggerArgs args)
+        {
+            if (_RedKillsCount > _BlueKillsCount)
+            {
+                Game.SetGameOver("Red wins");
                 winner = PlayerTeam.Team2;
                 Game.WriteToConsole(winner.ToString());
                 foreach (IPlayer p in Game.GetPlayers())
@@ -287,9 +524,9 @@ namespace SFDScripts
                     }
                 }
             }
-            else if (mRedKillsCount < mBlueKillsCount)
+            else if (_RedKillsCount < _BlueKillsCount)
             {
-                Game.SetGameOver("The Blue wins");
+                Game.SetGameOver("Blue wins");
                 winner = PlayerTeam.Team1;
 
                 foreach (IPlayer p in Game.GetPlayers())
@@ -307,191 +544,11 @@ namespace SFDScripts
             }
 
             var camera = Game.GetSingleObjectByCustomID("PeachCastleCamera") as IObjectCameraAreaTrigger;
+            var music = Game.GetSingleObjectByCustomID("WinnerMusic") as IObjectMusicTrigger;
             camera.Trigger();
-        }
-        public void CheckIfCrateIsOpen(TriggerArgs args)
-        {
-            if (mCrate.GetHealth() == 0 && mHasCrateBeenDestroyed == false)
-            {
-                mHasCrateBeenDestroyed = true;
-                Game.SpawnWeaponItem(WeaponItem.GRENADE_LAUNCHER, mCratePosition, true, 10000);
-                Game.GetSingleObjectByCustomId("CrateTrigger").Destroy();
-            }
-            else
-            {
-                mCratePosition = mCrate.GetWorldPosition();
-            }
-        }
-        public void MoveToBase(TriggerArgs args)
-        {
-            var senderPlayer = (IPlayer)args.Sender;
-            var caller = (IObject)args.Caller;
-
-            if ((senderPlayer != null) && (senderPlayer is IPlayer) && (!senderPlayer.IsDiving))
-            {
-                switch (caller.CustomId)
-                {
-                    case "SelectedRedButton":
-                        if (mNumberOfBlueTeamPlayers >= mNumberOfRedTeamPlayers)
-                        {
-                            SendToPosition(GetRedRandomPosition(), senderPlayer);
-                            senderPlayer.SetTeam(PlayerTeam.Team2);
-                            mNumberOfRedTeamPlayers++;
-                            SetPlayerToMarioOne(senderPlayer);
-                        }
-                        else
-                        {
-                            Game.ShowPopupMessage("Choose another team");
-                        }
-                        break;
-                    case "SelectedBlueButton":
-                        if (mNumberOfRedTeamPlayers >= mNumberOfBlueTeamPlayers)
-                        {
-                            SendToPosition(GetBlueRandomPosition(), senderPlayer);
-                            senderPlayer.SetTeam(PlayerTeam.Team1);
-                            mNumberOfBlueTeamPlayers++;
-                            SetPlayerToMarioTwo(senderPlayer);
-                        }
-                        else
-                        {
-                            Game.ShowPopupMessage("Choose another team");
-                        }
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-        public void Refill(TriggerArgs args)
-        {
-            var senderPlayer = (IPlayer)args.Sender;
-            senderPlayer.GiveWeaponItem(WeaponItem.PILLS);
-            senderPlayer.GiveWeaponItem(senderPlayer.CurrentSecondaryWeapon.WeaponItem);
-            if (senderPlayer.CurrentPrimaryWeapon.WeaponItem != WeaponItem.MAGNUM)
-            {
-                senderPlayer.GiveWeaponItem(senderPlayer.CurrentPrimaryWeapon.WeaponItem);
-            }
-        }
-        public void Death(TriggerArgs args)
-        {
-
-            var senderPlayer = args.Sender as IPlayer;
-
-            if (senderPlayer == null || senderPlayer.IsRemoved) return;
-
-            mDeadPlayersCount++;
-
-            if (senderPlayer.GetTeam() == PlayerTeam.Team1)
-            {
-                mRedKillsCount++;
-                RefreshKillCounter(mRedKillsCount, Teams.Red);
-            }
-            if (senderPlayer.GetTeam() == PlayerTeam.Team2)
-            {
-                mBlueKillsCount++;
-                RefreshKillCounter(mBlueKillsCount, Teams.Blue);
-            }
-            var user = senderPlayer.GetUser();
-            if (user != null)
-            {
-                mDeadPlayers.Add(
-                    new DeadPlayer()
-                    {
-                        DeathTimeStamp = Game.TotalElapsedGameTime,
-                        User = user,
-                        Player = senderPlayer,
-                        Team = senderPlayer.GetTeam(),
-                        IsBot = senderPlayer.IsBot
-                    });
-            }
-
-        }
-        public void RespawnTick(TriggerArgs args)
-        {
-            if (mDeadPlayers.Count > 0)
-            {
-                for (int i = mDeadPlayers.Count - 1; i >= 0; i--)
-                {
-                    var deadPlayer = mDeadPlayers[i];
-                    if (deadPlayer.DeathTimeStamp + USER_RESPAWN_DELAY_MS < Game.TotalElapsedGameTime)
-                    {
-
-                        mDeadPlayers.RemoveAt(i);
-                        if (deadPlayer.Player != null)
-                        {
-                            deadPlayer.Player.SetWorldPosition(Game.GetSingleObjectByCustomID("ThePit").GetWorldPosition());
-                        }
-                        var player = deadPlayer.User.GetPlayer();
-                        if (((player == null) || (player.IsDead)))
-                        {
-                            Respawn(deadPlayer.User, deadPlayer.Team, deadPlayer.IsBot);
-                        }
-                    }
-                }
-            }
-        }
-        public void ConnectedPlayersTick(TriggerArgs args)
-        {
-            if (mConnectPlayerDelay > 0)
-            {
-                mConnectPlayerDelay--;
-                if (mConnectPlayerDelay <= 0)
-                {
-                    var allUsers = Game.GetActiveUsers();
-                    if (mUsersConnectedCount == 0)
-                    {
-                        mUsersConnectedCount = allUsers.Length;
-                    }
-                    else if (allUsers.Length > mUsersConnectedCount)
-                    {
-                        for (int i = 0; i < allUsers.Length; i++)
-                        {
-                            var player = allUsers[i].GetPlayer();
-                            if ((player == null)) FirstSpawn(allUsers[i]);
-                        }
-                    }
-                    mUsersConnectedCount = allUsers.Length;
-                    var usersListText = (IObjectText)Game.GetSingleObjectByCustomId(USERS_COUNT_TEXT_ID);
-                    usersListText.SetText(mUsersConnectedCount.ToString());
-                    string playerList = "";
-                    for (int i = 0; i < allUsers.Length; i++)
-                        playerList += allUsers[i].GetProfile().Name + "\n";
-                    if (allUsers.Length < 8)
-                        for (int i = allUsers.Length - 1; i < 8; i++)
-                            playerList += " \n";
-                    usersListText = (IObjectText)Game.GetSingleObjectByCustomId(USERS_LIST_TEXT_ID);
-                    usersListText.SetText(playerList);
-                    mConnectPlayerDelay = DELAY_TO_CONNECT_A_NEW_PLAYER;
-                }
-            }
-        }
-        public void ShootFireball(TriggerArgs args)
-        {
-            foreach (IPlayer ply in mMarios)
-            {
-                if (ply != null)
-                {
-                    if (ply.IsBlocking && ply.IsWalking)
-                    {
-                        Vector2 pos = ply.GetWorldPosition();
-                        int dir = ply.FacingDirection;
-                        for (int i = 1; i >= 1; i--)
-                        {
-                            Game.SpawnProjectile(ProjectileItem.FLAREGUN, pos + new Vector2(6f * dir, 9f), new Vector2(150f * dir, i));
-                        }
-                    }
-                }
-            }
+            music.Trigger();
         }
 
-        public void BalloonsParty(TriggerArgs args)
-        {
-            IObjectGroupMarker groupOne = (IObjectGroupMarker)Game.GetSingleObjectByCustomID("BalloonsGroupOne");
-            groupOne.Trigger();
-        }
-        #endregion
-
-        #region Utility Methods
 
         /// <summary>
         /// Gets a random position for spawning a blue player
@@ -512,144 +569,6 @@ namespace SFDScripts
             var rand = RandNumber(0, 4);
             return (RedSpawnPositions[rand]);
         }
-        /// <summary>
-        /// Sends the player to a specified position
-        /// </summary>
-        /// <param name="id">The id of the desired position</param>
-        /// <param name="ply">The player</param>
-        public void SendToPosition(string id, IPlayer ply)
-        {
-            var mCallerObject = Game.GetSingleObjectByCustomId(id);
-            var position = mCallerObject.GetWorldPosition();
-            ply.SetWorldPosition(position);
-        }
-
-        /// <summary>
-        /// Substracts a player from the team 
-        /// </summary>
-        /// <param name="team">The team</param>
-        public void SubstractPlayerFromThisTeam(PlayerTeam team)
-        {
-            if (team == PlayerTeam.Team1)
-            {
-                mNumberOfBlueTeamPlayers--;
-            }
-            if (team == PlayerTeam.Team2)
-            {
-                mNumberOfRedTeamPlayers--;
-            }
-        }
-
-        /// <summary>
-        /// Returns a random int from low bound to high bound
-        /// </summary>
-        /// <param name="low">the lower value (included)</param>
-        /// <param name="high">the higher bound value (included)</param>
-        /// <returns></returns>
-        public int RandNumber(int low, int high)
-        {
-            return rnd.Next(low, high);
-        }
-
-        /// <summary>
-        /// Removes all weapons to this player
-        /// </summary>
-        /// <param name="ply"></param>
-        public void RemoveWeapons(IPlayer ply)
-        {
-            ply.RemoveWeaponItemType(WeaponItemType.Rifle);
-            ply.RemoveWeaponItemType(WeaponItemType.Handgun);
-            ply.RemoveWeaponItemType(WeaponItemType.Melee);
-            ply.RemoveWeaponItemType(WeaponItemType.Thrown);
-            ply.SetHealth(100);
-        }
-
-        /// <summary>
-        /// Spawns a player that has already spawned before
-        /// </summary>
-        /// <param name="user">The user</param>
-        /// <param name="team">The team for this user</param>
-        /// <param name="isBot">Whether the player to respawn is a bot or not</param>
-        private void Respawn(IUser user, PlayerTeam team, bool isBot)
-        {
-            if (CheckUserStillActive(user) && !user.IsSpectator)
-            {
-                var player = Game.CreatePlayer(mPlayerSpawnPosition);
-                if (isBot)
-                {
-                    var botBehavior = new BotBehavior(true, PredefinedAIType.BotB);
-                    player.SetBotBehavior(botBehavior);
-                }
-
-                player.SetProfile(user.GetProfile());
-                if (team == PlayerTeam.Team1)
-                {
-                    player.SetTeam(PlayerTeam.Team1);
-                    mPlayerSpawnPosition = Game.GetSingleObjectByCustomId(GetBlueRandomPosition()).GetWorldPosition();
-
-                    if (winner == PlayerTeam.Team1)
-                    {
-                        mPlayerSpawnPosition = Game.GetSingleObjectByCustomID("PlayerPeach").GetWorldPosition();
-                    }
-                    SetPlayerToMarioTwo(player);
-                }
-                if (team == PlayerTeam.Team2)
-                {
-                    player.SetTeam(PlayerTeam.Team2);
-                    mPlayerSpawnPosition = Game.GetSingleObjectByCustomId(GetRedRandomPosition()).GetWorldPosition();
-                    if (winner == PlayerTeam.Team2)
-                    {
-                        mPlayerSpawnPosition = Game.GetSingleObjectByCustomID("PlayerPeach").GetWorldPosition();
-                    }
-                    SetPlayerToMarioOne(player);
-                }
-                if (team.Equals(PlayerTeam.Team3))
-                {
-                    player.SetTeam(PlayerTeam.Team3);
-                    mPlayerSpawnPosition = Game.GetSingleObjectByCustomID(PLAYER_MIDDLE_SPAWN_BLOCK_ID).GetWorldPosition();
-                }
-                player.SetUser(user);
-                player.SetWorldPosition(mPlayerSpawnPosition);
-            }
-            else
-            {
-                SubstractPlayerFromThisTeam(team);
-            }
-        }
-
-        /// <summary>
-        /// Spawns the player in the middle of the map for it to choose a team
-        /// </summary>
-        /// <param name="user"></param>
-        private void FirstSpawn(IUser user)
-        {
-            if (CheckUserStillActive(user) && !user.IsSpectator)
-            {
-                mPlayerSpawnPosition = Game.GetSingleObjectByCustomId(PLAYER_MIDDLE_SPAWN_BLOCK_ID).GetWorldPosition();
-                var player = Game.CreatePlayer(mPlayerSpawnPosition);
-                player.SetUser(user);
-                player.SetProfile(user.GetProfile());
-                player.SetWorldPosition(mPlayerSpawnPosition);
-                player.SetTeam(PlayerTeam.Team3);
-            }
-        }
-
-        /// <summary>
-        /// Checks whether the user is still active or not
-        /// </summary>
-        /// <param name="user">The user</param>
-        /// <returns> Whether the user is still active or not</returns>
-        private bool CheckUserStillActive(IUser user)
-        {
-            foreach (IUser activeUser in Game.GetActiveUsers())
-            {
-                if (activeUser.UserId == user.UserId)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
 
         /// <summary>
         /// Refreshes the kill counter for the specified team
@@ -661,12 +580,16 @@ namespace SFDScripts
             var blueKillCounterText = (IObjectText)Game.GetSingleObjectByCustomId(BLUE_KILLS_COUNT_TEXT_ID);
             var redKillCounterTet = (IObjectText)Game.GetSingleObjectByCustomId(RED_KILLS_COUNT_TEXT_ID);
 
-            if (mHasGameTimeFinished != true)
+            if (_HasGameTimeFinished) return;
+
+            if (blueKillCounterText != null && team == Teams.Blue)
             {
-                if (blueKillCounterText != null && team == Teams.Blue)
-                    blueKillCounterText.SetText("Blue Score: " + killCount.ToString());
-                if (redKillCounterTet != null && team == Teams.Red)
-                    redKillCounterTet.SetText("Red Score: " + killCount.ToString());
+                blueKillCounterText.SetText("Blue Score: " + killCount.ToString());
+            }
+
+            if (redKillCounterTet != null && team == Teams.Red)
+            {
+                redKillCounterTet.SetText("Red Score: " + killCount.ToString());
             }
         }
 
@@ -691,7 +614,7 @@ namespace SFDScripts
             player.GiveWeaponItem(WeaponItem.KNIFE);
             player.GiveWeaponItem(WeaponItem.PISTOL45);
             player.GiveWeaponItem(WeaponItem.STRENGTHBOOST);
-            mMarios.Add(player);
+            _Marios.Add(player);
         }
 
         /// <summary>
@@ -715,32 +638,15 @@ namespace SFDScripts
             player.GiveWeaponItem(WeaponItem.PISTOL45);
             player.GiveWeaponItem(WeaponItem.STRENGTHBOOST);
             player.SetProfile(marioProfile);
-            mMarios.Add(player);
+            _Marios.Add(player);
         }
-
-        /// <summary>
-        /// Creates a new trigger
-        /// </summary>
-        /// <param name="interval">The interval at which the trigger will run</param>
-        /// <param name="count">How many times the trigger will round (0 for infinite times)</param>
-        /// <param name="method">The name of the method that is going to be called when the trigger executes</param>
-        /// <param name="id">The id for the trigger</param>
-        private void CreateTrigger(int interval, int count, string method, string id)
-        {
-            IObjectTimerTrigger timerTrigger = (IObjectTimerTrigger)Game.CreateObject("TimerTrigger");
-            timerTrigger.SetIntervalTime(interval);
-            timerTrigger.SetRepeatCount(count);
-            timerTrigger.SetScriptMethod(method);
-            timerTrigger.CustomId = id;
-            timerTrigger.Trigger();
-            timerTrigger.SetWorldPosition(Game.GetSingleObjectByCustomId("TriggersPosition").GetWorldPosition());
-        }
-        private string PrintMinutes(int toConvertSeconds)
+        private string GetRemainingMinutesAndSecondsString(int toConvertSeconds)
         {
             int minutes = toConvertSeconds / 60;
             int seconds = toConvertSeconds % 60;
             return minutes.ToString("00") + ":" + seconds.ToString("00");
         }
+
         private void SpawnPeach()
         {
             Vector2 pos = Game.GetSingleObjectByCustomID(PEACH_POSITION_BLOCK_ID).GetWorldPosition();
@@ -772,6 +678,167 @@ namespace SFDScripts
             explode.Trigger();
         }
         #endregion
+
+        #region Generic Utility Methods
+
+        /// <summary>
+        /// Creates a new trigger
+        /// </summary>
+        /// <param name="interval">The interval at which the trigger will run</param>
+        /// <param name="count">How many times the trigger will round (0 for infinite times)</param>
+        /// <param name="method">The name of the method that is going to be called when the trigger executes</param>
+        /// <param name="id">The id for the trigger</param>
+        private void CreateTrigger(int interval, int count, string method, string id)
+        {
+            IObjectTimerTrigger timerTrigger = (IObjectTimerTrigger)Game.CreateObject("TimerTrigger");
+            timerTrigger.SetIntervalTime(interval);
+            timerTrigger.SetRepeatCount(count);
+            timerTrigger.SetScriptMethod(method);
+            timerTrigger.CustomId = id;
+            timerTrigger.Trigger();
+            timerTrigger.SetWorldPosition(Game.GetSingleObjectByCustomId("TriggersPosition").GetWorldPosition());
+        }
+
+        /// <summary>
+        /// Checks whether the user is still active or not
+        /// </summary>
+        /// <param name="user">The user</param>
+        /// <returns> Whether the user is still active or not</returns>
+        private bool IsUserStillActive(IUser user)
+        {
+            foreach (IUser activeUser in Game.GetActiveUsers())
+            {
+                if (activeUser.UserId == user.UserId)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Sends the player to a specified position
+        /// </summary>
+        /// <param name="id">The id of the desired position</param>
+        /// <param name="ply">The player</param>
+        public void SendToPosition(string id, IPlayer ply)
+        {
+            var mCallerObject = Game.GetSingleObjectByCustomId(id);
+            var position = mCallerObject.GetWorldPosition();
+            ply.SetWorldPosition(position);
+        }
+
+        /// <summary>
+        /// Substracts a player from the team 
+        /// </summary>
+        /// <param name="team">The team</param>
+        public void SubstractPlayerFromThisTeam(PlayerTeam team)
+        {
+            if (team == PlayerTeam.Team1)
+            {
+                _NumberOfBlueTeamPlayers--;
+            }
+            if (team == PlayerTeam.Team2)
+            {
+                _NumberOfRedTeamPlayers--;
+            }
+        }
+
+        /// <summary>
+        /// Returns a random int from low bound to high bound
+        /// </summary>
+        /// <param name="low">the lower value (included)</param>
+        /// <param name="high">the higher bound value (included)</param>
+        /// <returns></returns>
+        public int RandNumber(int low, int high)
+        {
+            return _Rnd.Next(low, high);
+        }
+
+        /// <summary>
+        /// Removes all weapons to this player
+        /// </summary>
+        /// <param name="ply"></param>
+        public void RemoveWeapons(IPlayer ply)
+        {
+            ply.RemoveWeaponItemType(WeaponItemType.Rifle);
+            ply.RemoveWeaponItemType(WeaponItemType.Handgun);
+            ply.RemoveWeaponItemType(WeaponItemType.Melee);
+            ply.RemoveWeaponItemType(WeaponItemType.Thrown);
+            ply.SetHealth(100);
+        }
+
+        /// <summary>
+        /// Spawns a player that has already spawned before
+        /// </summary>
+        /// <param name="user">The user</param>
+        /// <param name="team">The team for this user</param>
+        /// <param name="isBot">Whether the player to respawn is a bot or not</param>
+        private void Respawn(IUser user, PlayerTeam team, bool isBot)
+        {
+            if (IsUserStillActive(user) && !user.IsSpectator)
+            {
+                var player = Game.CreatePlayer(_PlayerSpawnPosition);
+                if (isBot)
+                {
+                    var botBehavior = new BotBehavior(true, PredefinedAIType.BotB);
+                    player.SetBotBehavior(botBehavior);
+                }
+
+                player.SetProfile(user.GetProfile());
+                if (team == PlayerTeam.Team1)
+                {
+                    player.SetTeam(PlayerTeam.Team1);
+                    _PlayerSpawnPosition = Game.GetSingleObjectByCustomId(GetBlueRandomPosition()).GetWorldPosition();
+
+                    if (winner == PlayerTeam.Team1)
+                    {
+                        _PlayerSpawnPosition = Game.GetSingleObjectByCustomID("PlayerPeach").GetWorldPosition();
+                    }
+                    SetPlayerToMarioTwo(player);
+                }
+                if (team == PlayerTeam.Team2)
+                {
+                    player.SetTeam(PlayerTeam.Team2);
+                    _PlayerSpawnPosition = Game.GetSingleObjectByCustomId(GetRedRandomPosition()).GetWorldPosition();
+                    if (winner == PlayerTeam.Team2)
+                    {
+                        _PlayerSpawnPosition = Game.GetSingleObjectByCustomID("PlayerPeach").GetWorldPosition();
+                    }
+                    SetPlayerToMarioOne(player);
+                }
+                if (team.Equals(PlayerTeam.Team3))
+                {
+                    player.SetTeam(PlayerTeam.Team3);
+                    _PlayerSpawnPosition = Game.GetSingleObjectByCustomID(PLAYER_MIDDLE_SPAWN_BLOCK_ID).GetWorldPosition();
+                }
+                player.SetUser(user);
+                player.SetWorldPosition(_PlayerSpawnPosition);
+            }
+            else
+            {
+                SubstractPlayerFromThisTeam(team);
+            }
+        }
+
+        /// <summary>
+        /// Spawns the player in the middle of the map for it to choose a team
+        /// </summary>
+        /// <param name="user"></param>
+        private void FirstSpawn(IUser user)
+        {
+            if (!IsUserStillActive(user) || user.IsSpectator) return;
+            _PlayerSpawnPosition = Game.GetSingleObjectByCustomId(PLAYER_MIDDLE_SPAWN_BLOCK_ID).GetWorldPosition();
+            var player = Game.CreatePlayer(_PlayerSpawnPosition);
+            player.SetUser(user);
+            player.SetProfile(user.GetProfile());
+            player.SetWorldPosition(_PlayerSpawnPosition);
+            player.SetTeam(PlayerTeam.Team3);
+        }
+
+
+        #endregion
+
         #endregion
     }
 }
