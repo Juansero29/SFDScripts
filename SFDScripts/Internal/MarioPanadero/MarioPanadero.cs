@@ -32,9 +32,9 @@ namespace SFDScripts
             /// </summary>
             public IUser User { get; set; }
             /// <summary>
-            /// The player
+            /// The player's body
             /// </summary>
-            public IPlayer Player { get; set; }
+            public IPlayer DeadBody { get; set; }
 
             /// <summary>
             /// The team of this dead player
@@ -96,7 +96,7 @@ namespace SFDScripts
         /// <summary>
         /// The user respawn rate delay in miliseconds
         /// </summary>
-        private const int USER_RESPAWN_DELAY_MS = 5000;
+        private const int USER_RESPAWN_DELAY_MS = 1000;
 
         /// <summary>
         /// Whether we want to gib the corpses or not
@@ -125,12 +125,10 @@ namespace SFDScripts
 
         #region Private Fields
 
-
         /// <summary>
         /// The total time remaining for this game in seconds
         /// </summary>
-        private int mRemainingGameTimeInSeconds = TOTAL_GAME_TIME_IN_SECONDS;
-
+        private int _RemainingGameTimeInSeconds = TOTAL_GAME_TIME_IN_SECONDS;
 
         /// <summary>
         /// The text object showing the time remaining
@@ -193,131 +191,124 @@ namespace SFDScripts
         private int _UsersConnectedCount = 0;
         #endregion
 
-        #region Triggers
+        #region Game Lifecycle
 
-        #region Lifecycle Triggers
 
         /// <summary>
-        /// Tick called at the start of the game
+        /// The game will always call the following method "public void OnStartup()" during a map start (or script activates). 
         /// </summary>
-        /// <param name="args"></param>
-        public void Start(TriggerArgs args)
+        /// <remarks>
+        /// No triggers required. This is run before triggers that activate on startup (and before OnStartup triggers).
+        /// </remarks>
+        public void OnStartup()
         {
-            // can't use nameof(ShootFireball)
-            CreateTrigger(300, 0, "ShootFireball", "");
-            CreateTrigger(5000, 0, "ClearPopup", "");
+            // This is the recommended place to hook up any events. To register an update loop:
+            Events.UpdateCallback.Start(OnUpdate, 200);
+            Events.PlayerDeathCallback.Start(Death);
+
+
+            // can't use nameof(Method)
+            CreateTrigger(1000, 0, "TimeRemaining");
+            CreateTrigger(300, 0, "ShootFireball");
+            CreateTrigger(5000, 0, "ClearPopup");
 
             RefreshKillCounter(_BlueKillsCount, Teams.Blue);
             RefreshKillCounter(_RedKillsCount, Teams.Red);
-
             _TimeRemainingText = Game.GetSingleObjectByCustomId(TIME_REMAINING_LABEL_ID) as IObjectText;
 
             SpawnPeach();
         }
 
-
         /// <summary>
-        /// General game tick
+        /// Update loop (must be enabled in the OnStartup() function or AfterStartup() function).
         /// </summary>
-        /// <param name="args"></param>
-        public void Tick(TriggerArgs args)
+        /// <param name="elapsed">Time elapsed</param>
+        public void OnUpdate(float elapsed)
         {
-            RespawnTick(args);
-            ConnectedPlayersTick(args);
+            RespawnTick();
+            CheckConnectedPlayersTick();
         }
 
+        /// <summary>
+        /// The game will always call the following method "public void AfterStartup()" after a map start (or script activates). 
+        /// </summary>
+        /// <remarks>
+        /// No triggers required. This is run after triggers that activate on startup (and after OnStartup triggers).
+        /// </remarks>
+        public void AfterStartup()
+        {
+
+        }
 
         /// <summary>
-        /// Checks if there's any death players to respawn
+        /// The game will always call the following method "public void OnShutdown()" before a map restart (or script deactivates). 
         /// </summary>
-        /// <param name="args"></param>
-        public void RespawnTick(TriggerArgs args)
+        /// <remarks>
+        /// Perform some cleanup here or store some final information to Game.Data/Game.LocalStorage/Game.SessionStorage if needed.
+        /// </remarks>
+        public void OnShutdown()
         {
-            if (_DeadPlayers.Count <= 0) return;
 
-
-            for (int i = _DeadPlayers.Count - 1; i >= 0; i--)
-            {
-                var deadPlayer = _DeadPlayers[i];
-                if (deadPlayer.DeathTimeStamp + USER_RESPAWN_DELAY_MS < Game.TotalElapsedGameTime)
-                {
-                    _DeadPlayers.RemoveAt(i);
-                    if (deadPlayer.Player != null)
-                    {
-                        deadPlayer.Player.SetWorldPosition(Game.GetSingleObjectByCustomID("ThePit").GetWorldPosition());
-                    }
-                    var player = deadPlayer.User.GetPlayer();
-                    if (((player == null) || (player.IsDead)))
-                    {
-                        Respawn(deadPlayer.User, deadPlayer.Team, deadPlayer.IsBot);
-                    }
-                }
-            }
         }
+        #endregion
+
+        #region Triggers
+
+        #region Player Lifecycle Triggers
 
         /// <summary>
         /// Checks if there are any new active users that haven't been spawned
         /// </summary>
         /// <param name="args"></param>
-        public void ConnectedPlayersTick(TriggerArgs args)
+        public void CheckConnectedPlayersTick()
         {
             var allUsers = Game.GetActiveUsers();
-            if (_UsersConnectedCount <= 0)
+
+            for (int i = 0; i < allUsers.Length; i++)
             {
-                _UsersConnectedCount = allUsers.Length;
-            }
-            else if (allUsers.Length > _UsersConnectedCount)
-            {
-                for (int i = 0; i < allUsers.Length; i++)
+                var player = allUsers[i].GetPlayer();
+                if (player == null)
                 {
-                    var player = allUsers[i].GetPlayer();
-                    if ((player == null)) FirstSpawn(allUsers[i]);
+                    FirstSpawn(allUsers[i]);
                 }
             }
             _UsersConnectedCount = allUsers.Length;
-            var usersListText = (IObjectText)Game.GetSingleObjectByCustomId(USERS_COUNT_TEXT_ID);
-            usersListText.SetText(_UsersConnectedCount.ToString());
-            string playerList = "";
-            for (int i = 0; i < allUsers.Length; i++)
-            {
-                playerList += allUsers[i].GetProfile().Name + "\n";
-            }
 
-            if (allUsers.Length < 8)
-            {
-                for (int i = allUsers.Length - 1; i < 8; i++)
-                {
-                    playerList += " \n";
-                }
-            }
-            usersListText = (IObjectText)Game.GetSingleObjectByCustomId(USERS_LIST_TEXT_ID);
-            usersListText.SetText(playerList);
+            UpdateUsersTextList(allUsers);
         }
 
         /// <summary>
         /// Tick called when a player dies
         /// </summary>
         /// <param name="args"></param>
-        public void Death(TriggerArgs args)
+        public void Death(IPlayer deadPlayer, PlayerDeathArgs args)
         {
 
-            var senderPlayer = args.Sender as IPlayer;
+            Game.WriteToConsole("Death() called. senderPlayer: ", deadPlayer.Name);
+            Game.WriteToConsole("Death() senderPlayer: ", deadPlayer.Name);
+            Game.WriteToConsole("Death() senderPlayer.IsRemoved: ", deadPlayer.IsRemoved);
+            Game.WriteToConsole("Death() args.IsRemoved: ", args.Removed);
 
-            if (senderPlayer == null || senderPlayer.IsRemoved) return;
+            if (deadPlayer == null || deadPlayer.IsRemoved || args.Removed)
+            {
+                return;
+            }
 
             _DeadPlayersCount++;
 
-            if (senderPlayer.GetTeam() == PlayerTeam.Team1)
+            if (deadPlayer.GetTeam() == PlayerTeam.Team1)
             {
+                Game.WriteToConsole("Blue player dead");
                 _RedKillsCount++;
                 RefreshKillCounter(_RedKillsCount, Teams.Red);
             }
-            if (senderPlayer.GetTeam() == PlayerTeam.Team2)
+            if (deadPlayer.GetTeam() == PlayerTeam.Team2)
             {
+                Game.WriteToConsole("Red player dead");
                 _BlueKillsCount++;
                 RefreshKillCounter(_BlueKillsCount, Teams.Blue);
             }
-            var user = senderPlayer.GetUser();
+            var user = deadPlayer.GetUser();
             if (user != null)
             {
                 _DeadPlayers.Add(
@@ -325,13 +316,53 @@ namespace SFDScripts
                     {
                         DeathTimeStamp = Game.TotalElapsedGameTime,
                         User = user,
-                        Player = senderPlayer,
-                        Team = senderPlayer.GetTeam(),
-                        IsBot = senderPlayer.IsBot
+                        DeadBody = deadPlayer,
+                        Team = deadPlayer.GetTeam(),
+                        IsBot = deadPlayer.IsBot
                     });
+                Game.WriteToConsole("Death() added senderPlayer to _DeadPlayers: ", deadPlayer.Name);
             }
-
         }
+
+        /// <summary>
+        /// Checks if there's any dead players to respawn
+        /// </summary>
+        /// <param name="args"></param>
+        public void RespawnTick()
+        {
+            if (_DeadPlayers.Count <= 0) return;
+            
+            for (int i = _DeadPlayers.Count - 1; i >= 0; i--)
+            {
+                var deadPlayer = _DeadPlayers[i];
+
+                if (deadPlayer.DeathTimeStamp + USER_RESPAWN_DELAY_MS < Game.TotalElapsedGameTime)
+                {
+                    _DeadPlayers.RemoveAt(i);
+
+                    if (deadPlayer.DeadBody != null)
+                    {
+                        Game.WriteToConsole("RespawnTick() before deadPlayer.DeadBody.Remove()", deadPlayer.DeadBody.Name);
+                        deadPlayer.DeadBody.Remove();
+                        Game.WriteToConsole("RespawnTick() after deadPlayer.DeadBody.Remove()", deadPlayer.DeadBody.Name);
+                    }
+                    var player = deadPlayer.User.GetPlayer();
+                    if (player == null || player.IsDead)
+                    {
+                        Game.WriteToConsole("RespawnTick() before Respawn()", deadPlayer.DeadBody.Name);
+                        Respawn(deadPlayer.User, deadPlayer.Team, deadPlayer.IsBot);
+                        Game.WriteToConsole("RespawnTick() after Respawn()", deadPlayer.DeadBody.Name);
+                    }
+                }
+            }
+        }
+
+
+
+        #endregion
+
+        #region Utility Triggers
+
 
         /// <summary>
         /// Trigger called to update the time remaining
@@ -341,20 +372,15 @@ namespace SFDScripts
         {
             if (_TimeRemainingText != null && _HasGameTimeFinished == false)
             {
-                mRemainingGameTimeInSeconds--;
-                _TimeRemainingText.SetText("Time Remaining: " + GetRemainingMinutesAndSecondsString(mRemainingGameTimeInSeconds));
+                _RemainingGameTimeInSeconds--;
+                _TimeRemainingText.SetText("Time Remaining: " + GetRemainingMinutesAndSecondsString(_RemainingGameTimeInSeconds));
             }
-            if (mRemainingGameTimeInSeconds < 1 && !_HasGameTimeFinished)
+            if (_RemainingGameTimeInSeconds < 1 && !_HasGameTimeFinished)
             {
                 _HasGameTimeFinished = true;
                 OnTimeFinished(args);
             }
         }
-
-        #endregion
-
-
-        #region Utility Triggers
 
         /// <summary>
         /// Tick called to see if we need to spawn a fireball
@@ -437,7 +463,6 @@ namespace SFDScripts
         #endregion
         #endregion
 
-
         #region Buttons
 
         /// <summary>
@@ -502,8 +527,29 @@ namespace SFDScripts
 
         #endregion
 
-
         #region Specific Utility Methods
+
+        private void UpdateUsersTextList(IUser[] allUsers)
+        {
+            var usersListText = (IObjectText)Game.GetSingleObjectByCustomId(USERS_COUNT_TEXT_ID);
+            usersListText.SetText(_UsersConnectedCount.ToString());
+            string playerList = "";
+            for (int i = 0; i < allUsers.Length; i++)
+            {
+                playerList += allUsers[i].GetProfile().Name + "\n";
+            }
+
+            if (allUsers.Length < 8)
+            {
+                for (int i = allUsers.Length - 1; i < 8; i++)
+                {
+                    playerList += " \n";
+                }
+            }
+            usersListText = (IObjectText)Game.GetSingleObjectByCustomId(USERS_LIST_TEXT_ID);
+            usersListText.SetText(playerList);
+        }
+
 
         /// <summary>
         /// Called when the game time has elapsed
@@ -688,7 +734,7 @@ namespace SFDScripts
         /// <param name="count">How many times the trigger will round (0 for infinite times)</param>
         /// <param name="method">The name of the method that is going to be called when the trigger executes</param>
         /// <param name="id">The id for the trigger</param>
-        private void CreateTrigger(int interval, int count, string method, string id)
+        private void CreateTrigger(int interval, int count, string method, string id = "")
         {
             IObjectTimerTrigger timerTrigger = (IObjectTimerTrigger)Game.CreateObject("TimerTrigger");
             timerTrigger.SetIntervalTime(interval);
