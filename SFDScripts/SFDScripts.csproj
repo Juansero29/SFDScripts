@@ -53,6 +53,7 @@
     <Compile Include="External\#UT.cs" />
     <Compile Include="External\#W.cs" />
     <Compile Include="Internal\BOT3dot0.cs" />
+    <Compile Include="Internal\BOT4dot0.cs" />
     <Compile Include="Internal\BOT5dot0.cs" />
     <Compile Include="Internal\Coroutine.cs" />
     <Compile Include="Internal\DataStorageTest\DataStorageTest.cs" />

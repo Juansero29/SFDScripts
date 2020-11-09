@@ -14,6 +14,8 @@ namespace SFDScripts.Internal
         public PirateWars() : base(null) { }
 
         #region ScriptToCopy
+        private string[] _Classes = new string[] { "s", "d", "f", "g", "h" };
+        private Random rnd;
         int TimeCDT = 5 * 60;
         bool TextF = false;
 
@@ -35,11 +37,6 @@ namespace SFDScripts.Internal
             }
         }
 
-        public void TimeVerdin(TriggerArgs args)
-        {
-            IPlayer tiozinho = (IPlayer)args.Sender;
-            tiozinho.SetTeam(PlayerTeam.Team3);
-        }
 
         public void ClearPopup(TriggerArgs args)
         {
@@ -87,6 +84,39 @@ namespace SFDScripts.Internal
         private IPlayer ply = null;
         private IPlayer plyExit = null;
         private bool allowOpen = false;
+
+        public void OnEnter(TriggerArgs args)
+        {
+            var player = (IPlayer)args.Sender;
+            player.SetTeam(PlayerTeam.Team3);
+
+            // If it's not a bot, we don't need to do anything else
+            if (!player.IsBot)
+            {
+                return;
+            }
+
+            var caller = Game.GetSingleObjectByCustomID("RedBase");
+            var args2 = new TriggerArgs(caller, player, false);
+            MovetoBase(args2);
+
+            // If now, we're not part of green team, the bot has spawned successfully
+            if (player.GetTeam() != PlayerTeam.Team3)
+            {
+                return;
+            }
+
+            caller = Game.GetSingleObjectByCustomID("BlueBase");
+            var args3 = new TriggerArgs(caller, player, false);
+            MovetoBase(args3);
+
+            rnd = new Random();
+            var i = rnd.Next(0, _Classes.Length - 1);
+
+            var o = Game.GetFirstObject(_Classes[i]) as IObjectActivateTrigger;
+            if (o == null) return;
+            ClassChooser(new TriggerArgs(o, player, false));
+        }
 
         public void CheckEnter(TriggerArgs args)
         {
@@ -147,6 +177,7 @@ namespace SFDScripts.Internal
             IPlayer sender = (IPlayer)args.Sender;
             if ((sender != null) && (sender is IPlayer) && (!sender.IsDiving))
             {
+                if (sender.GetTeam() == PlayerTeam.Team3) return;
                 IObject Clas = (IObject)args.Caller;
                 switch (Clas.CustomId)
                 {
@@ -266,17 +297,18 @@ namespace SFDScripts.Internal
             if ((sender != null) && (sender is IPlayer) && (!sender.IsDiving))
             {
                 IObject Where = (IObject)args.Caller;
-                IPlayer randomGuy = (IPlayer)args.Sender;
-                IUser user = randomGuy.GetUser();
+                IPlayer player = (IPlayer)args.Sender;
+                IUser user = player.GetUser();
 
                 switch (Where.CustomId)
                 {
                     case "RedBase":
-                        if (Game.GetActiveUsers().Length * 5 > redTeam * 10)
+                        if (bluTeam >= redTeam)
                         {
-                            getAway("Red", randomGuy);
-                            randomGuy.SetTeam(PlayerTeam.Team2);
+                            player.SetTeam(PlayerTeam.Team2);
                             redTeam++;
+                            if (player.IsBot) break;
+                            getAway("Red", player);
                         }
                         else
                         {
@@ -285,11 +317,12 @@ namespace SFDScripts.Internal
                         break;
 
                     case "BlueBase":
-                        if (Game.GetActiveUsers().Length * 5 > bluTeam * 10)
+                        if (redTeam >= bluTeam)
                         {
-                            getAway("Blue", randomGuy);
-                            randomGuy.SetTeam(PlayerTeam.Team1);
+                            player.SetTeam(PlayerTeam.Team1);
                             bluTeam++;
+                            if (player.IsBot) break;
+                            getAway("Blue", player);
                         }
                         else
                         {
@@ -298,20 +331,18 @@ namespace SFDScripts.Internal
 
                         break;
 
-                    case "God-joiner":
-                        if (randomGuy.GetProfile().Name == "#Rrreeembooo")
-                        {
-                            Staffplayer = randomGuy;
-                            getAway("Staff", randomGuy);
-                            randomGuy.SetTeam(PlayerTeam.Team4);
-                        }
-
-                        break;
-
                     default:
                         Game.ShowPopupMessage("Something is wrong, Check the MovetoBase void");
                         break;
                 }
+
+                if (!player.IsBot || player.GetTeam() == PlayerTeam.Team3) return;
+                rnd = new Random();
+                var i = rnd.Next(0, _Classes.Length - 1);
+
+                var o = Game.GetFirstObject(_Classes[i]) as IObjectActivateTrigger;
+                if (o == null) return;
+                ClassChooser(new TriggerArgs(o, player, false));
             }
         }
 
@@ -520,6 +551,14 @@ namespace SFDScripts.Internal
             {
                 IPlayer ply = user.GetPlayer();
                 IPlayer newPlayer = Game.CreatePlayer(spawnPos); // create a new blank player
+
+                if (ply.IsBot)
+                {
+                    var botBehavior = new BotBehavior(true, PredefinedAIType.BotD);
+                    ply.SetBotBehavior(botBehavior);
+                    newPlayer.SetBotBehavior(botBehavior);
+                }
+
                 if (team == PlayerTeam.Team1)
                 {
                     newPlayer.SetTeam(PlayerTeam.Team1);
