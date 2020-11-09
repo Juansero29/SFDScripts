@@ -10,7 +10,6 @@ namespace SFDScripts
 
         public MarioPanadero() : base(null) { }
 
-
         #region Script To Copy
 
         #region Settings
@@ -217,8 +216,16 @@ namespace SFDScripts
         /// <param name="elapsed">Time elapsed</param>
         public void OnUpdate(float elapsed)
         {
-            RespawnTick();
-            CheckConnectedPlayersTick();
+            try
+            {
+                RespawnTick();
+                CheckConnectedPlayersTick();
+            }
+            catch (Exception e)
+            {
+                Game.CreateDialogue(e.Message, new Vector2(10, 10), "MESSAGE");
+                Game.CreateDialogue(e.StackTrace, new Vector2(500, 500), "STACKTRACE");
+            }
         }
 
         /// <summary>
@@ -258,10 +265,11 @@ namespace SFDScripts
 
             for (int i = 0; i < allUsers.Length; i++)
             {
-                var player = allUsers[i].GetPlayer();
+                var user = allUsers[i];
+                var player = user.GetPlayer();
                 if (player == null)
                 {
-                    FirstSpawn(allUsers[i]);
+                    FirstSpawn(user);
                 }
             }
             _UsersConnectedCount = allUsers.Length;
@@ -745,6 +753,7 @@ namespace SFDScripts
         /// <returns> Whether the user is still active or not</returns>
         private bool IsUserStillActive(IUser user)
         {
+            if (user == null) return false;
             foreach (IUser activeUser in Game.GetActiveUsers())
             {
                 if (activeUser.UserId == user.UserId)
@@ -866,9 +875,12 @@ namespace SFDScripts
         /// <param name="user"></param>
         private void FirstSpawn(IUser user)
         {
-            if (!IsUserStillActive(user) || user.IsSpectator) return;
+            if (user == null) return;
             _PlayerSpawnPosition = Game.GetSingleObjectByCustomId(PLAYER_MIDDLE_SPAWN_BLOCK_ID).GetWorldPosition();
+            if (_PlayerSpawnPosition == null) return;
+            if (!IsUserStillActive(user) || user.IsSpectator) return;
             var player = Game.CreatePlayer(_PlayerSpawnPosition);
+            if (player == null) return;
             player.SetUser(user);
             player.SetProfile(user.GetProfile());
             player.SetWorldPosition(_PlayerSpawnPosition);
