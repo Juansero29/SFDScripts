@@ -13,6 +13,19 @@ namespace SFDScripts
 
         #region Script To Copy
 
+        #region Settings
+
+        /// <summary>
+        /// The user respawn rate delay in miliseconds
+        /// </summary>
+        private const int USER_RESPAWN_DELAY_MS = 5000;
+
+        /// <summary>
+        /// Total duration of the game declared in seconds
+        /// </summary>
+        private const int TOTAL_GAME_TIME_IN_SECONDS = 4 * 60;
+        #endregion
+
         #region Declarations
         private enum Teams
         {
@@ -91,28 +104,7 @@ namespace SFDScripts
         };
         #endregion
 
-        #region Settings
 
-        /// <summary>
-        /// The user respawn rate delay in miliseconds
-        /// </summary>
-        private const int USER_RESPAWN_DELAY_MS = 1000;
-
-        /// <summary>
-        /// Whether we want to gib the corpses or not
-        /// </summary>
-        private const bool GIB_CORPSES = false;
-
-        /// <summary>
-        /// Total duration of the game declared in seconds
-        /// </summary>
-        private const int TOTAL_GAME_TIME_IN_SECONDS = 4 * 60;
-
-        /// <summary>
-        /// Delay to connect a new player to the game
-        /// </summary>
-        private const int DELAY_TO_CONNECT_A_NEW_PLAYER = 15;
-        #endregion
 
         #region Utilities
         /// <summary>
@@ -284,9 +276,8 @@ namespace SFDScripts
         public void Death(IPlayer deadPlayer, PlayerDeathArgs args)
         {
 
-            Game.WriteToConsole("Death() called. senderPlayer: ", deadPlayer.Name);
-            Game.WriteToConsole("Death() senderPlayer: ", deadPlayer.Name);
-            Game.WriteToConsole("Death() senderPlayer.IsRemoved: ", deadPlayer.IsRemoved);
+            Game.WriteToConsole("Death() deadPlayer: ", deadPlayer.Name);
+            Game.WriteToConsole("Death() deadPlayer.IsRemoved: ", deadPlayer.IsRemoved);
             Game.WriteToConsole("Death() args.IsRemoved: ", args.Removed);
 
             if (deadPlayer == null || deadPlayer.IsRemoved || args.Removed)
@@ -312,14 +303,14 @@ namespace SFDScripts
             if (user != null)
             {
                 _DeadPlayers.Add(
-                    new DeadPlayer()
-                    {
-                        DeathTimeStamp = Game.TotalElapsedGameTime,
-                        User = user,
-                        DeadBody = deadPlayer,
-                        Team = deadPlayer.GetTeam(),
-                        IsBot = deadPlayer.IsBot
-                    });
+                new DeadPlayer()
+                {
+                    DeathTimeStamp = Game.TotalElapsedGameTime,
+                    User = user,
+                    DeadBody = deadPlayer,
+                    Team = deadPlayer.GetTeam(),
+                    IsBot = deadPlayer.IsBot
+                });
                 Game.WriteToConsole("Death() added senderPlayer to _DeadPlayers: ", deadPlayer.Name);
             }
         }
@@ -331,11 +322,13 @@ namespace SFDScripts
         public void RespawnTick()
         {
             if (_DeadPlayers.Count <= 0) return;
-            
+
+
             for (int i = _DeadPlayers.Count - 1; i >= 0; i--)
             {
                 var deadPlayer = _DeadPlayers[i];
 
+                if (deadPlayer == null) continue;
                 if (deadPlayer.DeathTimeStamp + USER_RESPAWN_DELAY_MS < Game.TotalElapsedGameTime)
                 {
                     _DeadPlayers.RemoveAt(i);
@@ -346,7 +339,7 @@ namespace SFDScripts
                         deadPlayer.DeadBody.Remove();
                         Game.WriteToConsole("RespawnTick() after deadPlayer.DeadBody.Remove()", deadPlayer.DeadBody.Name);
                     }
-                    var player = deadPlayer.User.GetPlayer();
+                    var player = deadPlayer.DeadBody;
                     if (player == null || player.IsDead)
                     {
                         Game.WriteToConsole("RespawnTick() before Respawn()", deadPlayer.DeadBody.Name);
