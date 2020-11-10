@@ -9,8 +9,8 @@ namespace SFDScripts.Internal
 {
     public class BOT4dot0 : GameScriptInterface
 	{
-
 		public BOT4dot0() : base(null) { }
+
         #region Script To Copy
 
         List<PlayerData> Players = new List<PlayerData>(8);
@@ -1047,10 +1047,16 @@ namespace SFDScripts.Internal
         {
             int blues = 0;
             int reds = 0;
-            ((IObjectText)Game.GetSingleObjectByCustomId("Blue Placar")).SetText("Blue Kills: " + RedDeaths.ToString());
-            ((IObjectText)Game.GetSingleObjectByCustomId("Red Placar")).SetText("Red Kills: " + BlueDeaths.ToString());
+            var blueText = Game.GetSingleObjectByCustomId("Blue Placar") as IObjectText;
+            var redText = Game.GetSingleObjectByCustomId("Red Placar") as IObjectText;
+
+            if (blueText == null || redText == null) return;
+            blueText.SetText("Blue Kills: " + RedDeaths.ToString());
+            redText.SetText("Red Kills: " + BlueDeaths.ToString());
+            
             foreach (PlayerData data in Players)
             {
+                if (data == null) continue;
                 if (data.Team == PlayerTeam.Team1 && !data.Leave)
                 {
                     blues++;
@@ -1061,25 +1067,25 @@ namespace SFDScripts.Internal
                 }
             }
 
-            for (int i = 0; i < 4; i++)
-            {
-                ((IObjectText)Game.GetSingleObjectByCustomId("Blue_Teams_Counter_" + i.ToString())).SetText("");
-                ((IObjectText)Game.GetSingleObjectByCustomId("Red_Teams_Counter_" + i.ToString())).SetText("");
-            }
+            //for (int i = 0; i < 4; i++)
+            //{
+            //    ((IObjectText)Game.GetSingleObjectByCustomId("Blue_Teams_Counter_" + i.ToString())).SetText("");
+            //    ((IObjectText)Game.GetSingleObjectByCustomId("Red_Teams_Counter_" + i.ToString())).SetText("");
+            //}
 
-            if (blues > 0)
-                for (int i = 0; i < blues; i++)
-                {
-                    ((IObjectText)Game.GetSingleObjectByCustomId("Blue_Teams_Counter_" + i.ToString())).SetText(".");
-                    ((IObjectTrigger)Game.GetSingleObjectByCustomId("AmmoCrate_" + (i + 1).ToString())).SetEnabled(true);
+            //if (blues > 0)
+            //    for (int i = 0; i < blues; i++)
+            //    {
+            //        ((IObjectText)Game.GetSingleObjectByCustomId("Blue_Teams_Counter_" + i.ToString())).SetText(".");
+            //        ((IObjectTrigger)Game.GetSingleObjectByCustomId("AmmoCrate_" + (i + 1).ToString())).SetEnabled(true);
 
-                }
-            if (reds > 0)
-                for (int i = 0; i < reds; i--)
-                {
-                    ((IObjectText)Game.GetSingleObjectByCustomId("Red_Teams_Counter_" + i.ToString())).SetText(".");
-                    ((IObjectTrigger)Game.GetSingleObjectByCustomId("AmmoCrate_" + (i + 6).ToString())).SetEnabled(true);
-                }
+            //    }
+            //if (reds > 0)
+            //    for (int i = 0; i < reds; i--)
+            //    {
+            //        ((IObjectText)Game.GetSingleObjectByCustomId("Red_Teams_Counter_" + i.ToString())).SetText(".");
+            //        ((IObjectTrigger)Game.GetSingleObjectByCustomId("AmmoCrate_" + (i + 6).ToString())).SetEnabled(true);
+            //    }
         }
 
         private Vector2 SetPosition(object obj, string oPos)
