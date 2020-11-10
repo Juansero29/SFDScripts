@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="External\#B.cs" />
     <Compile Include="External\#F.cs" />
+    <Compile Include="External\#HC.cs" />
     <Compile Include="External\#UK.cs" />
     <Compile Include="External\#UOP.cs" />
     <Compile Include="External\#UT.cs" />

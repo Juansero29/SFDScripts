@@ -27,7 +27,7 @@ namespace SFDScripts.Internal
                 if (TextF == false)
                 {
                     TimeCDT--;
-                    TimeText.SetText("Time Reamain: " + TimeCDT.ToString());
+                    TimeText.SetText("Time Remaining: " + TimeCDT.ToString());
                 }
 
                 if (TimeCDT == 0)
@@ -48,7 +48,7 @@ namespace SFDScripts.Internal
         int vBluKills = 0;
 
 
-        public void WhoWins(TriggerArgs args)
+        public void WhoWins(TriggerArgs args = null)
         {
             IObjectText TimeText = (IObjectText)Game.GetSingleObjectByCustomId("TextCD");
 
@@ -87,35 +87,51 @@ namespace SFDScripts.Internal
 
         public void OnEnter(TriggerArgs args)
         {
-            var player = (IPlayer)args.Sender;
-            player.SetTeam(PlayerTeam.Team3);
 
-            // If it's not a bot, we don't need to do anything else
-            if (!player.IsBot)
+            var player = args.Sender as IPlayer;
+            if (player == null) return;
+            try
             {
-                return;
+                player.SetTeam(PlayerTeam.Team3);
+
+                Game.CreateDialogue(player.Name + " entered the game", player.GetWorldPosition());
+
+                // If it's not a bot, we don't need to do anything else
+                if (!player.IsBot)
+                {
+                    Game.CreateDialogue(player.Name + " is not a bot", player.GetWorldPosition());
+                    return;
+                }
+
+                Game.CreateDialogue(player.Name + " is a bot", player.GetWorldPosition());
+                var caller = Game.GetSingleObjectByCustomID("RedBase");
+                var args2 = new TriggerArgs(caller, player, false);
+                MovetoBase(args2);
+
+                // If now, we're not part of green team, the bot has spawned successfully
+                if (player.GetTeam() != PlayerTeam.Team3)
+                {
+                    return;
+                }
+
+                caller = Game.GetSingleObjectByCustomID("BlueBase");
+                var args3 = new TriggerArgs(caller, player, false);
+                MovetoBase(args3);
+
+                rnd = new Random();
+                var i = rnd.Next(0, _Classes.Length - 1);
+
+                var o = Game.GetFirstObject(_Classes[i]) as IObjectActivateTrigger;
+                if (o == null) return;
+                ClassChooser(new TriggerArgs(o, player, false));
+            }
+            catch (Exception e)
+            {
+                Game.CreateDialogue("OnEntered failed for " + player.Name, player);
+                Game.CreateDialogue(e.Message, player);
+                Game.CreateDialogue(e.StackTrace, player);
             }
 
-            var caller = Game.GetSingleObjectByCustomID("RedBase");
-            var args2 = new TriggerArgs(caller, player, false);
-            MovetoBase(args2);
-
-            // If now, we're not part of green team, the bot has spawned successfully
-            if (player.GetTeam() != PlayerTeam.Team3)
-            {
-                return;
-            }
-
-            caller = Game.GetSingleObjectByCustomID("BlueBase");
-            var args3 = new TriggerArgs(caller, player, false);
-            MovetoBase(args3);
-
-            rnd = new Random();
-            var i = rnd.Next(0, _Classes.Length - 1);
-
-            var o = Game.GetFirstObject(_Classes[i]) as IObjectActivateTrigger;
-            if (o == null) return;
-            ClassChooser(new TriggerArgs(o, player, false));
         }
 
         public void CheckEnter(TriggerArgs args)
@@ -144,7 +160,7 @@ namespace SFDScripts.Internal
 
         String VBlueRnd;
 
-        public void BlueRnd(TriggerArgs args)
+        public void BlueRnd(TriggerArgs args = null)
         {
             int whereB = RandNumber(0, 4);
             string[] GetposB = new string[] { "BluBase", "BluBase2", "BluBase3", "BluBase4", "BluBase5" };
@@ -153,7 +169,7 @@ namespace SFDScripts.Internal
 
         String VRedRnd;
 
-        public void RedRnd(TriggerArgs args)
+        public void RedRnd(TriggerArgs args = null)
         {
             int whereR = RandNumber(0, 4);
             String[] GetposR = new string[] { "RediBase", "RedBase2", "RedBase3", "RedBase4", "RedBase5" };
@@ -175,10 +191,16 @@ namespace SFDScripts.Internal
         public void ClassChooser(TriggerArgs args)
         {
             IPlayer sender = (IPlayer)args.Sender;
+            if (sender == null)
+            {
+                Game.CreateDialogue("Class chooser sender is null", Vector2.Zero);
+            }
             if ((sender != null) && (sender is IPlayer) && (!sender.IsDiving))
             {
                 if (sender.GetTeam() == PlayerTeam.Team3) return;
                 IObject Clas = (IObject)args.Caller;
+
+                Game.CreateDialogue("Class chosen for " + sender.Name + " is " + Clas.CustomId, Vector2.Zero);
                 switch (Clas.CustomId)
                 {
 
@@ -281,6 +303,8 @@ namespace SFDScripts.Internal
 
         public void getAway(String id, IPlayer movingPlayer)
         {
+            Game.CreateDialogue(movingPlayer.Name + " is being teleported to " + id, movingPlayer);
+            if (movingPlayer == null || id == null) return;
             IObject FinalDestination = Game.GetSingleObjectByCustomId(id);
             Vector2 wee = FinalDestination.GetWorldPosition();
             movingPlayer.SetWorldPosition(wee);
@@ -402,9 +426,12 @@ namespace SFDScripts.Internal
 
         public void Start(TriggerArgs args)
         {
+            Events.PlayerDeathCallback.Start(Death);
             ConnectedPlayersTick(args);
             RefreshCounter(vBluKills, "BlueT");
             RefreshCounter(vRedKills, "RedT");
+            BlueRnd(args);
+            RedRnd(args);
             //Game.SetCurrentCameraMode(CameraMode.Dynamic);
             //Game.AddCameraFocus((IObjectText)Game.GetSingleObjectByCustomId("DeathCounterBl"));
             //Game.AddCameraFocus((IObjectText)Game.GetSingleObjectByCustomId("DeathCounterRe"));
@@ -447,14 +474,13 @@ namespace SFDScripts.Internal
 
 
         // called on player's death
-        public void Death(TriggerArgs args)
+        public void Death(IPlayer killedPlayer, PlayerDeathArgs args)
         {
-            BlueRnd(args);
-            RedRnd(args);
-            IPlayer killedPlayer = (IPlayer)args.Sender;
+            BlueRnd();
+            RedRnd();
 
             // refresh death counter on the map
-            if ((args.Sender != null) && (args.Sender is IPlayer))
+            if (killedPlayer != null && args.Removed == false)
             {
                 deathNum++;
                 if (killedPlayer.GetTeam() == PlayerTeam.Team1)
@@ -472,13 +498,17 @@ namespace SFDScripts.Internal
                 if (vRedKills < DEATH_LIMIT || vBluKills < DEATH_LIMIT)
                 {
                     IUser user = killedPlayer.GetUser();
-                    if (user != null)
+                    if (user == null)
                     {
-                        //store user to respawn and body to remove
-                        m_deadPlayers.Add(new DeadPlayer(Game.TotalElapsedGameTime, user, killedPlayer, killedPlayer.GetTeam()));
+                        Game.CreateDialogue(killedPlayer.Name + " not added to dead list because user is null.", killedPlayer);
+                        return;
                     }
+
+                    //store user to respawn and body to remove
+                    m_deadPlayers.Add(new DeadPlayer(Game.TotalElapsedGameTime, user, killedPlayer, killedPlayer.GetTeam()));
+                    Game.CreateDialogue(killedPlayer.Name + " added to dead list", killedPlayer);
                 }
-                else { WhoWins(args); }
+                else { WhoWins(); }
             }
         }
 
@@ -492,6 +522,7 @@ namespace SFDScripts.Internal
                     DeadPlayer deadPlayer = m_deadPlayers[i];
                     if (deadPlayer.Timestamp + USER_RESPAWN_DELAY_MS < Game.TotalElapsedGameTime)
                     {
+                        Game.CreateDialogue("Trying to respawn " + deadPlayer.User.Name, deadPlayer.DeadBody.GetWorldPosition());
                         // time to respawn this user
                         // remove entry from list over deadPlayers
                         m_deadPlayers.RemoveAt(i);
@@ -502,7 +533,11 @@ namespace SFDScripts.Internal
                         }
                         // respawn user
                         IPlayer ply = deadPlayer.User.GetPlayer();
-                        if (((ply == null) || (ply.IsDead))) { SpawnUser(deadPlayer.User, deadPlayer.Team); }
+                        if (((ply == null) || (ply.IsDead)))
+                        {
+                            Game.CreateDialogue("Calling SpawnUser(" + deadPlayer.User.Name + ", " + deadPlayer.Team.ToString() + ")", deadPlayer.DeadBody);
+                            SpawnUser(deadPlayer.User, deadPlayer.Team);
+                        }
                     }
                 }
             }
@@ -552,11 +587,27 @@ namespace SFDScripts.Internal
                 IPlayer ply = user.GetPlayer();
                 IPlayer newPlayer = Game.CreatePlayer(spawnPos); // create a new blank player
 
+                Game.CreateDialogue("Respawning " + ply.Name, ply);
                 if (ply.IsBot)
                 {
+                    Game.CreateDialogue(ply.Name + " is a bot", ply);
                     var botBehavior = new BotBehavior(true, PredefinedAIType.BotD);
                     ply.SetBotBehavior(botBehavior);
                     newPlayer.SetBotBehavior(botBehavior);
+
+                    rnd = new Random();
+                    var i = rnd.Next(0, _Classes.Length - 1);
+
+                    var o = Game.GetFirstObject(_Classes[i]) as IObjectActivateTrigger;
+                    if (o == null)
+                    {
+                        Game.CreateDialogue(ply.Name + " not teleported because _Classes[" + i + "] is null.", ply);
+                        return;
+                    }
+
+                    Game.CreateDialogue("Going to choose class for bot " + ply.Name, ply);
+                    ClassChooser(new TriggerArgs(o, ply, false));
+                    return;
                 }
 
                 if (team == PlayerTeam.Team1)
