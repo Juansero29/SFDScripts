@@ -5,9 +5,9 @@ using SFDGameScriptInterface;
 
 namespace SFDScripts
 {
-	class SFDHardCore : GameScriptInterface
-	{
-		public SFDHardCore() : base(null) { }
+    class SFDHardCore : GameScriptInterface
+    {
+        public SFDHardCore() : base(null) { }
 
         #region Script To Copy
 
@@ -25,12 +25,12 @@ namespace SFDScripts
         public static int AreaTime = 60 * 2 + 5;
         public static int GameState = 0;
         public static Random GlobalRandom = new Random();
-        public static bool IsDebug = false;
+        public static bool IsDebug = true;
 
         public static IObjectTrigger UpdateTrigger;
         public static IObjectTimerTrigger BeginTimerTrigger;
 
-        public static int CurrentMapPartIndex = 1;
+        public static int CurrentMapPartIndex = 0;
         public static Vector2 CameraPosition;
         public static float CameraSpeed = 2.0f;
 
@@ -1921,7 +1921,7 @@ namespace SFDScripts
             public float ExplosionDamageFactor = 1;
             public float FireDamageFactor = 1;
             public bool FireProtect = false;
-            public bool SucideMine = false;
+            public bool SuicideMine = false;
             public bool Jammer = false;
             public bool Heavy = false;
             public float MaxProjectileDamage = 75f;
@@ -1938,7 +1938,7 @@ namespace SFDScripts
                 FireDamageFactor = 1;
                 BreakWeaponFactor = 1;
                 FireProtect = false;
-                SucideMine = false;
+                SuicideMine = false;
                 Jammer = false;
                 Heavy = false;
                 MaxProjectileDamage = 75f;
@@ -1961,7 +1961,7 @@ namespace SFDScripts
                         }
                     case 3:
                         {
-                            SucideMine = true;
+                            SuicideMine = true;
                             break;
                         }
                     case 4:
@@ -3005,7 +3005,7 @@ namespace SFDScripts
                 else if (Team == PlayerTeam.Team2) skinName += "Red";
                 if (Armor.Id == 1) skinName += "Light";
                 else if (Armor.Id == 2) skinName += "Fire";
-                else if (Armor.Id == 3) skinName += "Sucide";
+                else if (Armor.Id == 3) skinName += "Suicide";
                 else if (Armor.Id == 4) skinName += "Jammer";
                 else if (Armor.Id == 5) skinName += "Bomb";
                 else if (Armor.Id == 6) skinName += "Heavy";
@@ -3142,7 +3142,7 @@ namespace SFDScripts
                 IPlayer pl = User.GetPlayer();
                 if (pl != null)
                 {
-                    if (Armor.SucideMine)
+                    if (Armor.SuicideMine)
                     {
                         GlobalGame.TriggerExplosion(Position);
                     }
@@ -3323,30 +3323,30 @@ namespace SFDScripts
                         pl.SetModifiers(mods);
                     }
                     /*if (IsSlow) {
-						if (pl.IsRolling  || pl.IsDiving) {
-							Vector2 vel = pl.GetLinearVelocity() / 3;
-							vel.Y = 0;
-							pl.SetWorldPosition(Position - vel);
-							if (SlowEffectTimer == 0) SlowEffectTimer = -1;
-						}
-						if (SlowTimer == 0 && pl.IsSprinting) {					
-							SlowTimer = 4;
-							if (SlowEffectTimer == 0) SlowEffectTimer = -1;
-						} 
-						if (SlowTimer <= 2) {
-							pl.SetInputEnabled(true);
-						} else {
-							pl.SetInputEnabled(false);
-						}
-						if (SlowEffectTimer == -1) {
-							GlobalGame.PlayEffect("CFTXT", pl.GetWorldPosition(), "TOO HEAVY");
-							SlowEffectTimer = 100;
-						}
-						if (SlowEffectTimer > 0) SlowEffectTimer--;
-						if (SlowTimer > 0) SlowTimer--;
-					} else if (!pl.IsInputEnabled) {
-						pl.SetInputEnabled(true);
-					}*/
+                        if (pl.IsRolling  || pl.IsDiving) {
+                            Vector2 vel = pl.GetLinearVelocity() / 3;
+                            vel.Y = 0;
+                            pl.SetWorldPosition(Position - vel);
+                            if (SlowEffectTimer == 0) SlowEffectTimer = -1;
+                        }
+                        if (SlowTimer == 0 && pl.IsSprinting) {					
+                            SlowTimer = 4;
+                            if (SlowEffectTimer == 0) SlowEffectTimer = -1;
+                        } 
+                        if (SlowTimer <= 2) {
+                            pl.SetInputEnabled(true);
+                        } else {
+                            pl.SetInputEnabled(false);
+                        }
+                        if (SlowEffectTimer == -1) {
+                            GlobalGame.PlayEffect("CFTXT", pl.GetWorldPosition(), "TOO HEAVY");
+                            SlowEffectTimer = 100;
+                        }
+                        if (SlowEffectTimer > 0) SlowEffectTimer--;
+                        if (SlowTimer > 0) SlowTimer--;
+                    } else if (!pl.IsInputEnabled) {
+                        pl.SetInputEnabled(true);
+                    }*/
                     JumpCount = stat.TotalJumps;
                     if (Status == 0)
                     {
@@ -3595,7 +3595,7 @@ namespace SFDScripts
             BeginTimer = (IObjectText)Game.GetSingleObjectByCustomId("BeginTimer");
 
             AddUserAccessLevels();
-            GlobalGame.RunCommand("IE 1");
+            // GlobalGame.RunCommand("IE 1");
 
             VisionObjects.Add("Concrete01A", 3);
             VisionObjects.Add("Concrete01B", 3);
@@ -3775,15 +3775,17 @@ namespace SFDScripts
                 MapPartList.Add(new TMapPart());
             }
             //1
-            MapPartList[0].MapPosition = new Vector2(-1120, 256);
+            MapPartList[0].MapPosition = new Vector2(-285, -525);
             MapPartList[0].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point00"), -100));
             MapPartList[0].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point01"), 100));
             MapPartList[0].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point02"), 0));
             //MapPartList[0].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point03"), 0));
             for (int i = 0; i < 8; i++)
             {
-                MapPartList[0].RedSpawnPosition.Add(Game.GetSingleObjectByCustomId("RedSpawnPoint0" + i));
-                MapPartList[0].BlueSpawnPosition.Add(Game.GetSingleObjectByCustomId("BlueSpawnPoint0" + i));
+                var redSpawn = Game.GetSingleObjectByCustomId("RedSpawnPoint0" + i);
+                var blueSpawn = Game.GetSingleObjectByCustomId("BlueSpawnPoint0" + i);
+                MapPartList[0].RedSpawnPosition.Add(redSpawn);
+                MapPartList[0].BlueSpawnPosition.Add(blueSpawn);
             }
 
 
@@ -3834,7 +3836,7 @@ namespace SFDScripts
                 Game.GetSingleObjectByCustomId("PlayerMenu" + i.ToString()).Remove();
             }
             TeamBalance();
-            CurrentMapPartIndex = 1;
+            CurrentMapPartIndex = 0;
             CameraPosition.X = Game.GetCameraArea().Left;
             CameraPosition.Y = Game.GetCameraArea().Top;
             UpdateTrigger = (IObjectTrigger)Game.CreateObject("OnUpdateTrigger", new Vector2(0, 0), 0);
@@ -3901,7 +3903,7 @@ namespace SFDScripts
                     PlayerList[i].Update();
                 }
                 PostWeaponTrackingUpdate();
-                UpdateTurrets();
+                // UpdateTurrets();
                 UpdateShieldGenerators();
                 ThrowingUpdate();
                 if (IsAllPlayerDead())
@@ -4010,8 +4012,10 @@ namespace SFDScripts
             }
             else if (GameState == -1 || GameState == -2)
             {
-                CameraPosition.X = -352;
-                CameraPosition.Y = 768;
+                //CameraPosition.X = -352;
+                //CameraPosition.Y = 768;
+                CameraPosition.X = Game.GetCameraArea().Left;
+                CameraPosition.Y = Game.GetCameraArea().Top;
                 for (int i = 0; i < PlayerMenuList.Count; i++)
                 {
                     PlayerMenuList[i].ShowExp();
@@ -4066,7 +4070,7 @@ namespace SFDScripts
                 if (TimeToStart == 0)
                 {
                     GameState = 1;
-                    CameraPosition.Y -= 512;
+//                    CameraPosition.Y -= 512;
                     BeginTimer.SetText("");
                 }
             }
@@ -4127,7 +4131,7 @@ namespace SFDScripts
                 {
                     cameraArea.Left -= CameraSpeed;
                 }
-                cameraArea.Right = cameraArea.Left + 768;
+                cameraArea.Right = cameraArea.Left + 550;
             }
             if (cameraArea.Top != CameraPosition.Y)
             {
@@ -4143,7 +4147,7 @@ namespace SFDScripts
                 {
                     cameraArea.Top -= CameraSpeed;
                 }
-                cameraArea.Bottom = cameraArea.Top - 512;
+                cameraArea.Bottom = cameraArea.Top - 500;
             }
             Game.SetCameraArea(cameraArea);
             //Game.SetBorderArea(cameraArea);
@@ -5003,7 +5007,7 @@ namespace SFDScripts
                     }
                 }
             }
-        } 
+        }
         #endregion
     }
 }
