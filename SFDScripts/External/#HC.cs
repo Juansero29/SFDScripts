@@ -48,7 +48,7 @@ namespace SFDScripts
         public static float MinDivingHeight = 50;
 
         //air
-        public static int WorldTop = -100;
+        public static int WorldTop = 610;
         public static List<TPlayerStrikeInfo> AirPlayerList = new List<TPlayerStrikeInfo>();
 
         //data
@@ -619,6 +619,7 @@ namespace SFDScripts
                 int blue = 0, red = 0;
                 if (GlobalGame.GetCameraArea().Left == CameraPosition.X && GlobalGame.GetCameraArea().Top == CameraPosition.Y && !_PlayersHaveSpawned)
                 {
+
                     for (int i = 0; i < PlayerList.Count; i++)
                     {
                         if (PlayerList[i].Team == PlayerTeam.Team1)
@@ -3605,9 +3606,9 @@ namespace SFDScripts
             Game.DeathSequenceEnabled = false;
             GlobalGame = Game;
             GlobalGame.SetAllowedCameraModes(CameraMode.Static);
-            var position = GlobalGame.GetSingleObjectByCustomId("MenuCameraPosition").GetWorldPosition();
-            CameraPosition.X = position.X;
-            CameraPosition.Y = position.Y;
+            var menuCameraPosition = GlobalGame.GetSingleObjectByCustomId("MenuCameraPosition").GetWorldPosition();
+            CameraPosition.X = menuCameraPosition.X;
+            CameraPosition.Y = menuCameraPosition.Y;
             CameraSpeed = 20000.0f;
             UpdateCamera();
 
@@ -3789,15 +3790,16 @@ namespace SFDScripts
 
             //Game.RunCommand("MSG HARDCORE: Loading maps...");
 
+
+            // only one map for the moment
             for (int i = 0; i < 1; i++)
             {
                 MapPartList.Add(new TMapPart());
             }
             //1
-            //var p = GlobalGame.GetSingleObjectByCustomId("Map0CameraPosition").GetWorldPosition();
-            //System.Diagnostics.Debugger.Break();
-            //MapPartList[0].MapPosition = new Vector2(position.X, position.Y);
-            MapPartList[0].MapPosition = new Vector2(-1046, -138);
+            var firstMapPosition = GlobalGame.GetSingleObjectByCustomId("Map0CameraPosition").GetWorldPosition();
+            MapPartList[0].MapPosition = new Vector2((float)Math.Round(firstMapPosition.X), (float)Math.Round(firstMapPosition.Y));
+
             MapPartList[0].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point00"), -100));
             MapPartList[0].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point01"), 100));
             MapPartList[0].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point02"), 0));
@@ -4031,9 +4033,9 @@ namespace SFDScripts
             }
             else if (GameState == -1 || GameState == -2)
             {
-                var position = GlobalGame.GetSingleObjectByCustomId("MenuCameraPosition").GetWorldPosition();
-                CameraPosition.X = position.X;
-                CameraPosition.Y = position.Y;
+                var menuCameraPosition = GlobalGame.GetSingleObjectByCustomId("MenuCameraPosition").GetWorldPosition();
+                CameraPosition.X = menuCameraPosition.X;
+                CameraPosition.Y = menuCameraPosition.Y;
                 for (int i = 0; i < PlayerMenuList.Count; i++)
                 {
                     PlayerMenuList[i].ShowExp();
