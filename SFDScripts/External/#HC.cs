@@ -48,7 +48,7 @@ namespace SFDScripts
         public static float MinDivingHeight = 50;
 
         //air
-        public static int WorldTop = 300;
+        public static int WorldTop = -100;
         public static List<TPlayerStrikeInfo> AirPlayerList = new List<TPlayerStrikeInfo>();
 
         //data
