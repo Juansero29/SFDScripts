@@ -22,7 +22,7 @@ namespace SFDScripts
         public static List<TPlayerMenu> PlayerMenuList = new List<TPlayerMenu>();
         public static IObjectText BeginTimer;
         public static int TimeToStart = 60;
-        public static int AreaTime = 60 * 2 + 5;
+        public static int AreaTime = 60 * 3 + 5;
         public static int GameState = 0;
         public static Random GlobalRandom = new Random();
         public static bool IsDebug = false;
@@ -3691,40 +3691,40 @@ namespace SFDScripts
             TEquipmentSlot equipmentSlot = AddEquipmentSlot("Equipment");
 
             //weapon
-            meleeWeaponSlot.AddEquipment(8, 0, 0, "Machete"); //1
-            meleeWeaponSlot.AddEquipment(49, 25, 3, "Knife", "Can be thrown.");
-            meleeWeaponSlot.AddEquipment(4, 0, 0, "Pipe"); //2
-            meleeWeaponSlot.AddEquipment(11, 0, 0, "Baseball Bat"); //3
-            meleeWeaponSlot.AddEquipment(31, 0, 0, "Hammer"); //4
+            meleeWeaponSlot.AddEquipment(8, 0, 0, "Machete", "A wonderful mexican machete."); //1
+            meleeWeaponSlot.AddEquipment(49, 25, 3, "Knife", "A knife that can be thrown.");
+            meleeWeaponSlot.AddEquipment(4, 0, 0, "Pipe", "A solid metal pipe."); //2
+            meleeWeaponSlot.AddEquipment(11, 0, 0, "Baseball Bat", "A wooden baseball bat."); //3
+            meleeWeaponSlot.AddEquipment(31, 0, 0, "Hammer", "A big hammer, don't use it to repair stuff."); //4
             meleeWeaponSlot.AddEquipment(18, 25, 3, "Axe", "Big damage. Good way to end the fight. Can be thrown."); //5
-            meleeWeaponSlot.AddEquipment(41, 0, 0, "Baton"); //6
-            meleeWeaponSlot.AddEquipment(3, 50, 5, "Katana", "Huge damage. Can be thrown."); //7
-            meleeWeaponSlot.AddEquipment(57, 50, 7, "Shock Baton"); //8
+            meleeWeaponSlot.AddEquipment(41, 0, 0, "Baton", "Used in a lot of riots. Feel the unrest in your hands."); //6
+            meleeWeaponSlot.AddEquipment(3, 50, 5, "Katana", "Huge damage asian katana. Can be thrown."); //7
+            meleeWeaponSlot.AddEquipment(57, 50, 7, "Shock Baton", "Police officers love these."); //8
 
-            secondaryWeaponSlot.AddEquipment(24, 50, 0, "Pistol"); //1
-            secondaryWeaponSlot.AddEquipment(39, 50, 0, "Silenced Pistol"); //2
-            secondaryWeaponSlot.AddEquipment(12, 75, 1, "Uzi"); //3
-            secondaryWeaponSlot.AddEquipment(40, 75, 1, "Silenced Uzi"); //4
-            secondaryWeaponSlot.AddEquipment(27, 50, 6, "Flare Gun"); //5
-            secondaryWeaponSlot.AddEquipment(28, 150, 9, "Revolver"); //6
-            secondaryWeaponSlot.AddEquipment(1, 175, 14, "Magnum"); //7
+            secondaryWeaponSlot.AddEquipment(24, 50, 0, "Pistol", "A normal 9mm pistol. 12 bullets mag size and 1 extra mag."); //1
+            secondaryWeaponSlot.AddEquipment(39, 50, 0, "Silenced Pistol", "A silenced 9mm pistol. 12 bullets mag size and 1 extra mag."); //2
+            secondaryWeaponSlot.AddEquipment(12, 75, 1, "Uzi", "Israeli Uzi pistol, 19mm bullets. 25 bullets mag size and 1 extra mag."); //3
+            secondaryWeaponSlot.AddEquipment(40, 75, 1, "Silenced Uzi", "Silenced Israeli Uzi pistol, 19mm bullets. 25 bullets mag size and 1 extra mag."); //4
+            secondaryWeaponSlot.AddEquipment(27, 50, 6, "Flare Gun", "A fire shooting flare gun. 1 bullet mag size and 2 extra mags. "); //5
+            secondaryWeaponSlot.AddEquipment(28, 150, 9, "Revolver", "That ol' cowboy revolver. 6 bullets mag size and 1 extra mag."); //6
+            secondaryWeaponSlot.AddEquipment(1, 175, 14, "Magnum", "Like a revolver but with higher damage and slower recharge. 6 bullets mag size and 1 extra mag."); //7
 
-            primaryWeaponSlot.AddEquipment(5, 100, 2, "Tommy Gun"); //1
-            primaryWeaponSlot.AddEquipment(10, 100, 0, "Sawed-Off Shotgun"); //2
-            primaryWeaponSlot.AddEquipment(30, 100, 0, "SMG"); //3
-            primaryWeaponSlot.AddEquipment(23, 100, 2, "Carbine", "Very accurate weapon with good damage, but low fire rate."); //4
-            primaryWeaponSlot.AddEquipment(19, 125, 5, "Assault Rifle", "Good damage and accuracy. Medium fire rate."); //5
-            primaryWeaponSlot.AddEquipment(2, 125, 4, "Shotgun");   //6
-            primaryWeaponSlot.AddEquipment(26, 125, 8, "Flamethrower"); //7
-            primaryWeaponSlot.AddEquipment(29, 150, 13, "Grenade Launcher"); //8
-            primaryWeaponSlot.AddEquipment(6, 150, 15, "M60", "Big damage and fire rate, but low accuracy. Too heavy, you cant sprint."); //9
-            primaryWeaponSlot.AddEquipment(9, 150, 13, "Sniper Rifle", "Best accurate weapon with huge damage. Too heavy, you cant sprint."); //10
-            primaryWeaponSlot.AddEquipment(17, 150, 12, "Bazooka"); //11
-                                                                    //primaryWeaponSlot.AddEquipment(64, 150, 9, "Bow"); //12
+            primaryWeaponSlot.AddEquipment(5, 100, 2, "Tommy Gun", "Having a rather high spread when compared to other automatic rifles, it should be used as a primary counterpart of the Uzi. 35 bullets mag size with 1 extra mag."); //1
+            primaryWeaponSlot.AddEquipment(10, 100, 0, "Sawed-Off Shotgun", "This shotgun shoots extremely fast, dealing tremendous damage at close range if all the bullets hit the target. The small clip compensates this, so it is best used when cover is available to reload. 2 shells with 6 extra shells"); //2
+            primaryWeaponSlot.AddEquipment(30, 100, 0, "SMG", "The Submachine Gun has a high rate of fire and good accuracy, however, it does little damage, and is less accurate than the Assault Rifle. 30 bullets mag with 1 extra mag."); //3
+            primaryWeaponSlot.AddEquipment(23, 100, 2, "Carbine", "Very accurate weapon with good damage, but low fire rate. 12 bullets mag size and 1 extra mag"); //4
+            primaryWeaponSlot.AddEquipment(19, 125, 5, "Assault Rifle", "Good damage and accuracy. Medium fire rate. 24 bullets mag and 1 extra mag."); //5
+            primaryWeaponSlot.AddEquipment(2, 125, 4, "Shotgun", "Great close and medium range. Extremely high damage. Slow reload. 6 shells with  6 extra shells.");   //6
+            primaryWeaponSlot.AddEquipment(26, 125, 8, "Flamethrower", "LET IT BURN!!!! 50 mag size with 0 extra mags."); //7
+            primaryWeaponSlot.AddEquipment(29, 150, 13, "Grenade Launcher", "When you account for the arc of the grenade, it can become much more accurate than a bazooka (without a laser sight). The grenade launcher also must reload after each shot fired. 1 grenade mag and two extra mags"); //8
+            primaryWeaponSlot.AddEquipment(6, 150, 15, "M60", "Big damage and fire rate, but low accuracy. Too heavy, you can't sprint."); //9
+            primaryWeaponSlot.AddEquipment(9, 150, 13, "Sniper Rifle", "Best accurate weapon with huge damage. Too heavy, you can't sprint."); //10
+            primaryWeaponSlot.AddEquipment(17, 150, 12, "Bazooka", "The Bazooka fires a rocket off in a straight line, however the trajectory is not constantly straight, as it has the tendency to shift which can help avoid excessively long ranged kills. The random directional shift can partially be prevented with a Laser Sight attached to the Bazooka. 1 rocket mag and two extra mags."); //11
+                                                                                                                                                                                                                                                                                                                                                                                                      //primaryWeaponSlot.AddEquipment(64, 150, 9, "Bow"); //12
 
-            thrownWeaponSlot.AddEquipment(1, 50, 6, "Grenades"); //1	
-            thrownWeaponSlot.AddEquipment(2, 25, 5, "Molotovs"); //2
-            thrownWeaponSlot.AddEquipment(3, 50, 7, "Mines"); //3
+            thrownWeaponSlot.AddEquipment(1, 50, 6, "Grenades", "Everyone loves grenades, make them explode. These grenades can't touch people though. 3 grenades"); //1	
+            thrownWeaponSlot.AddEquipment(2, 25, 5, "Molotovs", "These little russian bottles we love. 3 in here for your pleasure."); //2
+            thrownWeaponSlot.AddEquipment(3, 50, 7, "Mines", "Mines have a priming 'timer' in which while it flashes it will not detonate. 3 mines."); //3
             thrownWeaponSlot.AddEquipment(4, 100, 10, "Incendiary grenades"); //4
             thrownWeaponSlot.AddEquipment(5, 25, 5, "Smoke grenades", "", 1); //5
             thrownWeaponSlot.AddEquipment(6, 50, 7, "Flashbang", "", 1); //6
@@ -3745,17 +3745,17 @@ namespace SFDScripts
             equipmentSlot.AddEquipment(5, 100, 11, "Pinpoint Strike", "The missile tries to hit your enemy."); //5
             equipmentSlot.AddEquipment(6, 100, 14, "Airstrike", "Attack aircraft tries to hit your enemy."); //6
             equipmentSlot.AddEquipment(7, 50, 7, "Big Airdrop", "Drops three supply crates with random weapon."); //7
-            equipmentSlot.AddEquipment(8, 125, 13, "Artillery Strike", "150 mm cannons bombards the all map."); //8
+            equipmentSlot.AddEquipment(8, 125, 13, "Artillery Strike", "150mm cannons bombards all the map."); //8
             equipmentSlot.AddEquipment(9, 50, 8, "Mine Strike", "Mines are falling from the air all over the map."); //9
             equipmentSlot.AddEquipment(10, 250, 15, "Reinforcement", "Revives all your dead teammates and drops them by parachute."); //10
-            equipmentSlot.AddEquipment(11, 25, 9, "Supply Jammer", "Your enemies cant call supply while jammer is working. Jammer working 10 seconds."); //11
-            equipmentSlot.AddEquipment(12, 75, 11, "Supply Hacking", "Try to hack enemy supply. Who knows what will be after ?"); //12
+            equipmentSlot.AddEquipment(11, 25, 9, "Supply Jammer", "Your enemies can't call supply while jammer is working. Jammer works for 10 seconds."); //11
+            equipmentSlot.AddEquipment(12, 75, 11, "Supply Hacking", "Try to hack enemy supply. Who knows what will happen?"); //12
             equipmentSlot.AddEquipment(13, 150, 11, "Light Turret", "Automatically shoots at enemies in range of the minigun");
             equipmentSlot.AddEquipment(14, 175, 14, "Rocket Turret", "Automatically shoots at enemies in range of the rocket launcher");
             equipmentSlot.AddEquipment(15, 200, 15, "Heavy Turret", "Automatically shoots at enemies in range. It have minigun and rocket launcher.");
             equipmentSlot.AddEquipment(16, 175, 14, "Sniper Turret", "Automatically shoots at enemies in range of the sniper.", 1);
             equipmentSlot.AddEquipment(17, 50, 4, "Police Shield", "Protects you from some bullets.");
-            equipmentSlot.AddEquipment(18, 50, 3, "Adrenaline", "Gives temporary immunity to damage.You will receive all damage when adrenaline is over.", 1);
+            equipmentSlot.AddEquipment(18, 50, 3, "Adrenaline", "Gives temporary immunity to damage. You will receive all damage when adrenaline is over.", 1);
             //equipmentSlot.AddEquipment(19, 200, 15, "Shield Generator", "Creates an energy shield that protects from bullets and enemies.", 2);
             equipmentSlot.AddEquipment(20, 100, 15, "Jet Pack", "Allows you to make jet jumps. And protect from falling.");
 
@@ -3763,10 +3763,10 @@ namespace SFDScripts
             bodySlot.AddEquipment(1, 50, 2, "Light Armor", "Decrease the damage a bit."); //1
             bodySlot.AddEquipment(2, 50, 7, "Fire Suit", "Protects you from fire."); //2
             bodySlot.AddEquipment(3, 25, 6, "Suicide Vest", "Leaves a small surprise after your death. "); //3
-            bodySlot.AddEquipment(4, 50, 12, "Personal Jammer", "You cant be a target for strikes."); //4
+            bodySlot.AddEquipment(4, 50, 12, "Personal Jammer", "You can't be a target for strikes."); //4
             bodySlot.AddEquipment(5, 50, 10, "Blast Suit", "Decrease the explosion damage."); //5
-            bodySlot.AddEquipment(6, 150, 12, "Heavy Armor", "Decrease the damage greatly. Very heavy. You cant sprint and roll."); //6
-            bodySlot.AddEquipment(7, 50, 9, "Kevlar Armor", "Protects you from oneshot death."); //7
+            bodySlot.AddEquipment(6, 150, 12, "Heavy Armor", "Decrease the damage greatly. Very heavy. You can't sprint and roll."); //6
+            bodySlot.AddEquipment(7, 50, 9, "Kevlar Armor", "Protects you from one-shot death."); //7
 
             {
                 //human 0
@@ -4078,8 +4078,11 @@ namespace SFDScripts
                 }
                 if (TimeToStart > 10 && (float)readyPlayers / (float)PlayerMenuList.Count > 2.0 / 3.0)
                 {
-                    if (IsDebug) TimeToStart = 0;
-                    else TimeToStart = 10;
+                    TimeToStart = 15;
+                }
+                if (readyPlayers == PlayerMenuList.Count)
+                {
+                    TimeToStart = 0;
                 }
                 if (TimeToStart <= 10)
                 {
@@ -4090,7 +4093,7 @@ namespace SFDScripts
                 if (TimeToStart == 0)
                 {
                     GameState = 1;
-//                    CameraPosition.Y -= 512;
+                    //                    CameraPosition.Y -= 512;
                     BeginTimer.SetText("");
                 }
             }
