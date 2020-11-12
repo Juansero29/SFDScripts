@@ -1,7 +1,8 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using SFDGameScriptInterface;
-
+using System.IO.IsolatedStorage;
 
 namespace SFDScripts
 {
@@ -774,6 +775,13 @@ namespace SFDScripts
                 }
                 Menu.SetTextColor(Color.White);
                 Menu.SetText(text);
+            }
+
+            public void Dispose()
+            {
+                if (Menu == null) return;
+                Save();
+                Menu.Remove();
             }
             public void Update()
             {
@@ -3013,6 +3021,21 @@ namespace SFDScripts
                     DamageDelaySpeed = 0.5f;
                 }
             }
+
+            public override bool Equals(object obj)
+            {
+                if (obj == null) return false;
+                if (ReferenceEquals(this, obj)) return true;
+                if (!(obj is TPlayer)) return false;
+                var other = obj as TPlayer;
+                return User.AccountName.Equals(other.User.AccountName);
+            }
+
+            public override int GetHashCode()
+            {
+                return unchecked(User.AccountName.GetHashCode() * 17);
+            }
+
             public IProfile GetSkin()
             {
                 string skinName = "";
@@ -3838,28 +3861,9 @@ namespace SFDScripts
             //}
             GenerateDroneMap();
             //Game.RunCommand("MSG HARDCORE: Loading players...");
-            IUser[] users = Game.GetActiveUsers();
-            int menuCounter = 0;
-            for (int i = 0; i < users.Length; i++)
-            {
-                if (users[i].IsSpectator) continue;
-                TPlayer player = new TPlayer(users[i]);
-                PlayerList.Add(player);
-                TPlayerMenu menu = new TPlayerMenu();
-                menu.Menu = (IObjectText)Game.GetSingleObjectByCustomId("PlayerMenu" + menuCounter.ToString());
-                PlayerMenuList.Add(menu);
-                menuCounter++;
-            }
+            RefreshPlayerMenus();
             //if (Game.Data == "") Game.Data = SavedData;
-            LoadData();
-            for (int i = 0; i < PlayerList.Count; i++)
-            {
-                PlayerMenuList[i].SetPlayer(PlayerList[i]);
-            }
-            for (int i = PlayerMenuList.Count; i < 8; i++)
-            {
-                Game.GetSingleObjectByCustomId("PlayerMenu" + i.ToString()).Remove();
-            }
+
             TeamBalance();
             CurrentMapPartIndex = 0;
             CameraSpeed = 2.0f;
@@ -3874,12 +3878,71 @@ namespace SFDScripts
             BeginTimerTrigger.Trigger();
         }
 
+        private static void RefreshPlayerMenus()
+        {
+            IUser[] users = Game.GetActiveUsers();
+            if (PlayerMenuList.Count == users.Length) return;
+            
+            int menuCounter = 0;
+
+            if(PlayerList.Count < users.Length)
+            {
+                for (int i = 0; i < users.Length; i++)
+                {
+                    var currentUser = users[i];
+                    if (currentUser.IsSpectator) continue;
+                    if(PlayerList.Count > i)
+                    {
+                        var p = PlayerList[i];
+                        if (p != null && p.User.AccountID == currentUser.AccountID) continue;
+                    }
+                    var player = new TPlayer(currentUser);
+                    PlayerList.Add(player);
+                    TPlayerMenu menu = new TPlayerMenu
+                    {
+                        Menu = (IObjectText)Game.GetSingleObjectByCustomId("PlayerMenu" + menuCounter.ToString())
+                    };
+                    PlayerMenuList.Add(menu);
+                    menuCounter++;
+                }
+            }
+
+
+            if (PlayerList.Count > users.Length)
+            {
+
+                for (int i = PlayerMenuList.Count - 1; i >= 0; i--)
+                {
+                    var player = PlayerList[i];
+                    var menu = PlayerMenuList[i];
+                    if (!users.Contains(player.User))
+                    {
+                        menu.Dispose();
+                        PlayerMenuList.RemoveAt(i);
+                        PlayerList.RemoveAt(i);
+                    }
+                }
+            }
+
+            LoadData();
+
+            for (int i = 0; i < PlayerList.Count; i++)
+            {
+                PlayerMenuList[i].SetPlayer(PlayerList[i]);
+            }
+            for (int i = PlayerMenuList.Count; i < 8; i++)
+            {
+                Game.GetSingleObjectByCustomId("PlayerMenu" + i.ToString()).Remove();
+            }
+        }
+
         public void OnUpdate(TriggerArgs args)
         {
 
 
             if (GameState == 0)
             {
+                RefreshPlayerMenus();
                 for (int i = 0; i < PlayerMenuList.Count; i++)
                 {
                     PlayerMenuList[i].Update();
@@ -4077,7 +4140,7 @@ namespace SFDScripts
                         readyPlayers++;
                     }
                 }
-                if (TimeToStart > 10 && (float)readyPlayers / (float)PlayerMenuList.Count > 2.0 / 3.0)
+                if (TimeToStart > 15 && (float)readyPlayers / (float)PlayerMenuList.Count > 2.0 / 3.0)
                 {
                     TimeToStart = 15;
                 }
