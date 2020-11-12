@@ -25,7 +25,7 @@ namespace SFDScripts
         public static int AreaTime = 60 * 2 + 5;
         public static int GameState = 0;
         public static Random GlobalRandom = new Random();
-        public static bool IsDebug = true;
+        public static bool IsDebug = false;
 
         public static IObjectTrigger UpdateTrigger;
         public static IObjectTimerTrigger BeginTimerTrigger;
@@ -595,25 +595,13 @@ namespace SFDScripts
             public List<IObject> BlueSpawnPosition = new List<IObject>();
             public Vector2 MapPosition = new Vector2(0, 0);
             public int CapturedBy = 0;
+            private bool _PlayersHaveSpawned = false;
             //functions
             public void Start()
             {
                 CapturedBy = 0;
                 CameraPosition = MapPosition;
-                int blue = 0, red = 0;
-                for (int i = 0; i < PlayerList.Count; i++)
-                {
-                    if (PlayerList[i].Team == PlayerTeam.Team1)
-                    {
-                        PlayerMenuList[i].SpawnPlayer(BlueSpawnPosition[blue].GetWorldPosition());
-                        blue++;
-                    }
-                    else
-                    {
-                        PlayerMenuList[i].SpawnPlayer(RedSpawnPosition[red].GetWorldPosition());
-                        red++;
-                    }
-                }
+
                 for (int i = 0; i < PointList.Count; i++)
                 {
                     PointList[i].Start();
@@ -628,6 +616,31 @@ namespace SFDScripts
             }
             public int Update()
             {
+                int blue = 0, red = 0;
+                if (GlobalGame.GetCameraArea().Left == CameraPosition.X && GlobalGame.GetCameraArea().Top == CameraPosition.Y && !_PlayersHaveSpawned)
+                {
+                    for (int i = 0; i < PlayerList.Count; i++)
+                    {
+                        if (PlayerList[i].Team == PlayerTeam.Team1)
+                        {
+                            PlayerMenuList[i].SpawnPlayer(BlueSpawnPosition[blue].GetWorldPosition());
+                            blue++;
+                        }
+                        else
+                        {
+                            PlayerMenuList[i].SpawnPlayer(RedSpawnPosition[red].GetWorldPosition());
+                            red++;
+                        }
+                    }
+
+
+                    for (int i = 0; i < PlayerList.Count; i++)
+                    {
+                        PlayerList[i].Start();
+                    }
+
+                    _PlayersHaveSpawned = true;
+                }
                 if (CapturedBy != 0) return 0;
                 bool blueWin = true;
                 bool redWin = true;
@@ -3592,6 +3605,12 @@ namespace SFDScripts
             Game.DeathSequenceEnabled = false;
             GlobalGame = Game;
             GlobalGame.SetAllowedCameraModes(CameraMode.Static);
+            var position = GlobalGame.GetSingleObjectByCustomId("MenuCameraPosition").GetWorldPosition();
+            CameraPosition.X = position.X;
+            CameraPosition.Y = position.Y;
+            CameraSpeed = 20000.0f;
+            UpdateCamera();
+
             BeginTimer = (IObjectText)Game.GetSingleObjectByCustomId("BeginTimer");
 
             AddUserAccessLevels();
@@ -3770,12 +3789,15 @@ namespace SFDScripts
 
             //Game.RunCommand("MSG HARDCORE: Loading maps...");
 
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 1; i++)
             {
                 MapPartList.Add(new TMapPart());
             }
             //1
-            MapPartList[0].MapPosition = new Vector2(-285, -525);
+            //var p = GlobalGame.GetSingleObjectByCustomId("Map0CameraPosition").GetWorldPosition();
+            //System.Diagnostics.Debugger.Break();
+            //MapPartList[0].MapPosition = new Vector2(position.X, position.Y);
+            MapPartList[0].MapPosition = new Vector2(-1046, -138);
             MapPartList[0].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point00"), -100));
             MapPartList[0].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point01"), 100));
             MapPartList[0].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point02"), 0));
@@ -3811,7 +3833,7 @@ namespace SFDScripts
             //    MapPartList[2].RedSpawnPosition.Add(Game.GetSingleObjectByCustomId("RedSpawnPoint2" + i));
             //    MapPartList[2].BlueSpawnPosition.Add(Game.GetSingleObjectByCustomId("BlueSpawnPoint2" + i));
             //}
-            // GenerateDroneMap();
+            GenerateDroneMap();
             //Game.RunCommand("MSG HARDCORE: Loading players...");
             IUser[] users = Game.GetActiveUsers();
             int menuCounter = 0;
@@ -3837,6 +3859,7 @@ namespace SFDScripts
             }
             TeamBalance();
             CurrentMapPartIndex = 0;
+            CameraSpeed = 2.0f;
             CameraPosition.X = Game.GetCameraArea().Left;
             CameraPosition.Y = Game.GetCameraArea().Top;
             UpdateTrigger = (IObjectTrigger)Game.CreateObject("OnUpdateTrigger", new Vector2(0, 0), 0);
@@ -3877,10 +3900,6 @@ namespace SFDScripts
             {
                 if (Game.GetCameraArea().Left == CameraPosition.X && Game.GetCameraArea().Top == CameraPosition.Y)
                 {
-                    for (int i = 0; i < PlayerList.Count; i++)
-                    {
-                        PlayerList[i].Start();
-                    }
                     Game.RunCommand("MSG BATTLE BEGINS");
                     GameState = 3;
                 }
@@ -3903,7 +3922,7 @@ namespace SFDScripts
                     PlayerList[i].Update();
                 }
                 PostWeaponTrackingUpdate();
-                // UpdateTurrets();
+                UpdateTurrets();
                 UpdateShieldGenerators();
                 ThrowingUpdate();
                 if (IsAllPlayerDead())
@@ -3932,13 +3951,13 @@ namespace SFDScripts
                 }
                 if (areaStatus == 1)
                 {
-                    Game.RunCommand("MSG BLUE TEAM CAPTURE ALL POINTS");
+                    Game.RunCommand("MSG BLUE TEAM CAPTURED ALL POINTS");
                     SpawnDrone(4, PlayerTeam.Team1);
                     TimeToStart = 30;
                 }
                 else if (areaStatus == 2)
                 {
-                    Game.RunCommand("MSG RED TEAM CAPTURE ALL POINTS");
+                    Game.RunCommand("MSG RED TEAM CAPTURED ALL POINTS");
                     SpawnDrone(4, PlayerTeam.Team2);
                     TimeToStart = 30;
                 }
@@ -3956,7 +3975,7 @@ namespace SFDScripts
             }
             else if (GameState == 4)
             {
-                Game.RunCommand("MSG BLUE CAPTURE THE AREA");
+                Game.RunCommand("MSG BLUE CAPTURED THE AREA");
                 AddTeamExp(10, 3, PlayerTeam.Team1, false);
                 if (CurrentMapPartIndex > 0)
                 {
@@ -3973,7 +3992,7 @@ namespace SFDScripts
             }
             else if (GameState == 5)
             {
-                Game.RunCommand("MSG RED CAPTURE THE AREA");
+                Game.RunCommand("MSG RED CAPTURED THE AREA");
                 AddTeamExp(10, 3, PlayerTeam.Team2, false);
                 if (CurrentMapPartIndex < MapPartList.Count - 1)
                 {
@@ -3992,7 +4011,7 @@ namespace SFDScripts
             {
                 if (TimeToStart <= 0)
                 {
-                    Game.RunCommand("MSG NOBODY CAPTURE THE AREA");
+                    Game.RunCommand("MSG NOBODY CAPTURED THE AREA");
                     GameState = 1;
                 }
             }
@@ -4012,10 +4031,9 @@ namespace SFDScripts
             }
             else if (GameState == -1 || GameState == -2)
             {
-                //CameraPosition.X = -352;
-                //CameraPosition.Y = 768;
-                CameraPosition.X = Game.GetCameraArea().Left;
-                CameraPosition.Y = Game.GetCameraArea().Top;
+                var position = GlobalGame.GetSingleObjectByCustomId("MenuCameraPosition").GetWorldPosition();
+                CameraPosition.X = position.X;
+                CameraPosition.Y = position.Y;
                 for (int i = 0; i < PlayerMenuList.Count; i++)
                 {
                     PlayerMenuList[i].ShowExp();
