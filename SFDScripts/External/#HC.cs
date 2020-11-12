@@ -2566,6 +2566,7 @@ namespace SFDScripts
                 else target.X += GlobalRandom.Next(-12, 13);
                 Vector2 position = GetBeginPointTarget(target, angle);
                 GlobalGame.SpawnProjectile(ProjectileItem.BAZOOKA, position, (target - position));
+                GlobalGame.PlaySound("Explosion", position, 1);
                 return true;
             }
             public bool CallAirstrike(TPlayer player)
