@@ -23,7 +23,22 @@ namespace SFDScripts
         public static List<TPlayerMenu> PlayerMenuList = new List<TPlayerMenu>();
         public static IObjectText BeginTimer;
         public static int TimeToStart = 60;
-        public static int AreaTime = 60 * 3 + 5;
+        public static int AreaTime = 60 * 2 + 5;
+
+
+        /// <summary>
+        /// Defines the current game state.
+        /// 
+        /// States:
+        /// 
+        /// 0 - equipment selection state
+        /// 1 - game is starting: map cleansing is done here, also checks if there is still enough players to start a new round
+        /// 3 - battle starts: players are spawned into the arena and are free to move
+        /// 4 & 7 - blue won this round: all the red team is dead
+        /// 5 & 8 - red won this round: all the blue team is dead
+        /// 6 - no one won the round: all players are dead - tie
+        /// 100 - no enough players to start the game
+        /// </summary>
         public static int GameState = 0;
         public static Random GlobalRandom = new Random();
         public static bool IsDebug = false;
@@ -32,6 +47,7 @@ namespace SFDScripts
         public static IObjectTimerTrigger BeginTimerTrigger;
 
         public static int CurrentMapPartIndex = 0;
+        public static int NumberOfRoundsPerMapPart = 3;
         public static Vector2 CameraPosition;
         public static float CameraSpeed = 2.0f;
 
@@ -623,6 +639,7 @@ namespace SFDScripts
             public List<IObject> RedSpawnPosition = new List<IObject>();
             public List<IObject> BlueSpawnPosition = new List<IObject>();
             public Vector2 MapPosition = new Vector2(0, 0);
+            public int CurrentRound = 1;
             public int CapturedBy = 0;
             private bool _PlayersHaveSpawned = false;
             //functions
@@ -689,11 +706,13 @@ namespace SFDScripts
                 if (blueWin)
                 {
                     CapturedBy = 1;
+                    CurrentRound++;
                     return 1;
                 }
                 else if (redWin)
                 {
                     CapturedBy = 2;
+                    CurrentRound++;
                     return 2;
                 }
                 return 0;
@@ -3685,6 +3704,7 @@ namespace SFDScripts
                 CameraPosition.Y = menuCameraPosition.Y;
                 CameraSpeed = 20000.0f;
                 UpdateCamera();
+                SpawnPlayers();
 
                 BeginTimer = (IObjectText)Game.GetSingleObjectByCustomId("BeginTimer");
 
@@ -3977,9 +3997,9 @@ namespace SFDScripts
 
                         if (currentUser.GetPlayer() == null)
                         {
-                            // need to manage spawn points correctly so that two players don't spawn in the same spawn line and kill each other before a match begins
-                            var positionToSpawn = Game.GetSingleObjectByCustomId("PlayerSpawn" + (i + 1)).GetWorldPosition();
+                            var positionToSpawn = Game.GetSingleObjectByCustomId("StartSpawnPoint").GetWorldPosition();
                             var p = Game.CreatePlayer(positionToSpawn);
+                            p.SetTeam(PlayerTeam.Team3);
                             p.SetUser(currentUser);
                             p.SetProfile(currentUser.GetProfile());
                             p.SetWorldPosition(positionToSpawn);
@@ -4252,6 +4272,35 @@ namespace SFDScripts
             }
         }
 
+        private void SpawnPlayers()
+        {
+            var spawn = Game.GetSingleObjectByCustomId("StartSpawnPoint");
+            if (spawn == null)
+            {
+                DebugLogger.DebugOnlyDialogLog("Starting spawn point doesn't exist");
+                return;
+            }
+            var positionToSpawn = spawn.GetWorldPosition();
+            IPlayer p = null;
+
+            foreach (var user in Game.GetActiveUsers())
+            {
+                if (user.GetPlayer() == null)
+                {
+                    p = Game.CreatePlayer(positionToSpawn);
+                    p.SetUser(user);
+                    p.SetTeam(PlayerTeam.Team3);
+                    p.SetProfile(user.GetProfile());
+                }
+                else
+                {
+                    p = user.GetPlayer();
+                    p.SetTeam(PlayerTeam.Team3);
+                    p.SetWorldPosition(positionToSpawn);
+                }
+            }
+        }
+
         public void OnBeginTimer(TriggerArgs args)
         {
             if (TimeToStart > 0)
@@ -4324,7 +4373,11 @@ namespace SFDScripts
             {
                 if (!IsDebug)
                 {
-                    Game.ShowPopupMessage("Time: " + TimeToStart.ToString());
+                    Game.ShowPopupMessage(TimeToStart.ToString());
+                    if (TimeToStart == 0)
+                    {
+                        Game.HidePopupMessage();
+                    }
                 }
             }
         }
@@ -4346,7 +4399,7 @@ namespace SFDScripts
                 {
                     cameraArea.Left -= CameraSpeed;
                 }
-                cameraArea.Right = cameraArea.Left + 550;
+                cameraArea.Right = cameraArea.Left + 770;
             }
             if (cameraArea.Top != CameraPosition.Y)
             {
@@ -4362,7 +4415,7 @@ namespace SFDScripts
                 {
                     cameraArea.Top -= CameraSpeed;
                 }
-                cameraArea.Bottom = cameraArea.Top - 500;
+                cameraArea.Bottom = cameraArea.Top - 550;
             }
             Game.SetCameraArea(cameraArea);
             //Game.SetBorderArea(cameraArea);
