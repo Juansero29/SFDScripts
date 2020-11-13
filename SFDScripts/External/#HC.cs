@@ -640,6 +640,8 @@ namespace SFDScripts
             public List<IObject> BlueSpawnPosition = new List<IObject>();
             public Vector2 MapPosition = new Vector2(0, 0);
             public int CurrentRound = 1;
+            public int BlueRoundsWon = 0;
+            public int RedRoundsWon = 0;
             public int CapturedBy = 0;
             private bool _PlayersHaveSpawned = false;
             //functions
@@ -706,16 +708,26 @@ namespace SFDScripts
                 if (blueWin)
                 {
                     CapturedBy = 1;
-                    CurrentRound++;
                     return 1;
                 }
                 else if (redWin)
                 {
                     CapturedBy = 2;
-                    CurrentRound++;
                     return 2;
                 }
                 return 0;
+            }
+
+            public void Restart()
+            {
+                CurrentRound++;
+                for (int i = 0; i < PlayerList.Count; i++)
+                {
+                    var p = PlayerList[i];
+                    if (p.User == null || p.User.GetPlayer() == null) continue;
+                    PlayerList[i].User.GetPlayer().Remove();
+                }
+                _PlayersHaveSpawned = false;
             }
         }
 
@@ -835,8 +847,6 @@ namespace SFDScripts
             public void Dispose()
             {
                 if (Menu == null) return;
-                Save();
-
                 if (Player != null && Player.User != null)
                 {
                     var p = Player.User.GetPlayer();
@@ -3973,7 +3983,7 @@ namespace SFDScripts
 
             if (users == null || users.Length == 0) return;
             if (PlayerList.Count == users.Length) return;
-            DebugLogger.DebugOnlyDialogLog("PlayerList.Count:" + PlayerList.Count + "  users.Length:" + users.Length, CameraPosition);
+            // DebugLogger.DebugOnlyDialogLog("PlayerList.Count:" + PlayerList.Count + "  users.Length:" + users.Length, CameraPosition);
             try
             {
                 int initialPlayercount = PlayerList.Count;
@@ -4089,9 +4099,12 @@ namespace SFDScripts
                 }
                 else if (GameState == 1)
                 {
+                    if (TimeToStart > 0) return;
                     GameState = 2;
                     AirPlayerList.Clear();
                     ThrownTrackingList.Clear();
+                    PreWeaponTrackingUpdate();
+                    PostWeaponTrackingUpdate();
                     RemoveObjects();
                     RemoveTurrets();
                     RemoveShieldGenerators();
@@ -4110,9 +4123,13 @@ namespace SFDScripts
                 }
                 else if (GameState == 2)
                 {
-                    TeamBalance();
+
                     if (Game.GetCameraArea().Left == CameraPosition.X && Game.GetCameraArea().Top == CameraPosition.Y)
                     {
+                        if(MapPartList[CurrentMapPartIndex].CurrentRound == 1)
+                        {
+                            TeamBalance();
+                        }
                         Game.RunCommand("MSG BATTLE BEGINS");
                         GameState = 3;
                     }
@@ -4183,7 +4200,8 @@ namespace SFDScripts
                 }
                 else if (GameState == 4)
                 {
-                    Game.RunCommand("MSG BLUE CAPTURED THE AREA");
+                    var mapPart = MapPartList[CurrentMapPartIndex];
+                    mapPart.BlueRoundsWon++;
                     AddTeamExp(10, 3, PlayerTeam.Team1, false);
                     if (CurrentMapPartIndex > 0)
                     {
@@ -4192,15 +4210,30 @@ namespace SFDScripts
                     }
                     else
                     {
-                        AddTeamExp(20, 4, PlayerTeam.Team1, false);
-                        GameState = -1;
-                        TimeToStart = 15;
+                        if (mapPart.CurrentRound < NumberOfRoundsPerMapPart && mapPart.BlueRoundsWon != NumberOfRoundsPerMapPart - 1)
+                        {
+                            RemoveWeapons();
+                            MapPartList[CurrentMapPartIndex].Restart();
+                            GameState = 1;
+                            TimeToStart = 5;
+                            AddTeamExp(10, 4, PlayerTeam.Team1, false);
+                            Game.RunCommand("MSG BLUE WON THIS ROUND!");
+                            Game.RunCommand("MSG RED: " + mapPart.RedRoundsWon + " - BLUE: " + mapPart.BlueRoundsWon);
+                            Game.RunCommand("MSG STARTING NEXT ROUND (" + MapPartList[CurrentMapPartIndex].CurrentRound + "/" + NumberOfRoundsPerMapPart + ")");
+                        }
+                        else
+                        {
+                            Game.RunCommand("MSG BLUE WAS THE BEST OF " + NumberOfRoundsPerMapPart + "!");
+                            AddTeamExp(30 + NumberOfRoundsPerMapPart, 4, PlayerTeam.Team1, false);
+                            GameState = -1;
+                            TimeToStart = 15;
+                        }
                     }
-                    SaveData();
                 }
                 else if (GameState == 5)
                 {
-                    Game.RunCommand("MSG RED CAPTURED THE AREA");
+                    var mapPart = MapPartList[CurrentMapPartIndex];
+                    mapPart.RedRoundsWon++;
                     AddTeamExp(10, 3, PlayerTeam.Team2, false);
                     if (CurrentMapPartIndex < MapPartList.Count - 1)
                     {
@@ -4209,11 +4242,25 @@ namespace SFDScripts
                     }
                     else
                     {
-                        AddTeamExp(20, 4, PlayerTeam.Team2, false);
-                        GameState = -2;
-                        TimeToStart = 15;
+                        if (mapPart.CurrentRound < NumberOfRoundsPerMapPart && mapPart.RedRoundsWon != NumberOfRoundsPerMapPart - 1)
+                        {
+                            RemoveWeapons();
+                            MapPartList[CurrentMapPartIndex].Restart();
+                            GameState = 1;
+                            TimeToStart = 5;
+                            AddTeamExp(10, 4, PlayerTeam.Team2, false);
+                            Game.RunCommand("MSG RED WON THIS ROUND!");
+                            Game.RunCommand("MSG RED: " + mapPart.RedRoundsWon + " - BLUE: " + mapPart.BlueRoundsWon);
+                            Game.RunCommand("MSG STARTING NEXT ROUND (" + MapPartList[CurrentMapPartIndex].CurrentRound + "/" + NumberOfRoundsPerMapPart + ")");
+                        }
+                        else
+                        {
+                            Game.RunCommand("MSG RED WAS THE BEST OF " + NumberOfRoundsPerMapPart + "!");
+                            AddTeamExp(30 + NumberOfRoundsPerMapPart, 4, PlayerTeam.Team2, false);
+                            GameState = -2;
+                            TimeToStart = 15;
+                        }
                     }
-                    SaveData();
                 }
                 else if (GameState == 6)
                 {
@@ -4251,13 +4298,18 @@ namespace SFDScripts
                 }
                 else if (GameState == -3)
                 {
+                    SaveData();
+
                     if (TimeToStart <= 0)
                     {
                         Game.SetGameOver("BLUE TEAM WINS");
+
                     }
                 }
                 else if (GameState == -4)
                 {
+                    SaveData();
+
                     if (TimeToStart <= 0)
                     {
                         Game.SetGameOver("RED TEAM WINS");
@@ -4317,7 +4369,7 @@ namespace SFDScripts
                         readyPlayers++;
                     }
                 }
-                if (TimeToStart > 15 && (float)readyPlayers / (float)PlayerMenuList.Count > 2.0 / 3.0)
+                if (TimeToStart > 15 && (float)readyPlayers / (float)PlayerList.Count > 2.0 / 3.0)
                 {
                     TimeToStart = 15;
                 }
@@ -4334,10 +4386,11 @@ namespace SFDScripts
                 if (TimeToStart == 0)
                 {
                     GameState = 1;
-                    //                    CameraPosition.Y -= 512;
+                    Game.RunCommand("MSG BEST OF " + NumberOfRoundsPerMapPart + " WINS!");
                     BeginTimer.SetText("");
                 }
             }
+
             else if (GameState == 3)
             {
                 for (int i = 0; i < PlayerList.Count; i++)
@@ -4371,9 +4424,27 @@ namespace SFDScripts
             }
             if (GameState != 0)
             {
-                if (!IsDebug)
+                if (GameState == 1)
                 {
-                    Game.ShowPopupMessage(TimeToStart.ToString());
+
+                    if (TimeToStart > 0 && TimeToStart < 5)
+                    {
+                        GlobalGame.PlaySound("TimerTick", new Vector2(0, 600), 1.0f);
+                        Game.ShowPopupMessage("Starting in: " + TimeToStart.ToString(), Color.Red);
+                    }
+                    else if (TimeToStart == 0)
+                    {
+                        GlobalGame.PlaySound("TimerTick", new Vector2(0, 600), 1.0f);
+                        Game.ShowPopupMessage("Starting now!", Color.Red);
+                    }
+                    else
+                    {
+                        Game.ShowPopupMessage("Starting in: " + TimeToStart.ToString(), Color.Yellow);
+                    }
+                }
+                else if (!IsDebug)
+                {
+                    Game.ShowPopupMessage("Time: " + TimeToStart.ToString(), Color.White);
                     if (TimeToStart == 0)
                     {
                         Game.HidePopupMessage();
