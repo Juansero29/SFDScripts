@@ -3915,7 +3915,6 @@ namespace SFDScripts
                 RefreshPlayerMenus();
                 //if (Game.Data == "") Game.Data = SavedData;
 
-                TeamBalance();
                 CurrentMapPartIndex = 0;
                 CameraSpeed = 2.0f;
                 CameraPosition.X = Game.GetCameraArea().Left;
@@ -3934,6 +3933,7 @@ namespace SFDScripts
                 DebugLogger.DebugOnlyDialogLog(e.StackTrace, CameraPosition);
             }
         }
+
 
         private void PreparePlayerMenus()
         {
@@ -3977,6 +3977,7 @@ namespace SFDScripts
 
                         if (currentUser.GetPlayer() == null)
                         {
+                            // need to manage spawn points correctly so that two players don't spawn in the same spawn line and kill each other before a match begins
                             var positionToSpawn = Game.GetSingleObjectByCustomId("PlayerSpawn" + (i + 1)).GetWorldPosition();
                             var p = Game.CreatePlayer(positionToSpawn);
                             p.SetUser(currentUser);
@@ -4042,7 +4043,6 @@ namespace SFDScripts
                     }
                 }
 
-                TeamBalance();
                 LoadData();
             }
             catch (Exception e)
@@ -4090,6 +4090,7 @@ namespace SFDScripts
                 }
                 else if (GameState == 2)
                 {
+                    TeamBalance();
                     if (Game.GetCameraArea().Left == CameraPosition.X && Game.GetCameraArea().Top == CameraPosition.Y)
                     {
                         Game.RunCommand("MSG BATTLE BEGINS");
