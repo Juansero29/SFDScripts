@@ -4026,6 +4026,7 @@ namespace SFDScripts
                         var player = new TPlayer(currentUser);
 
 
+
                         if (availableMenus.Count == 0)
                         {
                             DebugLogger.DebugOnlyDialogLog("NO AVAILABLE MENUS FOR PLAYER " + player.Name);
@@ -4033,15 +4034,16 @@ namespace SFDScripts
                         }
                         TPlayerMenu menu = null;
                         menu = availableMenus.FirstOrDefault();
+                        availableMenus.RemoveAt(availableMenus.IndexOf(menu));
                         if (menu == null)
                         {
                             return;
                         }
 
-                        availableMenus.RemoveAt(availableMenus.IndexOf(menu));
 
                         try
                         {
+                            var playerFound = false;
                             if (!string.IsNullOrEmpty(OtherData))
                             {
                                 // try to look for player in OtherData
@@ -4068,15 +4070,25 @@ namespace SFDScripts
                                             menu.Equipment[u] = Convert.ToInt32(plData[3 + u]);
                                         }
                                         menu.ValidateEquipment();
+                                        playerFound = true;
                                         break;
                                     }
 
                                 }
                             }
+
+                            if (!playerFound)
+                            {
+                                menu.SetPlayer(player);
+                                menu.Update();
+                                
+                            }
                         }
-                        catch (Exception)
+                        catch (Exception e)
                         {
-                            Game.RunCommand("MSG COULDN'T LOAD DATA FOR " + player.Name);
+                            Game.RunCommand(e.Message);
+                            Game.RunCommand(e.StackTrace);
+                            Game.RunCommand("MSG COULDN'T INSTANTIATE PLAYER " + player.Name);
                         }
 
                         PlayerList.Add(player);
