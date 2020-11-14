@@ -760,6 +760,7 @@ namespace SFDScripts
             public string Save()
             {
                 if (Player == null) return "";
+                if (!Player.IsActive()) return "";
                 if (Player.Name.Contains("Unnamed")) return "";
                 string data = Player.Save();
                 for (int i = 0; i < Equipment.Count; i++)
@@ -3703,265 +3704,259 @@ namespace SFDScripts
 
         public void OnStartup()
         {
-            try
+
+            Game.StartupSequenceEnabled = false;
+            Game.DeathSequenceEnabled = false;
+            GlobalGame = Game;
+            GlobalGame.SetAllowedCameraModes(CameraMode.Static);
+            var menuCameraPosition = GlobalGame.GetSingleObjectByCustomId("MenuCameraPosition").GetWorldPosition();
+            CameraPosition.X = menuCameraPosition.X;
+            CameraPosition.Y = menuCameraPosition.Y;
+            CameraSpeed = 20000.0f;
+            UpdateCamera();
+            SpawnPlayers();
+
+            BeginTimer = (IObjectText)Game.GetSingleObjectByCustomId("BeginTimer");
+
+            AddUserAccessLevels();
+            // GlobalGame.RunCommand("IE 1");
+
+            VisionObjects.Add("Concrete01A", 3);
+            VisionObjects.Add("Concrete01B", 3);
+            VisionObjects.Add("Concrete00A", 3);
+            VisionObjects.Add("Concrete00B", 3);
+            VisionObjects.Add("Concrete00C", 3);
+            VisionObjects.Add("Concrete01C", 3);
+            VisionObjects.Add("Concrete02B", 3);
+            VisionObjects.Add("Concrete02C", 3);
+            VisionObjects.Add("Concrete02K", 3);
+            VisionObjects.Add("Stone00C", 3);
+            VisionObjects.Add("Concrete02H", 3);
+            VisionObjects.Add("Dirt01A", 3);
+            VisionObjects.Add("Dirt01C", 3);
+            VisionObjects.Add("Dirt01D", 3);
+            VisionObjects.Add("Metal06A", 3);
+            VisionObjects.Add("Metal06B", 3);
+            VisionObjects.Add("Metal06C", 3);
+            VisionObjects.Add("Metal02A", 3);
+            VisionObjects.Add("Metal02B", 3);
+            VisionObjects.Add("Metal02C", 3);
+            VisionObjects.Add("HangingCrate00", 3);
+            VisionObjects.Add("CargoContainer00A", 3);
+
+            VisionObjects.Add("Crate00", 1);
+            VisionObjects.Add("Barrel00", 2);
+            VisionObjects.Add("BarrelExplosive", 1);
+            VisionObjects.Add("CashRegister00", 1);
+            VisionObjects.Add("SwivelChair02", 1);
+            VisionObjects.Add("Desk00", 2);
+            VisionObjects.Add("FileCab00", 2);
+            VisionObjects.Add("Chair00", 1);
+            VisionObjects.Add("MetalTable00", 1);
+            VisionObjects.Add("Safe00", 2);
+
+            WeaponItemNames.Add(WeaponItem.PISTOL, "WpnPistol");
+            WeaponItemNames.Add(WeaponItem.SILENCEDPISTOL, "WpnSilencedPistol");
+            WeaponItemNames.Add(WeaponItem.MAGNUM, "WpnMagnum");
+            WeaponItemNames.Add(WeaponItem.REVOLVER, "WpnRevolver");
+            WeaponItemNames.Add(WeaponItem.SHOTGUN, "WpnPumpShotgun");
+            WeaponItemNames.Add(WeaponItem.TOMMYGUN, "WpnTommygun");
+            WeaponItemNames.Add(WeaponItem.SMG, "WpnSMG");
+            WeaponItemNames.Add(WeaponItem.M60, "WpnM60");
+            WeaponItemNames.Add(WeaponItem.SAWED_OFF, "WpnSawedOff");
+            WeaponItemNames.Add(WeaponItem.UZI, "WpnUzi");
+            WeaponItemNames.Add(WeaponItem.SILENCEDUZI, "WpnSilencedUzi");
+            WeaponItemNames.Add(WeaponItem.BAZOOKA, "WpnBazooka");
+            WeaponItemNames.Add(WeaponItem.ASSAULT, "WpnAssaultRifle");
+            WeaponItemNames.Add(WeaponItem.SNIPER, "WpnSniperRifle");
+            WeaponItemNames.Add(WeaponItem.CARBINE, "WpnCarbine");
+            WeaponItemNames.Add(WeaponItem.FLAMETHROWER, "WpnFlamethrower");
+            WeaponItemNames.Add(WeaponItem.FLAREGUN, "WpnFlareGun");
+            WeaponItemNames.Add(WeaponItem.GRENADE_LAUNCHER, "WpnGrenadeLauncher");
+            WeaponItemNames.Add(WeaponItem.GRENADES, "WpnGrenades");
+            WeaponItemNames.Add(WeaponItem.MOLOTOVS, "WpnMolotovs");
+            WeaponItemNames.Add(WeaponItem.MINES, "WpnMines");
+            WeaponItemNames.Add(WeaponItem.SHURIKEN, "WpnShuriken");
+            WeaponItemNames.Add(WeaponItem.BOW, "WpnBow");
+            WeaponItemNames.Add(WeaponItem.SHOCK_BATON, "WpnShockBaton");
+
+            //Game.RunCommand("MSG HARDCORE V2.0");
+            //Game.RunCommand("MSG HARDCORE: Loading equipment...");
+            //Game.RunCommand("MSG GAME DATABASE: SFD-HARDCORE.WIKIA.COM");
+            //Game.RunCommand("MSG https://discord.gg/Y7zGwNN");
+
+            //slots
+            TEquipmentSlot meleeWeaponSlot = AddEquipmentSlot("Melee Weapon");
+            TEquipmentSlot secondaryWeaponSlot = AddEquipmentSlot("Secondary Weapon");
+            TEquipmentSlot primaryWeaponSlot = AddEquipmentSlot("Primary Weapon");
+            TEquipmentSlot thrownWeaponSlot = AddEquipmentSlot("Thrown Weapon");
+            TEquipmentSlot weaponModSlot = AddEquipmentSlot("Weapon Mod");
+            TEquipmentSlot bodySlot = AddEquipmentSlot("Body");
+            TEquipmentSlot equipmentSlot = AddEquipmentSlot("Equipment");
+
+            //weapon
+            meleeWeaponSlot.AddEquipment(8, 0, 0, "Machete", "A wonderful mexican machete."); //1
+            meleeWeaponSlot.AddEquipment(49, 25, 3, "Knife", "A knife that can be thrown.");
+            meleeWeaponSlot.AddEquipment(4, 0, 0, "Pipe", "A solid metal pipe."); //2
+            meleeWeaponSlot.AddEquipment(11, 0, 0, "Baseball Bat", "A wooden baseball bat."); //3
+            meleeWeaponSlot.AddEquipment(31, 0, 0, "Hammer", "A big hammer, don't use it to repair stuff."); //4
+            meleeWeaponSlot.AddEquipment(18, 25, 3, "Axe", "Big damage. Good way to end the fight. Can be thrown."); //5
+            meleeWeaponSlot.AddEquipment(41, 0, 0, "Baton", "Used in a lot of riots. Feel the unrest in your hands."); //6
+            meleeWeaponSlot.AddEquipment(3, 50, 5, "Katana", "Huge damage asian katana. Can be thrown."); //7
+            meleeWeaponSlot.AddEquipment(57, 50, 7, "Shock Baton", "Police officers love these."); //8
+
+            secondaryWeaponSlot.AddEquipment(24, 50, 0, "Pistol", "A normal 9mm pistol. 12 bullets mag size and 1 extra mag."); //1
+            secondaryWeaponSlot.AddEquipment(39, 50, 0, "Silenced Pistol", "A silenced 9mm pistol. 12 bullets mag size and 1 extra mag."); //2
+            secondaryWeaponSlot.AddEquipment(12, 75, 1, "Uzi", "Israeli Uzi pistol, 19mm bullets. 25 bullets mag size and 1 extra mag."); //3
+            secondaryWeaponSlot.AddEquipment(40, 75, 1, "Silenced Uzi", "Silenced Israeli Uzi pistol, 19mm bullets. 25 bullets mag size and 1 extra mag."); //4
+            secondaryWeaponSlot.AddEquipment(27, 50, 6, "Flare Gun", "A fire shooting flare gun. 1 bullet mag size and 2 extra mags. "); //5
+            secondaryWeaponSlot.AddEquipment(28, 150, 9, "Revolver", "That ol' cowboy revolver. 6 bullets mag size and 1 extra mag."); //6
+            secondaryWeaponSlot.AddEquipment(1, 175, 14, "Magnum", "Like a revolver but with higher damage and slower recharge. 6 bullets mag size and 1 extra mag."); //7
+
+            primaryWeaponSlot.AddEquipment(5, 100, 2, "Tommy Gun", "Having a rather high spread when compared to other automatic rifles, it should be used as a primary counterpart of the Uzi. 35 bullets mag size with 1 extra mag."); //1
+            primaryWeaponSlot.AddEquipment(10, 100, 0, "Sawed-Off Shotgun", "This shotgun shoots extremely fast, dealing tremendous damage at close range if all the bullets hit the target. The small clip compensates this, so it is best used when cover is available to reload. 2 shells with 6 extra shells"); //2
+            primaryWeaponSlot.AddEquipment(30, 100, 0, "SMG", "The Submachine Gun has a high rate of fire and good accuracy, however, it does little damage, and is less accurate than the Assault Rifle. 30 bullets mag with 1 extra mag."); //3
+            primaryWeaponSlot.AddEquipment(23, 100, 2, "Carbine", "Very accurate weapon with good damage, but low fire rate. 12 bullets mag size and 1 extra mag"); //4
+            primaryWeaponSlot.AddEquipment(19, 125, 5, "Assault Rifle", "Good damage and accuracy. Medium fire rate. 24 bullets mag and 1 extra mag."); //5
+            primaryWeaponSlot.AddEquipment(2, 125, 4, "Shotgun", "Great close and medium range. Extremely high damage. Slow reload. 6 shells with  6 extra shells.");   //6
+            primaryWeaponSlot.AddEquipment(26, 125, 8, "Flamethrower", "LET IT BURN!!!! 50 mag size with 0 extra mags."); //7
+            primaryWeaponSlot.AddEquipment(29, 150, 13, "Grenade Launcher", "When you account for the arc of the grenade, it can become much more accurate than a bazooka (without a laser sight). The grenade launcher also must reload after each shot fired. 1 grenade mag and two extra mags"); //8
+            primaryWeaponSlot.AddEquipment(6, 150, 15, "M60", "Big damage and fire rate, but low accuracy. Too heavy, you can't sprint."); //9
+            primaryWeaponSlot.AddEquipment(9, 150, 13, "Sniper Rifle", "Best accurate weapon with huge damage. Too heavy, you can't sprint."); //10
+            primaryWeaponSlot.AddEquipment(17, 150, 12, "Bazooka", "The Bazooka fires a rocket off in a straight line, however the trajectory is not constantly straight, as it has the tendency to shift which can help avoid excessively long ranged kills. The random directional shift can partially be prevented with a Laser Sight attached to the Bazooka. 1 rocket mag and two extra mags."); //11
+                                                                                                                                                                                                                                                                                                                                                                                                      //primaryWeaponSlot.AddEquipment(64, 150, 9, "Bow"); //12
+
+            thrownWeaponSlot.AddEquipment(1, 50, 6, "Grenades", "Everyone loves grenades, make them explode. These grenades can't touch people though. 3 grenades"); //1	
+            thrownWeaponSlot.AddEquipment(2, 25, 5, "Molotovs", "These little russian bottles we love. 3 in here for your pleasure."); //2
+            thrownWeaponSlot.AddEquipment(3, 50, 7, "Mines", "Mines have a priming 'timer' in which while it flashes it will not detonate. 3 mines."); //3
+            thrownWeaponSlot.AddEquipment(4, 100, 10, "Incendiary grenades"); //4
+            thrownWeaponSlot.AddEquipment(5, 25, 5, "Smoke grenades", "", 1); //5
+            thrownWeaponSlot.AddEquipment(6, 50, 7, "Flashbang", "", 1); //6
+            thrownWeaponSlot.AddEquipment(7, 50, 3, "Shuriken"); //7
+
+            weaponModSlot.AddEquipment(1, 25, 3, "Lazer Scope", "Helps to aim precisely."); //1
+            weaponModSlot.AddEquipment(2, 25, 4, "Extra Ammo", "Add extra ammo to your light weapon."); //2
+            weaponModSlot.AddEquipment(3, 50, 8, "Extra Explosives", "Add extra ammo to your explosive weapon."); //3
+            weaponModSlot.AddEquipment(4, 50, 10, "Extra Heavy Ammo", "Add extra ammo to your heavy weapon."); //4
+            weaponModSlot.AddEquipment(5, 25, 4, "DNA Scanner", "If the enemy try to shoot from your gun, it will explode.", 1); //4
+                                                                                                                                 //weaponModSlot.AddEquipment(6, 100, 11, "Bouncing ammo"); //5
+
+            //equipment
+            equipmentSlot.AddEquipment(1, 25, 1, "Small Medkit", "Allows one time stop the bleeding or revive teammate."); //1
+            equipmentSlot.AddEquipment(2, 50, 3, "Big Medkit", "Allows 3 times stop the bleeding or revive teammate."); //2
+            equipmentSlot.AddEquipment(3, 25, 1, "Airdrop", "Drops one supply crate with random weapon."); //3
+            equipmentSlot.AddEquipment(4, 100, 10, "Napalm Strike", "Strike of Napalm bombs on the whole map."); //4
+            equipmentSlot.AddEquipment(5, 100, 11, "Pinpoint Strike", "The missile tries to hit your enemy."); //5
+            equipmentSlot.AddEquipment(6, 100, 14, "Airstrike", "Attack aircraft tries to hit your enemy."); //6
+            equipmentSlot.AddEquipment(7, 50, 7, "Big Airdrop", "Drops three supply crates with random weapon."); //7
+            equipmentSlot.AddEquipment(8, 125, 13, "Artillery Strike", "150mm cannons bombards all the map."); //8
+            equipmentSlot.AddEquipment(9, 50, 8, "Mine Strike", "Mines are falling from the air all over the map."); //9
+            equipmentSlot.AddEquipment(10, 250, 15, "Reinforcement", "Revives all your dead teammates and drops them by parachute."); //10
+            equipmentSlot.AddEquipment(11, 25, 9, "Supply Jammer", "Your enemies can't call supply while jammer is working. Jammer works for 10 seconds."); //11
+            equipmentSlot.AddEquipment(12, 75, 11, "Supply Hacking", "Try to hack enemy supply. Who knows what will happen?"); //12
+            equipmentSlot.AddEquipment(13, 150, 11, "Light Turret", "Automatically shoots at enemies in range of the minigun");
+            equipmentSlot.AddEquipment(14, 175, 14, "Rocket Turret", "Automatically shoots at enemies in range of the rocket launcher");
+            equipmentSlot.AddEquipment(15, 200, 15, "Heavy Turret", "Automatically shoots at enemies in range. It have minigun and rocket launcher.");
+            equipmentSlot.AddEquipment(16, 175, 14, "Sniper Turret", "Automatically shoots at enemies in range of the sniper.", 1);
+            equipmentSlot.AddEquipment(17, 50, 4, "Police Shield", "Protects you from some bullets.");
+            equipmentSlot.AddEquipment(18, 50, 3, "Adrenaline", "Gives temporary immunity to damage. You will receive all damage when adrenaline is over.", 1);
+            //equipmentSlot.AddEquipment(19, 200, 15, "Shield Generator", "Creates an energy shield that protects from bullets and enemies.", 2);
+            equipmentSlot.AddEquipment(20, 100, 15, "Jet Pack", "Allows you to make jet jumps. And protect from falling.");
+
+            //armor
+            bodySlot.AddEquipment(1, 50, 2, "Light Armor", "Decrease the damage a bit."); //1
+            bodySlot.AddEquipment(2, 50, 7, "Fire Suit", "Protects you from fire."); //2
+            bodySlot.AddEquipment(3, 25, 6, "Suicide Vest", "Leaves a small surprise after your death. "); //3
+            bodySlot.AddEquipment(4, 50, 12, "Personal Jammer", "You can't be a target for strikes."); //4
+            bodySlot.AddEquipment(5, 50, 10, "Blast Suit", "Decrease the explosion damage."); //5
+            bodySlot.AddEquipment(6, 150, 12, "Heavy Armor", "Decrease the damage greatly. Very heavy. You can't sprint and roll."); //6
+            bodySlot.AddEquipment(7, 50, 9, "Kevlar Armor", "Protects you from one-shot death."); //7
+
             {
-                Game.StartupSequenceEnabled = false;
-                Game.DeathSequenceEnabled = false;
-                GlobalGame = Game;
-                GlobalGame.SetAllowedCameraModes(CameraMode.Static);
-                var menuCameraPosition = GlobalGame.GetSingleObjectByCustomId("MenuCameraPosition").GetWorldPosition();
-                CameraPosition.X = menuCameraPosition.X;
-                CameraPosition.Y = menuCameraPosition.Y;
-                CameraSpeed = 20000.0f;
-                UpdateCamera();
-                SpawnPlayers();
-
-                BeginTimer = (IObjectText)Game.GetSingleObjectByCustomId("BeginTimer");
-
-                AddUserAccessLevels();
-                // GlobalGame.RunCommand("IE 1");
-
-                VisionObjects.Add("Concrete01A", 3);
-                VisionObjects.Add("Concrete01B", 3);
-                VisionObjects.Add("Concrete00A", 3);
-                VisionObjects.Add("Concrete00B", 3);
-                VisionObjects.Add("Concrete00C", 3);
-                VisionObjects.Add("Concrete01C", 3);
-                VisionObjects.Add("Concrete02B", 3);
-                VisionObjects.Add("Concrete02C", 3);
-                VisionObjects.Add("Concrete02K", 3);
-                VisionObjects.Add("Stone00C", 3);
-                VisionObjects.Add("Concrete02H", 3);
-                VisionObjects.Add("Dirt01A", 3);
-                VisionObjects.Add("Dirt01C", 3);
-                VisionObjects.Add("Dirt01D", 3);
-                VisionObjects.Add("Metal06A", 3);
-                VisionObjects.Add("Metal06B", 3);
-                VisionObjects.Add("Metal06C", 3);
-                VisionObjects.Add("Metal02A", 3);
-                VisionObjects.Add("Metal02B", 3);
-                VisionObjects.Add("Metal02C", 3);
-                VisionObjects.Add("HangingCrate00", 3);
-                VisionObjects.Add("CargoContainer00A", 3);
-
-                VisionObjects.Add("Crate00", 1);
-                VisionObjects.Add("Barrel00", 2);
-                VisionObjects.Add("BarrelExplosive", 1);
-                VisionObjects.Add("CashRegister00", 1);
-                VisionObjects.Add("SwivelChair02", 1);
-                VisionObjects.Add("Desk00", 2);
-                VisionObjects.Add("FileCab00", 2);
-                VisionObjects.Add("Chair00", 1);
-                VisionObjects.Add("MetalTable00", 1);
-                VisionObjects.Add("Safe00", 2);
-
-                WeaponItemNames.Add(WeaponItem.PISTOL, "WpnPistol");
-                WeaponItemNames.Add(WeaponItem.SILENCEDPISTOL, "WpnSilencedPistol");
-                WeaponItemNames.Add(WeaponItem.MAGNUM, "WpnMagnum");
-                WeaponItemNames.Add(WeaponItem.REVOLVER, "WpnRevolver");
-                WeaponItemNames.Add(WeaponItem.SHOTGUN, "WpnPumpShotgun");
-                WeaponItemNames.Add(WeaponItem.TOMMYGUN, "WpnTommygun");
-                WeaponItemNames.Add(WeaponItem.SMG, "WpnSMG");
-                WeaponItemNames.Add(WeaponItem.M60, "WpnM60");
-                WeaponItemNames.Add(WeaponItem.SAWED_OFF, "WpnSawedOff");
-                WeaponItemNames.Add(WeaponItem.UZI, "WpnUzi");
-                WeaponItemNames.Add(WeaponItem.SILENCEDUZI, "WpnSilencedUzi");
-                WeaponItemNames.Add(WeaponItem.BAZOOKA, "WpnBazooka");
-                WeaponItemNames.Add(WeaponItem.ASSAULT, "WpnAssaultRifle");
-                WeaponItemNames.Add(WeaponItem.SNIPER, "WpnSniperRifle");
-                WeaponItemNames.Add(WeaponItem.CARBINE, "WpnCarbine");
-                WeaponItemNames.Add(WeaponItem.FLAMETHROWER, "WpnFlamethrower");
-                WeaponItemNames.Add(WeaponItem.FLAREGUN, "WpnFlareGun");
-                WeaponItemNames.Add(WeaponItem.GRENADE_LAUNCHER, "WpnGrenadeLauncher");
-                WeaponItemNames.Add(WeaponItem.GRENADES, "WpnGrenades");
-                WeaponItemNames.Add(WeaponItem.MOLOTOVS, "WpnMolotovs");
-                WeaponItemNames.Add(WeaponItem.MINES, "WpnMines");
-                WeaponItemNames.Add(WeaponItem.SHURIKEN, "WpnShuriken");
-                WeaponItemNames.Add(WeaponItem.BOW, "WpnBow");
-                WeaponItemNames.Add(WeaponItem.SHOCK_BATON, "WpnShockBaton");
-
-                //Game.RunCommand("MSG HARDCORE V2.0");
-                //Game.RunCommand("MSG HARDCORE: Loading equipment...");
-                //Game.RunCommand("MSG GAME DATABASE: SFD-HARDCORE.WIKIA.COM");
-                //Game.RunCommand("MSG https://discord.gg/Y7zGwNN");
-
-                //slots
-                TEquipmentSlot meleeWeaponSlot = AddEquipmentSlot("Melee Weapon");
-                TEquipmentSlot secondaryWeaponSlot = AddEquipmentSlot("Secondary Weapon");
-                TEquipmentSlot primaryWeaponSlot = AddEquipmentSlot("Primary Weapon");
-                TEquipmentSlot thrownWeaponSlot = AddEquipmentSlot("Thrown Weapon");
-                TEquipmentSlot weaponModSlot = AddEquipmentSlot("Weapon Mod");
-                TEquipmentSlot bodySlot = AddEquipmentSlot("Body");
-                TEquipmentSlot equipmentSlot = AddEquipmentSlot("Equipment");
-
-                //weapon
-                meleeWeaponSlot.AddEquipment(8, 0, 0, "Machete", "A wonderful mexican machete."); //1
-                meleeWeaponSlot.AddEquipment(49, 25, 3, "Knife", "A knife that can be thrown.");
-                meleeWeaponSlot.AddEquipment(4, 0, 0, "Pipe", "A solid metal pipe."); //2
-                meleeWeaponSlot.AddEquipment(11, 0, 0, "Baseball Bat", "A wooden baseball bat."); //3
-                meleeWeaponSlot.AddEquipment(31, 0, 0, "Hammer", "A big hammer, don't use it to repair stuff."); //4
-                meleeWeaponSlot.AddEquipment(18, 25, 3, "Axe", "Big damage. Good way to end the fight. Can be thrown."); //5
-                meleeWeaponSlot.AddEquipment(41, 0, 0, "Baton", "Used in a lot of riots. Feel the unrest in your hands."); //6
-                meleeWeaponSlot.AddEquipment(3, 50, 5, "Katana", "Huge damage asian katana. Can be thrown."); //7
-                meleeWeaponSlot.AddEquipment(57, 50, 7, "Shock Baton", "Police officers love these."); //8
-
-                secondaryWeaponSlot.AddEquipment(24, 50, 0, "Pistol", "A normal 9mm pistol. 12 bullets mag size and 1 extra mag."); //1
-                secondaryWeaponSlot.AddEquipment(39, 50, 0, "Silenced Pistol", "A silenced 9mm pistol. 12 bullets mag size and 1 extra mag."); //2
-                secondaryWeaponSlot.AddEquipment(12, 75, 1, "Uzi", "Israeli Uzi pistol, 19mm bullets. 25 bullets mag size and 1 extra mag."); //3
-                secondaryWeaponSlot.AddEquipment(40, 75, 1, "Silenced Uzi", "Silenced Israeli Uzi pistol, 19mm bullets. 25 bullets mag size and 1 extra mag."); //4
-                secondaryWeaponSlot.AddEquipment(27, 50, 6, "Flare Gun", "A fire shooting flare gun. 1 bullet mag size and 2 extra mags. "); //5
-                secondaryWeaponSlot.AddEquipment(28, 150, 9, "Revolver", "That ol' cowboy revolver. 6 bullets mag size and 1 extra mag."); //6
-                secondaryWeaponSlot.AddEquipment(1, 175, 14, "Magnum", "Like a revolver but with higher damage and slower recharge. 6 bullets mag size and 1 extra mag."); //7
-
-                primaryWeaponSlot.AddEquipment(5, 100, 2, "Tommy Gun", "Having a rather high spread when compared to other automatic rifles, it should be used as a primary counterpart of the Uzi. 35 bullets mag size with 1 extra mag."); //1
-                primaryWeaponSlot.AddEquipment(10, 100, 0, "Sawed-Off Shotgun", "This shotgun shoots extremely fast, dealing tremendous damage at close range if all the bullets hit the target. The small clip compensates this, so it is best used when cover is available to reload. 2 shells with 6 extra shells"); //2
-                primaryWeaponSlot.AddEquipment(30, 100, 0, "SMG", "The Submachine Gun has a high rate of fire and good accuracy, however, it does little damage, and is less accurate than the Assault Rifle. 30 bullets mag with 1 extra mag."); //3
-                primaryWeaponSlot.AddEquipment(23, 100, 2, "Carbine", "Very accurate weapon with good damage, but low fire rate. 12 bullets mag size and 1 extra mag"); //4
-                primaryWeaponSlot.AddEquipment(19, 125, 5, "Assault Rifle", "Good damage and accuracy. Medium fire rate. 24 bullets mag and 1 extra mag."); //5
-                primaryWeaponSlot.AddEquipment(2, 125, 4, "Shotgun", "Great close and medium range. Extremely high damage. Slow reload. 6 shells with  6 extra shells.");   //6
-                primaryWeaponSlot.AddEquipment(26, 125, 8, "Flamethrower", "LET IT BURN!!!! 50 mag size with 0 extra mags."); //7
-                primaryWeaponSlot.AddEquipment(29, 150, 13, "Grenade Launcher", "When you account for the arc of the grenade, it can become much more accurate than a bazooka (without a laser sight). The grenade launcher also must reload after each shot fired. 1 grenade mag and two extra mags"); //8
-                primaryWeaponSlot.AddEquipment(6, 150, 15, "M60", "Big damage and fire rate, but low accuracy. Too heavy, you can't sprint."); //9
-                primaryWeaponSlot.AddEquipment(9, 150, 13, "Sniper Rifle", "Best accurate weapon with huge damage. Too heavy, you can't sprint."); //10
-                primaryWeaponSlot.AddEquipment(17, 150, 12, "Bazooka", "The Bazooka fires a rocket off in a straight line, however the trajectory is not constantly straight, as it has the tendency to shift which can help avoid excessively long ranged kills. The random directional shift can partially be prevented with a Laser Sight attached to the Bazooka. 1 rocket mag and two extra mags."); //11
-                                                                                                                                                                                                                                                                                                                                                                                                          //primaryWeaponSlot.AddEquipment(64, 150, 9, "Bow"); //12
-
-                thrownWeaponSlot.AddEquipment(1, 50, 6, "Grenades", "Everyone loves grenades, make them explode. These grenades can't touch people though. 3 grenades"); //1	
-                thrownWeaponSlot.AddEquipment(2, 25, 5, "Molotovs", "These little russian bottles we love. 3 in here for your pleasure."); //2
-                thrownWeaponSlot.AddEquipment(3, 50, 7, "Mines", "Mines have a priming 'timer' in which while it flashes it will not detonate. 3 mines."); //3
-                thrownWeaponSlot.AddEquipment(4, 100, 10, "Incendiary grenades"); //4
-                thrownWeaponSlot.AddEquipment(5, 25, 5, "Smoke grenades", "", 1); //5
-                thrownWeaponSlot.AddEquipment(6, 50, 7, "Flashbang", "", 1); //6
-                thrownWeaponSlot.AddEquipment(7, 50, 3, "Shuriken"); //7
-
-                weaponModSlot.AddEquipment(1, 25, 3, "Lazer Scope", "Helps to aim precisely."); //1
-                weaponModSlot.AddEquipment(2, 25, 4, "Extra Ammo", "Add extra ammo to your light weapon."); //2
-                weaponModSlot.AddEquipment(3, 50, 8, "Extra Explosives", "Add extra ammo to your explosive weapon."); //3
-                weaponModSlot.AddEquipment(4, 50, 10, "Extra Heavy Ammo", "Add extra ammo to your heavy weapon."); //4
-                weaponModSlot.AddEquipment(5, 25, 4, "DNA Scanner", "If the enemy try to shoot from your gun, it will explode.", 1); //4
-                                                                                                                                     //weaponModSlot.AddEquipment(6, 100, 11, "Bouncing ammo"); //5
-
-                //equipment
-                equipmentSlot.AddEquipment(1, 25, 1, "Small Medkit", "Allows one time stop the bleeding or revive teammate."); //1
-                equipmentSlot.AddEquipment(2, 50, 3, "Big Medkit", "Allows 3 times stop the bleeding or revive teammate."); //2
-                equipmentSlot.AddEquipment(3, 25, 1, "Airdrop", "Drops one supply crate with random weapon."); //3
-                equipmentSlot.AddEquipment(4, 100, 10, "Napalm Strike", "Strike of Napalm bombs on the whole map."); //4
-                equipmentSlot.AddEquipment(5, 100, 11, "Pinpoint Strike", "The missile tries to hit your enemy."); //5
-                equipmentSlot.AddEquipment(6, 100, 14, "Airstrike", "Attack aircraft tries to hit your enemy."); //6
-                equipmentSlot.AddEquipment(7, 50, 7, "Big Airdrop", "Drops three supply crates with random weapon."); //7
-                equipmentSlot.AddEquipment(8, 125, 13, "Artillery Strike", "150mm cannons bombards all the map."); //8
-                equipmentSlot.AddEquipment(9, 50, 8, "Mine Strike", "Mines are falling from the air all over the map."); //9
-                equipmentSlot.AddEquipment(10, 250, 15, "Reinforcement", "Revives all your dead teammates and drops them by parachute."); //10
-                equipmentSlot.AddEquipment(11, 25, 9, "Supply Jammer", "Your enemies can't call supply while jammer is working. Jammer works for 10 seconds."); //11
-                equipmentSlot.AddEquipment(12, 75, 11, "Supply Hacking", "Try to hack enemy supply. Who knows what will happen?"); //12
-                equipmentSlot.AddEquipment(13, 150, 11, "Light Turret", "Automatically shoots at enemies in range of the minigun");
-                equipmentSlot.AddEquipment(14, 175, 14, "Rocket Turret", "Automatically shoots at enemies in range of the rocket launcher");
-                equipmentSlot.AddEquipment(15, 200, 15, "Heavy Turret", "Automatically shoots at enemies in range. It have minigun and rocket launcher.");
-                equipmentSlot.AddEquipment(16, 175, 14, "Sniper Turret", "Automatically shoots at enemies in range of the sniper.", 1);
-                equipmentSlot.AddEquipment(17, 50, 4, "Police Shield", "Protects you from some bullets.");
-                equipmentSlot.AddEquipment(18, 50, 3, "Adrenaline", "Gives temporary immunity to damage. You will receive all damage when adrenaline is over.", 1);
-                //equipmentSlot.AddEquipment(19, 200, 15, "Shield Generator", "Creates an energy shield that protects from bullets and enemies.", 2);
-                equipmentSlot.AddEquipment(20, 100, 15, "Jet Pack", "Allows you to make jet jumps. And protect from falling.");
-
-                //armor
-                bodySlot.AddEquipment(1, 50, 2, "Light Armor", "Decrease the damage a bit."); //1
-                bodySlot.AddEquipment(2, 50, 7, "Fire Suit", "Protects you from fire."); //2
-                bodySlot.AddEquipment(3, 25, 6, "Suicide Vest", "Leaves a small surprise after your death. "); //3
-                bodySlot.AddEquipment(4, 50, 12, "Personal Jammer", "You can't be a target for strikes."); //4
-                bodySlot.AddEquipment(5, 50, 10, "Blast Suit", "Decrease the explosion damage."); //5
-                bodySlot.AddEquipment(6, 150, 12, "Heavy Armor", "Decrease the damage greatly. Very heavy. You can't sprint and roll."); //6
-                bodySlot.AddEquipment(7, 50, 9, "Kevlar Armor", "Protects you from one-shot death."); //7
-
-                {
-                    //human 0
-                    AddLevel("Private", 0, 100);
-                    AddLevel("First Private", 100, 125);
-                    AddLevel("Specialist", 120, 150);
-                    AddLevel("Corporal", 140, 175);
-                    AddLevel("Sergeant", 160, 200);
-                    AddLevel("Staff Sergeant", 180, 200);
-                    AddLevel("Master Sergeant", 200, 225);
-                    AddLevel("Master Sergeant II", 220, 225);
-                    AddLevel("First Sergeant", 240, 250);
-                    AddLevel("Second Lieutenant", 260, 275);
-                    AddLevel("First Lieutenant", 280, 275);
-                    AddLevel("Captain", 300, 300);
-                    AddLevel("Major", 320, 325);
-                    AddLevel("Colonel", 340, 350);
-                    AddLevel("Colonel II", 360, 350);
-                    AddLevel("General", 380, 350);
-                }
-
-                //Game.RunCommand("MSG HARDCORE: Loading maps...");
-
-
-                // only one map for the moment
-                for (int i = 0; i < 1; i++)
-                {
-                    MapPartList.Add(new TMapPart());
-                }
-                //1
-                var firstMapPosition = GlobalGame.GetSingleObjectByCustomId("Map0CameraPosition").GetWorldPosition();
-                MapPartList[0].MapPosition = new Vector2((float)Math.Round(firstMapPosition.X), (float)Math.Round(firstMapPosition.Y));
-
-                MapPartList[0].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point00"), -100));
-                MapPartList[0].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point01"), 100));
-                MapPartList[0].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point02"), 0));
-                //MapPartList[0].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point03"), 0));
-                for (int i = 0; i < 8; i++)
-                {
-                    var redSpawn = Game.GetSingleObjectByCustomId("RedSpawnPoint0" + i);
-                    var blueSpawn = Game.GetSingleObjectByCustomId("BlueSpawnPoint0" + i);
-                    MapPartList[0].RedSpawnPosition.Add(redSpawn);
-                    MapPartList[0].BlueSpawnPosition.Add(blueSpawn);
-                }
-
-
-                ////2
-                //MapPartList[1].MapPosition = new Vector2(-352, 256);
-                //MapPartList[1].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point10"), -100));
-                //MapPartList[1].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point11"), 100));
-                //MapPartList[1].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point12"), 0));
-                //for (int i = 0; i < 8; i++)
-                //{
-                //    MapPartList[1].RedSpawnPosition.Add(Game.GetSingleObjectByCustomId("RedSpawnPoint1" + i));
-                //    MapPartList[1].BlueSpawnPosition.Add(Game.GetSingleObjectByCustomId("BlueSpawnPoint1" + i));
-                //}
-
-                ////3
-                //MapPartList[2].MapPosition = new Vector2(416, 256);
-                //MapPartList[2].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point20"), -100));
-                //MapPartList[2].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point21"), 100));
-                //MapPartList[2].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point22"), 0));
-                ////MapPartList[2].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point23"), 0));
-                //for (int i = 0; i < 8; i++)
-                //{
-                //    MapPartList[2].RedSpawnPosition.Add(Game.GetSingleObjectByCustomId("RedSpawnPoint2" + i));
-                //    MapPartList[2].BlueSpawnPosition.Add(Game.GetSingleObjectByCustomId("BlueSpawnPoint2" + i));
-                //}
-                GenerateDroneMap();
-                //Game.RunCommand("MSG HARDCORE: Loading players...");
-                PreparePlayerMenus();
-                RefreshPlayerMenus();
-                //if (Game.Data == "") Game.Data = SavedData;
-
-                CurrentMapPartIndex = 0;
-                CameraSpeed = 2.0f;
-                CameraPosition.X = Game.GetCameraArea().Left;
-                CameraPosition.Y = Game.GetCameraArea().Top;
-                UpdateTrigger = (IObjectTrigger)Game.CreateObject("OnUpdateTrigger", new Vector2(0, 0), 0);
-                UpdateTrigger.SetScriptMethod("OnUpdate");
-                BeginTimerTrigger = (IObjectTimerTrigger)Game.CreateObject("TimerTrigger", new Vector2(0, 0), 0);
-                BeginTimerTrigger.SetRepeatCount(0);
-                BeginTimerTrigger.SetIntervalTime(1000);
-                BeginTimerTrigger.SetScriptMethod("OnBeginTimer");
-                BeginTimerTrigger.Trigger();
+                //human 0
+                AddLevel("Private", 0, 100);
+                AddLevel("First Private", 100, 125);
+                AddLevel("Specialist", 120, 150);
+                AddLevel("Corporal", 140, 175);
+                AddLevel("Sergeant", 160, 200);
+                AddLevel("Staff Sergeant", 180, 200);
+                AddLevel("Master Sergeant", 200, 225);
+                AddLevel("Master Sergeant II", 220, 225);
+                AddLevel("First Sergeant", 240, 250);
+                AddLevel("Second Lieutenant", 260, 275);
+                AddLevel("First Lieutenant", 280, 275);
+                AddLevel("Captain", 300, 300);
+                AddLevel("Major", 320, 325);
+                AddLevel("Colonel", 440, 350);
+                AddLevel("Colonel II", 500, 350);
+                AddLevel("General", 600, 350);
             }
-            catch (Exception e)
+
+            //Game.RunCommand("MSG HARDCORE: Loading maps...");
+
+
+            // only one map for the moment
+            for (int i = 0; i < 1; i++)
             {
-                DebugLogger.DebugOnlyDialogLog("OnStartup Exception: " + e.Message, CameraPosition);
-                DebugLogger.DebugOnlyDialogLog(e.StackTrace, CameraPosition);
+                MapPartList.Add(new TMapPart());
             }
+            //1
+            var firstMapPosition = GlobalGame.GetSingleObjectByCustomId("Map0CameraPosition").GetWorldPosition();
+            MapPartList[0].MapPosition = new Vector2((float)Math.Round(firstMapPosition.X), (float)Math.Round(firstMapPosition.Y));
+
+            MapPartList[0].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point00"), -100));
+            MapPartList[0].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point01"), 100));
+            MapPartList[0].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point02"), 0));
+            //MapPartList[0].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point03"), 0));
+            for (int i = 0; i < 8; i++)
+            {
+                var redSpawn = Game.GetSingleObjectByCustomId("RedSpawnPoint0" + i);
+                var blueSpawn = Game.GetSingleObjectByCustomId("BlueSpawnPoint0" + i);
+                MapPartList[0].RedSpawnPosition.Add(redSpawn);
+                MapPartList[0].BlueSpawnPosition.Add(blueSpawn);
+            }
+
+
+            ////2
+            //MapPartList[1].MapPosition = new Vector2(-352, 256);
+            //MapPartList[1].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point10"), -100));
+            //MapPartList[1].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point11"), 100));
+            //MapPartList[1].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point12"), 0));
+            //for (int i = 0; i < 8; i++)
+            //{
+            //    MapPartList[1].RedSpawnPosition.Add(Game.GetSingleObjectByCustomId("RedSpawnPoint1" + i));
+            //    MapPartList[1].BlueSpawnPosition.Add(Game.GetSingleObjectByCustomId("BlueSpawnPoint1" + i));
+            //}
+
+            ////3
+            //MapPartList[2].MapPosition = new Vector2(416, 256);
+            //MapPartList[2].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point20"), -100));
+            //MapPartList[2].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point21"), 100));
+            //MapPartList[2].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point22"), 0));
+            ////MapPartList[2].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point23"), 0));
+            //for (int i = 0; i < 8; i++)
+            //{
+            //    MapPartList[2].RedSpawnPosition.Add(Game.GetSingleObjectByCustomId("RedSpawnPoint2" + i));
+            //    MapPartList[2].BlueSpawnPosition.Add(Game.GetSingleObjectByCustomId("BlueSpawnPoint2" + i));
+            //}
+            GenerateDroneMap();
+            //Game.RunCommand("MSG HARDCORE: Loading players...");
+            PreparePlayerMenus();
+            RefreshPlayerMenus();
+            //if (Game.Data == "") Game.Data = SavedData;
+
+            CurrentMapPartIndex = 0;
+            CameraSpeed = 2.0f;
+            CameraPosition.X = Game.GetCameraArea().Left;
+            CameraPosition.Y = Game.GetCameraArea().Top;
+            UpdateTrigger = (IObjectTrigger)Game.CreateObject("OnUpdateTrigger", new Vector2(0, 0), 0);
+            UpdateTrigger.SetScriptMethod("OnUpdate");
+            BeginTimerTrigger = (IObjectTimerTrigger)Game.CreateObject("TimerTrigger", new Vector2(0, 0), 0);
+            BeginTimerTrigger.SetRepeatCount(0);
+            BeginTimerTrigger.SetIntervalTime(1000);
+            BeginTimerTrigger.SetScriptMethod("OnBeginTimer");
+            BeginTimerTrigger.Trigger();
+
         }
 
 
@@ -3982,15 +3977,28 @@ namespace SFDScripts
             IUser[] users = Game.GetActiveUsers();
 
             if (users == null || users.Length == 0) return;
+
+            foreach (var u in users)
+            {
+                var menus = PlayerMenuList.Where(m => m.Player != null && m.Player.User != null && m.Player.User.Name == u.Name).ToList();
+                if (menus.Count > 1)
+                {
+                    menus[1].Player = null;
+                    menus[1].Menu.SetText(string.Empty);
+                }
+            }
+
             if (PlayerList.Count == users.Length) return;
             // DebugLogger.DebugOnlyDialogLog("PlayerList.Count:" + PlayerList.Count + "  users.Length:" + users.Length, CameraPosition);
             try
             {
                 int initialPlayercount = PlayerList.Count;
 
+
+
                 if (PlayerList.Count < users.Length)
                 {
-                    var availableMenus = PlayerMenuList.Where(m => m.Player == null).ToList();
+                    var availableMenus = PlayerMenuList.Where(m => m.Player == null || m.Player.User == null).ToList();
                     for (int i = 0; i < users.Length; i++)
                     {
                         IUser currentUser = null;
@@ -4063,12 +4071,16 @@ namespace SFDScripts
                         }
 
                         if (player == null || menu == null) continue;
-                        if (!users.Any(u => u.Name.Equals(player.User.Name)))
+                        if (!users.Any(u => u.Name.Equals(player.User.Name)) && GameState != -3 && GameState != -4)
                         {
 
                             DebugLogger.DebugOnlyDialogLog("REMOVING MENU FOR: " + player.User.Name, CameraPosition);
                             menu.Dispose();
                             PlayerList.Remove(player);
+                            if (player.User != null && player.User.GetPlayer() != null)
+                            {
+                                player.User.GetPlayer().Remove();
+                            }
                         }
                     }
                 }
@@ -4085,243 +4097,245 @@ namespace SFDScripts
 
         public void OnUpdate(TriggerArgs args)
         {
+            if (GameState == 0)
+            {
+                RefreshPlayerMenus();
+                
+                foreach(var p in PlayerList)
+                {
+                    var player = p.User.GetPlayer();
+                    PlayerModifiers mods = player.GetModifiers();
+                    mods.MaxEnergy = 0;
+                    mods.MeleeStunImmunity = 1;
+                    mods.EnergyRechargeModifier = 0;
+                    player.SetModifiers(mods);
+                }
 
-            try
+                for (int i = 0; i < PlayerMenuList.Count; i++)
+                {
+                    PlayerMenuList[i].Update();
+                }
+            }
+            else if (GameState == 1)
+            {
+                if (TimeToStart > 0) return;
+                GameState = 2;
+                AirPlayerList.Clear();
+                ThrownTrackingList.Clear();
+                PreWeaponTrackingUpdate();
+                PostWeaponTrackingUpdate();
+                RemoveObjects();
+                RemoveTurrets();
+                RemoveShieldGenerators();
+                ResetElectronicWarfare();
+                ResetEffects();
+                RemoveWeapons();
+                MapPartList[CurrentMapPartIndex].Start();
+                TimeToStart = AreaTime;
+
+                if (!IsDebug && PlayerList.Count < 2)
+                {
+                    Game.SetGameOver("NOT ENOUGH PLAYERS");
+                    GameState = 100;
+                    return;
+                }
+            }
+            else if (GameState == 2)
             {
 
-                if (GameState == 0)
+                if (Game.GetCameraArea().Left == CameraPosition.X && Game.GetCameraArea().Top == CameraPosition.Y)
                 {
-                    RefreshPlayerMenus();
-                    for (int i = 0; i < PlayerMenuList.Count; i++)
+                    if (MapPartList[CurrentMapPartIndex].CurrentRound == 1)
                     {
-                        PlayerMenuList[i].Update();
+                        TeamBalance();
                     }
+                    Game.RunCommand("MSG BATTLE BEGINS");
+                    GameState = 3;
                 }
-                else if (GameState == 1)
-                {
-                    if (TimeToStart > 0) return;
-                    GameState = 2;
-                    AirPlayerList.Clear();
-                    ThrownTrackingList.Clear();
-                    PreWeaponTrackingUpdate();
-                    PostWeaponTrackingUpdate();
-                    RemoveObjects();
-                    RemoveTurrets();
-                    RemoveShieldGenerators();
-                    ResetElectronicWarfare();
-                    ResetEffects();
-                    RemoveWeapons();
-                    MapPartList[CurrentMapPartIndex].Start();
-                    TimeToStart = AreaTime;
+            }
+            else if (GameState == 3)
+            {
 
-                    if (!IsDebug && PlayerList.Count < 2)
-                    {
-                        Game.SetGameOver("NOT ENOUGH PLAYERS");
-                        GameState = 100;
-                        return;
-                    }
+                int areaStatus = MapPartList[CurrentMapPartIndex].Update();
+                int capturedBy = MapPartList[CurrentMapPartIndex].CapturedBy;
+                UpdateEffects();
+                ThrownWeaponUpdate();
+                PreWeaponTrackingUpdate();
+                for (int i = 0; i < PlayerList.Count; i++)
+                {
+                    PlayerList[i].Update();
                 }
-                else if (GameState == 2)
+                PostWeaponTrackingUpdate();
+                UpdateTurrets();
+                UpdateShieldGenerators();
+                ThrowingUpdate();
+                if (IsAllPlayerDead())
                 {
-
-                    if (Game.GetCameraArea().Left == CameraPosition.X && Game.GetCameraArea().Top == CameraPosition.Y)
-                    {
-                        if(MapPartList[CurrentMapPartIndex].CurrentRound == 1)
-                        {
-                            TeamBalance();
-                        }
-                        Game.RunCommand("MSG BATTLE BEGINS");
-                        GameState = 3;
-                    }
+                    GameState = 6;
+                    TimeToStart = 5;
                 }
-                else if (GameState == 3)
+                else if (TimeToStart <= 0)
                 {
-
-                    int areaStatus = MapPartList[CurrentMapPartIndex].Update();
-                    int capturedBy = MapPartList[CurrentMapPartIndex].CapturedBy;
-                    UpdateEffects();
-                    ThrownWeaponUpdate();
-                    PreWeaponTrackingUpdate();
+                    if (capturedBy == 0) SpawnDrone(4, PlayerTeam.Team3);
+                    else if (capturedBy == 1) SpawnDrone(4, PlayerTeam.Team1);
+                    else if (capturedBy == 2) SpawnDrone(4, PlayerTeam.Team2);
+                    TimeToStart = 30;
+                }
+                int teamStatus = IsOneTeamDead();
+                if (teamStatus != 0 || GameState == 6)
+                {
                     for (int i = 0; i < PlayerList.Count; i++)
                     {
-                        PlayerList[i].Update();
+                        PlayerList[i].Stop();
                     }
-                    PostWeaponTrackingUpdate();
-                    UpdateTurrets();
-                    UpdateShieldGenerators();
-                    ThrowingUpdate();
-                    if (IsAllPlayerDead())
+                    for (int i = 0; i < TurretList.Count; i++)
                     {
-                        GameState = 6;
-                        TimeToStart = 5;
+                        TurretList[i].StopMovement();
                     }
-                    else if (TimeToStart <= 0)
-                    {
-                        if (capturedBy == 0) SpawnDrone(4, PlayerTeam.Team3);
-                        else if (capturedBy == 1) SpawnDrone(4, PlayerTeam.Team1);
-                        else if (capturedBy == 2) SpawnDrone(4, PlayerTeam.Team2);
-                        TimeToStart = 30;
-                    }
-                    int teamStatus = IsOneTeamDead();
-                    if (teamStatus != 0 || GameState == 6)
-                    {
-                        for (int i = 0; i < PlayerList.Count; i++)
-                        {
-                            PlayerList[i].Stop();
-                        }
-                        for (int i = 0; i < TurretList.Count; i++)
-                        {
-                            TurretList[i].StopMovement();
-                        }
-                    }
-                    if (areaStatus == 1)
-                    {
-                        Game.RunCommand("MSG BLUE TEAM CAPTURED ALL POINTS");
-                        SpawnDrone(4, PlayerTeam.Team1);
-                        TimeToStart = 30;
-                    }
-                    else if (areaStatus == 2)
-                    {
-                        Game.RunCommand("MSG RED TEAM CAPTURED ALL POINTS");
-                        SpawnDrone(4, PlayerTeam.Team2);
-                        TimeToStart = 30;
-                    }
-                    if (teamStatus == 1)
-                    {
-                        TimeToStart = 5;
-                        GameState = 7;
-                    }
-                    else if (teamStatus == 2)
-                    {
-                        TimeToStart = 5;
-                        GameState = 8;
-                    }
+                }
+                if (areaStatus == 1)
+                {
+                    Game.RunCommand("MSG BLUE TEAM CAPTURED ALL POINTS");
+                    SpawnDrone(4, PlayerTeam.Team1);
+                    TimeToStart = 30;
+                }
+                else if (areaStatus == 2)
+                {
+                    Game.RunCommand("MSG RED TEAM CAPTURED ALL POINTS");
+                    SpawnDrone(4, PlayerTeam.Team2);
+                    TimeToStart = 30;
+                }
+                if (teamStatus == 1)
+                {
+                    TimeToStart = 5;
+                    GameState = 7;
+                }
+                else if (teamStatus == 2)
+                {
+                    TimeToStart = 5;
+                    GameState = 8;
+                }
 
-                }
-                else if (GameState == 4)
-                {
-                    var mapPart = MapPartList[CurrentMapPartIndex];
-                    mapPart.BlueRoundsWon++;
-                    AddTeamExp(10, 3, PlayerTeam.Team1, false);
-                    if (CurrentMapPartIndex > 0)
-                    {
-                        CurrentMapPartIndex--;
-                        GameState = 1;
-                    }
-                    else
-                    {
-                        if (mapPart.CurrentRound < NumberOfRoundsPerMapPart && mapPart.BlueRoundsWon != NumberOfRoundsPerMapPart - 1)
-                        {
-                            RemoveWeapons();
-                            MapPartList[CurrentMapPartIndex].Restart();
-                            GameState = 1;
-                            TimeToStart = 5;
-                            AddTeamExp(10, 4, PlayerTeam.Team1, false);
-                            Game.RunCommand("MSG BLUE WON THIS ROUND!");
-                            Game.RunCommand("MSG RED: " + mapPart.RedRoundsWon + " - BLUE: " + mapPart.BlueRoundsWon);
-                            Game.RunCommand("MSG STARTING NEXT ROUND (" + MapPartList[CurrentMapPartIndex].CurrentRound + "/" + NumberOfRoundsPerMapPart + ")");
-                        }
-                        else
-                        {
-                            Game.RunCommand("MSG BLUE WAS THE BEST OF " + NumberOfRoundsPerMapPart + "!");
-                            AddTeamExp(30 + NumberOfRoundsPerMapPart, 4, PlayerTeam.Team1, false);
-                            GameState = -1;
-                            TimeToStart = 15;
-                        }
-                    }
-                }
-                else if (GameState == 5)
-                {
-                    var mapPart = MapPartList[CurrentMapPartIndex];
-                    mapPart.RedRoundsWon++;
-                    AddTeamExp(10, 3, PlayerTeam.Team2, false);
-                    if (CurrentMapPartIndex < MapPartList.Count - 1)
-                    {
-                        CurrentMapPartIndex++;
-                        GameState = 1;
-                    }
-                    else
-                    {
-                        if (mapPart.CurrentRound < NumberOfRoundsPerMapPart && mapPart.RedRoundsWon != NumberOfRoundsPerMapPart - 1)
-                        {
-                            RemoveWeapons();
-                            MapPartList[CurrentMapPartIndex].Restart();
-                            GameState = 1;
-                            TimeToStart = 5;
-                            AddTeamExp(10, 4, PlayerTeam.Team2, false);
-                            Game.RunCommand("MSG RED WON THIS ROUND!");
-                            Game.RunCommand("MSG RED: " + mapPart.RedRoundsWon + " - BLUE: " + mapPart.BlueRoundsWon);
-                            Game.RunCommand("MSG STARTING NEXT ROUND (" + MapPartList[CurrentMapPartIndex].CurrentRound + "/" + NumberOfRoundsPerMapPart + ")");
-                        }
-                        else
-                        {
-                            Game.RunCommand("MSG RED WAS THE BEST OF " + NumberOfRoundsPerMapPart + "!");
-                            AddTeamExp(30 + NumberOfRoundsPerMapPart, 4, PlayerTeam.Team2, false);
-                            GameState = -2;
-                            TimeToStart = 15;
-                        }
-                    }
-                }
-                else if (GameState == 6)
-                {
-                    if (TimeToStart <= 0)
-                    {
-                        Game.RunCommand("MSG NOBODY CAPTURED THE AREA");
-                        GameState = 1;
-                    }
-                }
-                else if (GameState == 7)
-                {
-                    if (TimeToStart <= 0)
-                    {
-                        GameState = 4;
-                    }
-                }
-                else if (GameState == 8)
-                {
-                    if (TimeToStart <= 0)
-                    {
-                        GameState = 5;
-                    }
-                }
-                else if (GameState == -1 || GameState == -2)
-                {
-                    var menuCameraPosition = GlobalGame.GetSingleObjectByCustomId("MenuCameraPosition").GetWorldPosition();
-                    CameraPosition.X = menuCameraPosition.X;
-                    CameraPosition.Y = menuCameraPosition.Y;
-                    for (int i = 0; i < PlayerMenuList.Count; i++)
-                    {
-                        PlayerMenuList[i].ShowExp();
-                    }
-                    GlobalGame.SetWeatherType(WeatherType.None);
-                    GameState -= 2;
-                }
-                else if (GameState == -3)
-                {
-                    SaveData();
-
-                    if (TimeToStart <= 0)
-                    {
-                        Game.SetGameOver("BLUE TEAM WINS");
-
-                    }
-                }
-                else if (GameState == -4)
-                {
-                    SaveData();
-
-                    if (TimeToStart <= 0)
-                    {
-                        Game.SetGameOver("RED TEAM WINS");
-                    }
-                }
-                UpdateCamera();
             }
-            catch (Exception e)
+            else if (GameState == 4)
             {
-                DebugLogger.DialogLog("OnUpdate Exception: " + e.Message);
-                DebugLogger.DialogLog(e.StackTrace);
+                var mapPart = MapPartList[CurrentMapPartIndex];
+                mapPart.BlueRoundsWon++;
+                AddTeamExp(10, 3, PlayerTeam.Team1, false);
+                if (CurrentMapPartIndex > 0)
+                {
+                    CurrentMapPartIndex--;
+                    GameState = 1;
+                }
+                else
+                {
+                    if (mapPart.CurrentRound < NumberOfRoundsPerMapPart && mapPart.BlueRoundsWon != NumberOfRoundsPerMapPart - 1)
+                    {
+                        RemoveWeapons();
+                        MapPartList[CurrentMapPartIndex].Restart();
+                        GameState = 1;
+                        TimeToStart = 5;
+                        AddTeamExp(10, 4, PlayerTeam.Team1, false);
+                        Game.RunCommand("MSG BLUE WON THIS ROUND!");
+                        Game.RunCommand("MSG RED: " + mapPart.RedRoundsWon + " - BLUE: " + mapPart.BlueRoundsWon);
+                        Game.RunCommand("MSG STARTING NEXT ROUND (" + MapPartList[CurrentMapPartIndex].CurrentRound + "/" + NumberOfRoundsPerMapPart + ")");
+                    }
+                    else
+                    {
+                        Game.RunCommand("MSG BLUE WAS THE BEST OF " + NumberOfRoundsPerMapPart + "!");
+                        AddTeamExp(30 + NumberOfRoundsPerMapPart, 4, PlayerTeam.Team1, false);
+                        GameState = -1;
+                        TimeToStart = 15;
+                    }
+                }
             }
+            else if (GameState == 5)
+            {
+                var mapPart = MapPartList[CurrentMapPartIndex];
+                mapPart.RedRoundsWon++;
+                AddTeamExp(10, 3, PlayerTeam.Team2, false);
+                if (CurrentMapPartIndex < MapPartList.Count - 1)
+                {
+                    CurrentMapPartIndex++;
+                    GameState = 1;
+                }
+                else
+                {
+                    if (mapPart.CurrentRound < NumberOfRoundsPerMapPart && mapPart.RedRoundsWon != NumberOfRoundsPerMapPart - 1)
+                    {
+                        RemoveWeapons();
+                        MapPartList[CurrentMapPartIndex].Restart();
+                        GameState = 1;
+                        TimeToStart = 5;
+                        AddTeamExp(10, 4, PlayerTeam.Team2, false);
+                        Game.RunCommand("MSG RED WON THIS ROUND!");
+                        Game.RunCommand("MSG RED: " + mapPart.RedRoundsWon + " - BLUE: " + mapPart.BlueRoundsWon);
+                        Game.RunCommand("MSG STARTING NEXT ROUND (" + MapPartList[CurrentMapPartIndex].CurrentRound + "/" + NumberOfRoundsPerMapPart + ")");
+                    }
+                    else
+                    {
+                        Game.RunCommand("MSG RED WAS THE BEST OF " + NumberOfRoundsPerMapPart + "!");
+                        AddTeamExp(30 + NumberOfRoundsPerMapPart, 4, PlayerTeam.Team2, false);
+                        GameState = -2;
+                        TimeToStart = 15;
+                    }
+                }
+            }
+            else if (GameState == 6)
+            {
+                if (TimeToStart <= 0)
+                {
+                    Game.RunCommand("MSG NOBODY CAPTURED THE AREA");
+                    GameState = 1;
+                }
+            }
+            else if (GameState == 7)
+            {
+                if (TimeToStart <= 0)
+                {
+                    GameState = 4;
+                }
+            }
+            else if (GameState == 8)
+            {
+                if (TimeToStart <= 0)
+                {
+                    GameState = 5;
+                }
+            }
+            else if (GameState == -1 || GameState == -2)
+            {
+                var menuCameraPosition = GlobalGame.GetSingleObjectByCustomId("MenuCameraPosition").GetWorldPosition();
+                CameraPosition.X = menuCameraPosition.X;
+                CameraPosition.Y = menuCameraPosition.Y;
+                for (int i = 0; i < PlayerMenuList.Count; i++)
+                {
+                    PlayerMenuList[i].ShowExp();
+                }
+                GlobalGame.SetWeatherType(WeatherType.None);
+                GameState -= 2;
+            }
+            else if (GameState == -3)
+            {
+                SaveData();
+
+                if (TimeToStart <= 0)
+                {
+                    Game.SetGameOver("BLUE TEAM WINS");
+
+                }
+            }
+            else if (GameState == -4)
+            {
+                SaveData();
+
+                if (TimeToStart <= 0)
+                {
+                    Game.SetGameOver("RED TEAM WINS");
+                }
+            }
+            UpdateCamera();
+
         }
 
         private void SpawnPlayers()
@@ -4369,7 +4383,7 @@ namespace SFDScripts
                         readyPlayers++;
                     }
                 }
-                if (TimeToStart > 15 && (float)readyPlayers / (float)PlayerList.Count > 2.0 / 3.0)
+                if (TimeToStart > 15 && (float)readyPlayers / (float)PlayerList.Count > 3.0 / 5.0)
                 {
                     TimeToStart = 15;
                 }
@@ -4535,6 +4549,7 @@ namespace SFDScripts
         }
         public static void SaveData()
         {
+
             string data = OtherData;
             for (int i = 0; i < PlayerMenuList.Count; i++)
             {
