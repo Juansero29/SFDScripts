@@ -105,6 +105,8 @@ namespace SFDScripts
         //missile
         public static List<string> AllowedMissile = new List<string>(new string[] { "WpnKnife", "WpnKatana", "WpnAxe", "WpnShurikenThrown" });
 
+        public static bool IsDataSaved = false;
+
         public void AddUserAccessLevels()
         {
             //UserAccessList.Add("Admin", 2);
@@ -4003,13 +4005,11 @@ namespace SFDScripts
                     {
                         IUser currentUser = null;
                         currentUser = users[i];
-                        // DebugLogger.DebugOnlyDialogLog("ADDING MENUS FOR  " + users.Length + " active users, currently on user " + i.ToString() + " " + currentUser.Name, CameraPosition);
                         if (currentUser == null) continue;
                         if (currentUser.IsSpectator) continue;
 
                         if (PlayerList.Any(p => p.User.Name.Equals(currentUser.Name)))
                         {
-                            // DebugLogger.DebugOnlyDialogLog("Skipping player " + currentUser.Name + " because his menu was already added.", CameraPosition);
                             continue;
                         }
 
@@ -4024,7 +4024,7 @@ namespace SFDScripts
                         }
 
                         var player = new TPlayer(currentUser);
-                        PlayerList.Add(player);
+
 
                         if (availableMenus.Count == 0)
                         {
@@ -4037,9 +4037,49 @@ namespace SFDScripts
                         {
                             return;
                         }
-                        menu.SetPlayer(player);
-                        menu.Update();
+
                         availableMenus.RemoveAt(availableMenus.IndexOf(menu));
+
+                        try
+                        {
+                            if (!string.IsNullOrEmpty(OtherData))
+                            {
+                                // try to look for player in OtherData
+                                var playerList = OtherData.Split(';');
+
+                                for (int p = 0; p < playerList.Length; p++)
+                                {
+                                    string[] plData = playerList[p].Split(':');
+                                    if (plData.Length == 11)
+                                    {
+                                        List<string> list = new List<string>(plData);
+                                        list.RemoveAt(3);
+                                        plData = list.ToArray();
+                                    }
+
+                                    string name = FormatName(player.Name);
+                                    if (name == plData[0])
+                                    {
+                                        menu.SetPlayer(player);
+                                        player.Level = Math.Min(Convert.ToInt32(plData[1]), LevelList.Count - 1);
+                                        player.CurrentExp = Convert.ToInt32(plData[2]);
+                                        for (int u = 0; u < menu.Equipment.Count; u++)
+                                        {
+                                            menu.Equipment[u] = Convert.ToInt32(plData[3 + u]);
+                                        }
+                                        menu.ValidateEquipment();
+                                        break;
+                                    }
+
+                                }
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            Game.RunCommand("MSG COULDN'T LOAD DATA FOR " + player.Name);
+                        }
+
+                        PlayerList.Add(player);
                     }
 
                 }
@@ -4085,7 +4125,12 @@ namespace SFDScripts
                     }
                 }
 
-                LoadData();
+                // ONLY LOAD DATA ONCE PER GAME
+                if (OtherData == string.Empty)
+                {
+                    LoadData();
+                }
+
             }
             catch (Exception e)
             {
@@ -4100,8 +4145,8 @@ namespace SFDScripts
             if (GameState == 0)
             {
                 RefreshPlayerMenus();
-                
-                foreach(var p in PlayerList)
+
+                foreach (var p in PlayerList)
                 {
                     var player = p.User.GetPlayer();
                     PlayerModifiers mods = player.GetModifiers();
@@ -4317,7 +4362,10 @@ namespace SFDScripts
             }
             else if (GameState == -3)
             {
-                SaveData();
+                if (!IsDataSaved)
+                {
+                    SaveData();
+                }
 
                 if (TimeToStart <= 0)
                 {
@@ -4327,7 +4375,10 @@ namespace SFDScripts
             }
             else if (GameState == -4)
             {
-                SaveData();
+                if (!IsDataSaved)
+                {
+                    SaveData();
+                }
 
                 if (TimeToStart <= 0)
                 {
@@ -4559,6 +4610,10 @@ namespace SFDScripts
             }
 
             GlobalGame.LocalStorage.SetItem("SaveData", data);
+            IsDataSaved = true;
+
+            var playersSavedCount = data.Split(';').Count();
+            Game.RunCommand("MSG GAME SAVED " + playersSavedCount + " PLAYERS IN DATABASE");
             // GlobalGame.Data = "BEGIN" + "DATA" + data + "ENDDATA";
         }
 
@@ -4569,38 +4624,37 @@ namespace SFDScripts
             if (!status) data = "";
             // data = data.Replace("BEGIN" + "DATA", "").Replace("ENDDATA", "");
             string[] playerList = data.Split(';');
-            for (int i = 0; i < playerList.Length; i++)
+            var playersLoadedCount = data.Split(';').Count();
+            Game.RunCommand("MSG GAME LOADED " + playersLoadedCount + " PLAYERS FROM DATABASE");
+            for (int p = 0; p < playerList.Length; p++)
             {
-                string[] plData = playerList[i].Split(':');
+                string[] plData = playerList[p].Split(':');
                 if (plData.Length == 11)
                 {
                     List<string> list = new List<string>(plData);
                     list.RemoveAt(3);
                     plData = list.ToArray();
                 }
-                for (int j = 0; j < PlayerList.Count; j++)
+                for (int l = 0; l < PlayerList.Count; l++)
                 {
-                    string name = FormatName(PlayerList[j].Name);
+                    string name = FormatName(PlayerList[l].Name);
                     if (name == plData[0])
                     {
-                        PlayerMenuList[j].SetPlayer(PlayerList[j]);
-                        PlayerList[j].Level = Math.Min(Convert.ToInt32(plData[1]), LevelList.Count - 1);
-                        PlayerList[j].CurrentExp = Convert.ToInt32(plData[2]);
-                        for (int k = 0; k < PlayerMenuList[j].Equipment.Count; k++)
+                        PlayerMenuList[l].SetPlayer(PlayerList[l]);
+                        PlayerList[l].Level = Math.Min(Convert.ToInt32(plData[1]), LevelList.Count - 1);
+                        PlayerList[l].CurrentExp = Convert.ToInt32(plData[2]);
+                        for (int u = 0; u < PlayerMenuList[l].Equipment.Count; u++)
                         {
-                            PlayerMenuList[j].Equipment[k] = Convert.ToInt32(plData[3 + k]);
+                            PlayerMenuList[l].Equipment[u] = Convert.ToInt32(plData[3 + u]);
                         }
-                        PlayerMenuList[j].ValidateEquipment();
-                        playerList[i] = "";
+                        PlayerMenuList[l].ValidateEquipment();
+                        playerList[p] = "";
                         break;
                     }
                 }
-            }
-            for (int i = 0; i < playerList.Length; i++)
-            {
-                if (playerList[i] != "")
+                if (playerList[p] != "")
                 {
-                    OtherData += playerList[i] + ";";
+                    OtherData += playerList[p] + ";";
                 }
             }
         }
