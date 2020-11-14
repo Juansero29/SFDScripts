@@ -3718,7 +3718,7 @@ namespace SFDScripts
 
             BeginTimer = (IObjectText)Game.GetSingleObjectByCustomId("BeginTimer");
 
-            AddUserAccessLevels();
+            // AddUserAccessLevels();
             // GlobalGame.RunCommand("IE 1");
 
             VisionObjects.Add("Concrete01A", 3);
@@ -3876,20 +3876,20 @@ namespace SFDScripts
                 //human 0
                 AddLevel("Private", 0, 100);
                 AddLevel("First Private", 100, 125);
-                AddLevel("Specialist", 120, 150);
-                AddLevel("Corporal", 140, 175);
-                AddLevel("Sergeant", 160, 200);
-                AddLevel("Staff Sergeant", 180, 200);
-                AddLevel("Master Sergeant", 200, 225);
-                AddLevel("Master Sergeant II", 220, 225);
-                AddLevel("First Sergeant", 240, 250);
-                AddLevel("Second Lieutenant", 260, 275);
-                AddLevel("First Lieutenant", 280, 275);
-                AddLevel("Captain", 300, 300);
-                AddLevel("Major", 320, 325);
-                AddLevel("Colonel", 440, 350);
-                AddLevel("Colonel II", 500, 350);
-                AddLevel("General", 600, 350);
+                AddLevel("Specialist", 150, 150);
+                AddLevel("Corporal", 200, 175);
+                AddLevel("Sergeant", 250, 200);
+                AddLevel("Staff Sergeant", 350, 200);
+                AddLevel("Master Sergeant", 400, 225);
+                AddLevel("Master Sergeant II", 470, 225);
+                AddLevel("First Sergeant", 550, 250);
+                AddLevel("Second Lieutenant", 620, 275);
+                AddLevel("First Lieutenant", 690, 275);
+                AddLevel("Captain", 800, 300);
+                AddLevel("Major", 900, 325);
+                AddLevel("Colonel", 1000, 350);
+                AddLevel("Colonel II", 1200, 350);
+                AddLevel("General", 1500, 350);
             }
 
             //Game.RunCommand("MSG HARDCORE: Loading maps...");
@@ -4268,13 +4268,13 @@ namespace SFDScripts
                         GameState = 1;
                         TimeToStart = 5;
                         AddTeamExp(10, 4, PlayerTeam.Team2, false);
-                        Game.RunCommand("MSG RED WON THIS ROUND!");
+                        Game.RunCommand("MSG RED TEAM WON THIS ROUND!");
                         Game.RunCommand("MSG RED: " + mapPart.RedRoundsWon + " - BLUE: " + mapPart.BlueRoundsWon);
                         Game.RunCommand("MSG STARTING NEXT ROUND (" + MapPartList[CurrentMapPartIndex].CurrentRound + "/" + NumberOfRoundsPerMapPart + ")");
                     }
                     else
                     {
-                        Game.RunCommand("MSG RED WAS THE BEST OF " + NumberOfRoundsPerMapPart + "!");
+                        Game.RunCommand("MSG RED TEAM WAS THE BEST OF " + NumberOfRoundsPerMapPart + "!");
                         AddTeamExp(30 + NumberOfRoundsPerMapPart, 4, PlayerTeam.Team2, false);
                         GameState = -2;
                         TimeToStart = 15;
@@ -4321,7 +4321,7 @@ namespace SFDScripts
 
                 if (TimeToStart <= 0)
                 {
-                    Game.SetGameOver("BLUE TEAM WINS");
+                    Game.SetGameOver("BLUE TEAM WINS!");
 
                 }
             }
@@ -4331,7 +4331,7 @@ namespace SFDScripts
 
                 if (TimeToStart <= 0)
                 {
-                    Game.SetGameOver("RED TEAM WINS");
+                    Game.SetGameOver("RED TEAM WINS!");
                 }
             }
             UpdateCamera();
@@ -4383,7 +4383,7 @@ namespace SFDScripts
                         readyPlayers++;
                     }
                 }
-                if (TimeToStart > 15 && (float)readyPlayers / (float)PlayerList.Count > 3.0 / 5.0)
+                if (TimeToStart > 15 && (float)readyPlayers / (float)PlayerList.Count >= 2.0 / 3.0)
                 {
                     TimeToStart = 15;
                 }
@@ -4549,14 +4549,17 @@ namespace SFDScripts
         }
         public static void SaveData()
         {
+            // clear the file before so that data doesn't get inserted at the end of file
+            GlobalGame.LocalStorage.Clear();
 
             string data = OtherData;
             for (int i = 0; i < PlayerMenuList.Count; i++)
             {
                 data += PlayerMenuList[i].Save();
             }
+
             GlobalGame.LocalStorage.SetItem("SaveData", data);
-            //GlobalGame.Data = "BEGIN" + "DATA" + data + "ENDDATA";
+            // GlobalGame.Data = "BEGIN" + "DATA" + data + "ENDDATA";
         }
 
         public static void LoadData()
@@ -4564,7 +4567,7 @@ namespace SFDScripts
             string data = "";
             bool status = GlobalGame.LocalStorage.TryGetItemString("SaveData", out data);
             if (!status) data = "";
-            data = data.Replace("BEGIN" + "DATA", "").Replace("ENDDATA", "");
+            // data = data.Replace("BEGIN" + "DATA", "").Replace("ENDDATA", "");
             string[] playerList = data.Split(';');
             for (int i = 0; i < playerList.Length; i++)
             {
