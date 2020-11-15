@@ -40,14 +40,49 @@ namespace SFDScripts
         /// 100 - no enough players to start the game
         /// </summary>
         public static int GameState = 0;
+
         public static Random GlobalRandom = new Random();
+
+
+        /// <summary>
+        /// The number of map parts in this map. For each map part, an startup process
+        /// will be done in the 'OnStartup' method.
+        /// </summary>
+        public static int NumberOfMapParts;
+
+
+        /// <summary>
+        /// Is the debug mode enabled
+        /// </summary>
+        /// <remakrs>
+        /// Changes the game a little bit :
+        /// - Never finishes a matches by player's death
+        /// - Doesn't show timer
+        /// - Doesn't end the game when there isn't enough players
+        /// </remakrs>
         public static bool IsDebug = false;
-        public static bool ShowDebugMessages = true;
+
+        /// <summary>
+        /// Defines wether we want to show the debug messages or not
+        /// </summary>
+        public static bool ShowDebugMessages = false;
+
+        /// <summary>
+        /// Defines wether we want to allow players to keep their skins or not
+        /// </summary>
+        public static bool KeepPlayersSkins = false;
 
         public static IObjectTrigger UpdateTrigger;
         public static IObjectTimerTrigger BeginTimerTrigger;
 
+        /// <summary>
+        /// Defines the map part that we should start on
+        /// </summary>
         public static int CurrentMapPartIndex = 0;
+
+        /// <summary>
+        /// Defines the number of rounds per map part
+        /// </summary>
         public static int NumberOfRoundsPerMapPart = 3;
         public static Vector2 CameraPosition;
         public static float CameraSpeed = 2.0f;
@@ -66,7 +101,7 @@ namespace SFDScripts
         public static float MinDivingHeight = 50;
 
         //air
-        public static int WorldTop = 610;
+        public static int WorldTop = 500;
         public static List<TPlayerStrikeInfo> AirPlayerList = new List<TPlayerStrikeInfo>();
 
         //data
@@ -90,8 +125,12 @@ namespace SFDScripts
         public static List<TShieldGenerator> ShieldGeneratorList = new List<TShieldGenerator>();
 
         //drones
-        public static Vector2 DroneAreaBegin = new Vector2(-1168, -272);
-        public static Vector2 DroneAreaSize = new Vector2(308, 150);
+        //public static Vector2 DroneAreaBegin = new Vector2(-1168, -272);
+        //public static Vector2 DroneAreaSize = new Vector2(308, 150);
+
+        //drones
+        public static Vector2 DroneAreaBegin = new Vector2(1000, 0);
+        public static Vector2 DroneAreaSize = new Vector2(1000, 1152);
         public static List<List<int>> DroneMap1x1 = new List<List<int>>();
 
 
@@ -586,6 +625,12 @@ namespace SFDScripts
             public IObjectText Object;
             public int DefaultCaptureProgress = 0;
             public int CaptureProgress = 0;
+
+            /// <summary>
+            /// Builds a capture point
+            /// </summary>
+            /// <param name="obj">The text that shows the capture point</param>
+            /// <param name="captureProgress">The capture progress. -100 for red team, 100 for blue team, 0 for neutral</param>
             public TCapturePoint(IObjectText obj, int captureProgress)
             {
                 Object = obj;
@@ -694,29 +739,46 @@ namespace SFDScripts
                     _PlayersHaveSpawned = true;
                 }
 
-                for (int i = 0; i < PlayerList.Count; i++)
+                if(_PlayersHaveSpawned)
                 {
-                    var p = PlayerList[i];
-                    if (p.User != null && p.User.GetPlayer() != null)
+                    var activeUsers = Game.GetActiveUsers();
+                    for (int i = 0; i < activeUsers.Length; i++)
                     {
-                        var body = p.User.GetPlayer();
-                        if (body.GetWorldPosition().Y > 500)
+
+                        var u = activeUsers[i];
+                        if (u != null && u.GetPlayer() != null)
                         {
-                            var menu = PlayerMenuList.Where(m => m.Player.Name.Equals(p.User.Name)).FirstOrDefault();
-                            DebugLogger.DebugOnlyDialogLog("PLAYER " + p.User.Name + " DIDN'T SPAWNED CORRECTLY. TELEPORTING THEM");
-
-                            if (body.GetTeam() == PlayerTeam.Team1)
+                            var body = u.GetPlayer();
+                            if (body.GetWorldPosition().Y > WorldTop)
                             {
-                                body.SetWorldPosition(BlueSpawnPosition[0].GetWorldPosition());
+                                var menu = PlayerMenuList.Where(m => m.Player.Name.Equals(u.Name)).FirstOrDefault();
+                                DebugLogger.DebugOnlyDialogLog("PLAYER " + u.Name + " DIDN'T SPAWNED CORRECTLY. TELEPORTING THEM");
 
-                            }
-                            else
-                            {
-                                body.SetWorldPosition(RedSpawnPosition[0].GetWorldPosition());
+                                var player = PlayerList.Where(p => p.Name.Equals(u.Name)).FirstOrDefault();
+                                if(player != null)
+                                {
+                                    DebugLogger.DebugOnlyDialogLog("PLAYER " + player.Name + " EXISTS IN PlayerList");
+                                }
+                                else
+                                {
+                                    DebugLogger.DebugOnlyDialogLog("PLAYER " + player.Name + " DOESN'T EXIST IN PlayerList");
+                                }
+                                DebugLogger.DebugOnlyDialogLog("PLAYER " + u.Name + " DIDN'T SPAWNED CORRECTLY. TELEPORTING THEM");
+
+                                if (body.GetTeam() == PlayerTeam.Team1)
+                                {
+                                    body.SetWorldPosition(BlueSpawnPosition[0].GetWorldPosition());
+
+                                }
+                                else
+                                {
+                                    body.SetWorldPosition(RedSpawnPosition[0].GetWorldPosition());
+                                }
                             }
                         }
                     }
                 }
+               
 
                 if (CapturedBy != 0) return 0;
                 bool blueWin = true;
@@ -788,7 +850,7 @@ namespace SFDScripts
             public string Save(bool saveOnlyIfActive = true)
             {
                 if (Player == null) return "";
-                if(saveOnlyIfActive)
+                if (saveOnlyIfActive)
                 {
                     if (!Player.IsActive()) return "";
                 }
@@ -1088,7 +1150,16 @@ namespace SFDScripts
                         Player.AddEquipment(EquipmentList[i].EquipmentList[Equipment[i]].Id, i);
                     }
                 }
-                newPlayer.SetProfile(Player.GetSkin());
+
+                if (KeepPlayersSkins)
+                {
+                    newPlayer.SetProfile(Player.User.GetProfile());
+                }
+                else
+                {
+                    newPlayer.SetProfile(Player.GetSkin());
+                }
+
                 Player.OnPlayerCreated();
                 newPlayer.SetInputEnabled(false);
             }
@@ -3191,7 +3262,15 @@ namespace SFDScripts
                 else position = new Vector2(x, y);
                 if (pl != null) pl.Remove();
                 pl = GlobalGame.CreatePlayer(position);
-                pl.SetProfile(GetSkin());
+
+                if (KeepPlayersSkins)
+                {
+                    pl.SetProfile(pl.GetUser().GetProfile());
+                }
+                else
+                {
+                    pl.SetProfile(GetSkin());
+                }
                 pl.SetUser(User);
                 pl.SetTeam(Team);
                 //pl.SetStatusBarsVisible(false);
@@ -3736,7 +3815,6 @@ namespace SFDScripts
 
         public void OnStartup()
         {
-
             Game.StartupSequenceEnabled = false;
             Game.DeathSequenceEnabled = false;
             GlobalGame = Game;
@@ -3892,7 +3970,7 @@ namespace SFDScripts
             equipmentSlot.AddEquipment(16, 175, 14, "Sniper Turret", "Automatically shoots at enemies in range of the sniper.", 1);
             equipmentSlot.AddEquipment(17, 50, 4, "Police Shield", "Protects you from some bullets.");
             equipmentSlot.AddEquipment(18, 50, 3, "Adrenaline", "Gives temporary immunity to damage. You will receive all damage when adrenaline is over.", 1);
-            //equipmentSlot.AddEquipment(19, 200, 15, "Shield Generator", "Creates an energy shield that protects from bullets and enemies.", 2);
+            // equipmentSlot.AddEquipment(19, 200, 15, "Shield Generator", "Creates an energy shield that protects from bullets and enemies.", 2);
             equipmentSlot.AddEquipment(20, 100, 15, "Jet Pack", "Allows you to make jet jumps. And protect from falling.");
 
             //armor
@@ -3928,25 +4006,26 @@ namespace SFDScripts
 
 
             // only one map for the moment
-            for (int i = 0; i < 1; i++)
+            for (int i = 0; i < NumberOfMapParts - 1; i++)
             {
                 MapPartList.Add(new TMapPart());
+                var mapPosition = GlobalGame.GetSingleObjectByCustomId("Map" + i + "CameraPosition").GetWorldPosition();
+                MapPartList[i].MapPosition = new Vector2((float)Math.Round(mapPosition.X), (float)Math.Round(mapPosition.Y));
+
+                MapPartList[i].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point" + i +"0"), 100));
+                MapPartList[i].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point" + i +"1"), 0));
+                MapPartList[i].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point" + i + "2"), -100));
+                //MapPartList[0].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point" + i + "..."), 0));
+                for (int j = 0; j < 8; j++)
+                {
+                    var redSpawn = Game.GetSingleObjectByCustomId("RedSpawnPoint0" + i);
+                    var blueSpawn = Game.GetSingleObjectByCustomId("BlueSpawnPoint0" + i);
+                    MapPartList[i].RedSpawnPosition.Add(redSpawn);
+                    MapPartList[i].BlueSpawnPosition.Add(blueSpawn);
+                }
             }
             //1
-            var firstMapPosition = GlobalGame.GetSingleObjectByCustomId("Map0CameraPosition").GetWorldPosition();
-            MapPartList[0].MapPosition = new Vector2((float)Math.Round(firstMapPosition.X), (float)Math.Round(firstMapPosition.Y));
 
-            MapPartList[0].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point00"), -100));
-            MapPartList[0].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point01"), 100));
-            MapPartList[0].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point02"), 0));
-            //MapPartList[0].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point03"), 0));
-            for (int i = 0; i < 8; i++)
-            {
-                var redSpawn = Game.GetSingleObjectByCustomId("RedSpawnPoint0" + i);
-                var blueSpawn = Game.GetSingleObjectByCustomId("BlueSpawnPoint0" + i);
-                MapPartList[0].RedSpawnPosition.Add(redSpawn);
-                MapPartList[0].BlueSpawnPosition.Add(blueSpawn);
-            }
 
 
             ////2
@@ -4680,7 +4759,7 @@ namespace SFDScripts
             IsDataSaved = true;
 
             var playersSavedCount = data.Split(';').Count();
-            //Game.RunCommand("MSG GAME SAVED " + playersSavedCount + " PLAYERS IN DATABASE");
+            DebugLogger.DebugOnlyDialogLog("GAME SAVED " + playersSavedCount + " PLAYERS IN DATABASE");
             // GlobalGame.Data = "BEGIN" + "DATA" + data + "ENDDATA";
         }
 
@@ -4692,7 +4771,7 @@ namespace SFDScripts
             // data = data.Replace("BEGIN" + "DATA", "").Replace("ENDDATA", "");
             string[] playerList = data.Split(';');
             var playersLoadedCount = data.Split(';').Count();
-            // Game.RunCommand("MSG GAME LOADED " + playersLoadedCount + " PLAYERS FROM DATABASE");
+            DebugLogger.DebugOnlyDialogLog("GAME LOADED " + playersLoadedCount + " PLAYERS FROM DATABASE");
             for (int p = 0; p < playerList.Length; p++)
             {
                 string[] plData = playerList[p].Split(':');
