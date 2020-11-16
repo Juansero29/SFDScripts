@@ -48,7 +48,7 @@ namespace SFDScripts
         /// The number of map parts in this map. For each map part, an startup process
         /// will be done in the 'OnStartup' method.
         /// </summary>
-        public static int NumberOfMapParts;
+        public static int NumberOfMapParts = 3;
 
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace SFDScripts
         /// <summary>
         /// Defines wether we want to show the debug messages or not
         /// </summary>
-        public static bool ShowDebugMessages = false;
+        public static bool ShowDebugMessages = true;
 
         /// <summary>
         /// Defines wether we want to allow players to keep their skins or not
@@ -78,12 +78,15 @@ namespace SFDScripts
         /// <summary>
         /// Defines the map part that we should start on
         /// </summary>
-        public static int CurrentMapPartIndex = 0;
+        public static int CurrentMapPartIndex = 1;
 
         /// <summary>
-        /// Defines the number of rounds per map part
+        /// Defines the number of wins required per map part to advance
         /// </summary>
-        public static int NumberOfRoundsPerMapPart = 3;
+        /// <remarks>
+        /// Has to be an uneven number to avoid ties.
+        /// </remarks>
+        public static int RoundsPerMapPart = 3;
         public static Vector2 CameraPosition;
         public static float CameraSpeed = 2.0f;
 
@@ -124,13 +127,17 @@ namespace SFDScripts
         //shield generators
         public static List<TShieldGenerator> ShieldGeneratorList = new List<TShieldGenerator>();
 
-        //drones
-        //public static Vector2 DroneAreaBegin = new Vector2(-1168, -272);
-        //public static Vector2 DroneAreaSize = new Vector2(308, 150);
+        #region Drones
+        /// <summary>
+        /// Left bottom corner spot of the map. (x and  y coordinates)
+        /// </summary>
+        public static Vector2 DroneAreaBegin = new Vector2(442, 218);
+        /// <summary>
+        /// An area that covers each of the map parts (x = width, y = height)
+        /// </summary>
+        public static Vector2 DroneAreaSize = new Vector2(600, 300); 
+        #endregion
 
-        //drones
-        public static Vector2 DroneAreaBegin = new Vector2(1000, 0);
-        public static Vector2 DroneAreaSize = new Vector2(1000, 1152);
         public static List<List<int>> DroneMap1x1 = new List<List<int>>();
 
 
@@ -147,6 +154,7 @@ namespace SFDScripts
 
         public static bool IsDataSaved = false;
 
+        public static bool IsFirstMatch = true;
         public void AddUserAccessLevels()
         {
             //UserAccessList.Add("Admin", 2);
@@ -707,6 +715,7 @@ namespace SFDScripts
                 {
                     WeatherType weather = GlobalGame.GetWeatherType();
                     if (weather == WeatherType.None) GlobalGame.SetWeatherType(WeatherType.Rain);
+                    if (weather == WeatherType.Rain) GlobalGame.SetWeatherType(WeatherType.Snow);
                     else GlobalGame.SetWeatherType(WeatherType.None);
                 }
             }
@@ -739,7 +748,7 @@ namespace SFDScripts
                     _PlayersHaveSpawned = true;
                 }
 
-                if(_PlayersHaveSpawned)
+                if (_PlayersHaveSpawned)
                 {
                     var activeUsers = Game.GetActiveUsers();
                     for (int i = 0; i < activeUsers.Length; i++)
@@ -755,7 +764,7 @@ namespace SFDScripts
                                 DebugLogger.DebugOnlyDialogLog("PLAYER " + u.Name + " DIDN'T SPAWNED CORRECTLY. TELEPORTING THEM");
 
                                 var player = PlayerList.Where(p => p.Name.Equals(u.Name)).FirstOrDefault();
-                                if(player != null)
+                                if (player != null)
                                 {
                                     DebugLogger.DebugOnlyDialogLog("PLAYER " + player.Name + " EXISTS IN PlayerList");
                                 }
@@ -763,8 +772,8 @@ namespace SFDScripts
                                 {
                                     DebugLogger.DebugOnlyDialogLog("PLAYER " + player.Name + " DOESN'T EXIST IN PlayerList");
                                 }
-                                DebugLogger.DebugOnlyDialogLog("PLAYER " + u.Name + " DIDN'T SPAWNED CORRECTLY. TELEPORTING THEM");
 
+                                DebugLogger.DebugOnlyDialogLog("PLAYER " + u.Name + " DIDN'T SPAWNED CORRECTLY. TELEPORTING THEM");
                                 if (body.GetTeam() == PlayerTeam.Team1)
                                 {
                                     body.SetWorldPosition(BlueSpawnPosition[0].GetWorldPosition());
@@ -778,7 +787,7 @@ namespace SFDScripts
                         }
                     }
                 }
-               
+
 
                 if (CapturedBy != 0) return 0;
                 bool blueWin = true;
@@ -3818,6 +3827,7 @@ namespace SFDScripts
             Game.StartupSequenceEnabled = false;
             Game.DeathSequenceEnabled = false;
             GlobalGame = Game;
+            CurrentMapPartIndex = CurrentMapPartIndex;
             GlobalGame.SetAllowedCameraModes(CameraMode.Static);
             var menuCameraPosition = GlobalGame.GetSingleObjectByCustomId("MenuCameraPosition").GetWorldPosition();
             CameraPosition.X = menuCameraPosition.X;
@@ -4005,58 +4015,35 @@ namespace SFDScripts
             //Game.RunCommand("MSG HARDCORE: Loading maps...");
 
 
-            // only one map for the moment
-            for (int i = 0; i < NumberOfMapParts - 1; i++)
+            // load different map parts
+            for (int i = 0; i < NumberOfMapParts; i++)
             {
                 MapPartList.Add(new TMapPart());
                 var mapPosition = GlobalGame.GetSingleObjectByCustomId("Map" + i + "CameraPosition").GetWorldPosition();
                 MapPartList[i].MapPosition = new Vector2((float)Math.Round(mapPosition.X), (float)Math.Round(mapPosition.Y));
 
-                MapPartList[i].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point" + i +"0"), 100));
-                MapPartList[i].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point" + i +"1"), 0));
-                MapPartList[i].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point" + i + "2"), -100));
+                MapPartList[i].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point" + i + "0"), -100));
+                MapPartList[i].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point" + i + "1"), 0));
+                MapPartList[i].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point" + i + "2"), 100));
                 //MapPartList[0].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point" + i + "..."), 0));
                 for (int j = 0; j < 8; j++)
                 {
-                    var redSpawn = Game.GetSingleObjectByCustomId("RedSpawnPoint0" + i);
-                    var blueSpawn = Game.GetSingleObjectByCustomId("BlueSpawnPoint0" + i);
+                    var redSpawn = Game.GetSingleObjectByCustomId("RedSpawnPoint" + i + j);
+                    var blueSpawn = Game.GetSingleObjectByCustomId("BlueSpawnPoint" + i + j);
                     MapPartList[i].RedSpawnPosition.Add(redSpawn);
                     MapPartList[i].BlueSpawnPosition.Add(blueSpawn);
                 }
             }
-            //1
 
 
 
-            ////2
-            //MapPartList[1].MapPosition = new Vector2(-352, 256);
-            //MapPartList[1].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point10"), -100));
-            //MapPartList[1].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point11"), 100));
-            //MapPartList[1].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point12"), 0));
-            //for (int i = 0; i < 8; i++)
-            //{
-            //    MapPartList[1].RedSpawnPosition.Add(Game.GetSingleObjectByCustomId("RedSpawnPoint1" + i));
-            //    MapPartList[1].BlueSpawnPosition.Add(Game.GetSingleObjectByCustomId("BlueSpawnPoint1" + i));
-            //}
 
-            ////3
-            //MapPartList[2].MapPosition = new Vector2(416, 256);
-            //MapPartList[2].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point20"), -100));
-            //MapPartList[2].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point21"), 100));
-            //MapPartList[2].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point22"), 0));
-            ////MapPartList[2].PointList.Add(new TCapturePoint((IObjectText)Game.GetSingleObjectByCustomId("Point23"), 0));
-            //for (int i = 0; i < 8; i++)
-            //{
-            //    MapPartList[2].RedSpawnPosition.Add(Game.GetSingleObjectByCustomId("RedSpawnPoint2" + i));
-            //    MapPartList[2].BlueSpawnPosition.Add(Game.GetSingleObjectByCustomId("BlueSpawnPoint2" + i));
-            //}
             GenerateDroneMap();
             //Game.RunCommand("MSG HARDCORE: Loading players...");
             PreparePlayerMenus();
             RefreshPlayerMenus();
             //if (Game.Data == "") Game.Data = SavedData;
 
-            CurrentMapPartIndex = 0;
             CameraSpeed = 2.0f;
             CameraPosition.X = Game.GetCameraArea().Left;
             CameraPosition.Y = Game.GetCameraArea().Top;
@@ -4229,7 +4216,7 @@ namespace SFDScripts
                         TPlayerMenu menu = null;
                         try
                         {
-                            menu = PlayerMenuList.ElementAtOrDefault(i);
+                            menu = PlayerMenuList.Where(m => m.Player.Name.Equals(m.Player)).FirstOrDefault();
                         }
                         catch (Exception)
                         {
@@ -4326,7 +4313,7 @@ namespace SFDScripts
 
                     if (Game.GetCameraArea().Left == CameraPosition.X && Game.GetCameraArea().Top == CameraPosition.Y)
                     {
-                        if (MapPartList[CurrentMapPartIndex].CurrentRound == 1)
+                        if (IsFirstMatch)
                         {
                             TeamBalance();
                         }
@@ -4400,69 +4387,95 @@ namespace SFDScripts
                 }
                 else if (GameState == 4)
                 {
+                    System.Diagnostics.Debugger.Break();
                     GlobalGame.SetAllowedCameraModes(CameraMode.Static);
                     var mapPart = MapPartList[CurrentMapPartIndex];
                     mapPart.BlueRoundsWon++;
+                    MapPartList[CurrentMapPartIndex].Restart();
                     AddTeamExp(10, 3, PlayerTeam.Team1, false);
-                    if (CurrentMapPartIndex > 0)
+
+                    if (mapPart.CurrentRound < RoundsPerMapPart && mapPart.BlueRoundsWon != RoundsPerMapPart - 1)
                     {
-                        CurrentMapPartIndex--;
+                        // won this round, but not enough to advance
+                        RemoveWeapons();
                         GameState = 1;
+                        TimeToStart = 5;
+                        AddTeamExp(10, 4, PlayerTeam.Team1, false);
+                        Game.RunCommand("MSG BLUE WON THIS ROUND!");
+                        Game.RunCommand("MSG RED: " + mapPart.RedRoundsWon + " - BLUE: " + mapPart.BlueRoundsWon);
+                        Game.RunCommand("MSG STARTING NEXT ROUND (" + MapPartList[CurrentMapPartIndex].CurrentRound + "/" + RoundsPerMapPart + ")");
                     }
                     else
                     {
-                        if (mapPart.CurrentRound < NumberOfRoundsPerMapPart && mapPart.BlueRoundsWon != NumberOfRoundsPerMapPart - 1)
+                        // won this round, and it's enough to advance
+                        if (RoundsPerMapPart > 1)
                         {
-                            RemoveWeapons();
-                            MapPartList[CurrentMapPartIndex].Restart();
-                            GameState = 1;
+                            // more than one win was needed to advance
+                            Game.RunCommand("MSG BLUE WAS THE BEST OF " + RoundsPerMapPart + "!");
+                            AddTeamExp(30 + RoundsPerMapPart, 4, PlayerTeam.Team1, false);
+                            mapPart.RedRoundsWon = 0;
+                            mapPart.BlueRoundsWon = 0;
                             TimeToStart = 5;
-                            AddTeamExp(10, 4, PlayerTeam.Team1, false);
-                            Game.RunCommand("MSG BLUE WON THIS ROUND!");
-                            Game.RunCommand("MSG RED: " + mapPart.RedRoundsWon + " - BLUE: " + mapPart.BlueRoundsWon);
-                            Game.RunCommand("MSG STARTING NEXT ROUND (" + MapPartList[CurrentMapPartIndex].CurrentRound + "/" + NumberOfRoundsPerMapPart + ")");
+                        }
+
+                        if (CurrentMapPartIndex > 0)
+                        {
+                            CurrentMapPartIndex--;
+                            IsFirstMatch = false;
+                            GameState = 1;
                         }
                         else
                         {
-                            Game.RunCommand("MSG BLUE WAS THE BEST OF " + NumberOfRoundsPerMapPart + "!");
-                            AddTeamExp(30 + NumberOfRoundsPerMapPart, 4, PlayerTeam.Team1, false);
                             GameState = -1;
-                            TimeToStart = 15;
                         }
                     }
                 }
                 else if (GameState == 5)
                 {
+                    System.Diagnostics.Debugger.Break();
                     GlobalGame.SetAllowedCameraModes(CameraMode.Static);
                     var mapPart = MapPartList[CurrentMapPartIndex];
                     mapPart.RedRoundsWon++;
+                    mapPart.Restart();
                     AddTeamExp(10, 3, PlayerTeam.Team2, false);
-                    if (CurrentMapPartIndex < MapPartList.Count - 1)
+
+                    if (mapPart.CurrentRound < RoundsPerMapPart && mapPart.RedRoundsWon != RoundsPerMapPart - 1)
                     {
-                        CurrentMapPartIndex++;
+                        RemoveWeapons();
                         GameState = 1;
+                        TimeToStart = 5;
+                        AddTeamExp(10, 4, PlayerTeam.Team2, false);
+                        Game.RunCommand("MSG RED TEAM WON THIS ROUND!");
+                        Game.RunCommand("MSG RED: " + mapPart.RedRoundsWon + " - BLUE: " + mapPart.BlueRoundsWon);
+                        Game.RunCommand("MSG STARTING NEXT ROUND (" + MapPartList[CurrentMapPartIndex].CurrentRound + "/" + RoundsPerMapPart + ")");
                     }
                     else
                     {
-                        if (mapPart.CurrentRound < NumberOfRoundsPerMapPart && mapPart.RedRoundsWon != NumberOfRoundsPerMapPart - 1)
+                        //  won this round, and it's enough to advance
+
+                        if (RoundsPerMapPart > 1)
                         {
-                            RemoveWeapons();
-                            MapPartList[CurrentMapPartIndex].Restart();
-                            GameState = 1;
+                            // more than one win was needed to advance
+                            Game.RunCommand("MSG RED TEAM WAS THE BEST OF " + RoundsPerMapPart + "!");
+                            AddTeamExp(30 + RoundsPerMapPart, 4, PlayerTeam.Team2, false);
+                            mapPart.RedRoundsWon = 0;
+                            mapPart.BlueRoundsWon = 0;
                             TimeToStart = 5;
-                            AddTeamExp(10, 4, PlayerTeam.Team2, false);
-                            Game.RunCommand("MSG RED TEAM WON THIS ROUND!");
-                            Game.RunCommand("MSG RED: " + mapPart.RedRoundsWon + " - BLUE: " + mapPart.BlueRoundsWon);
-                            Game.RunCommand("MSG STARTING NEXT ROUND (" + MapPartList[CurrentMapPartIndex].CurrentRound + "/" + NumberOfRoundsPerMapPart + ")");
+                        }
+
+                        if (CurrentMapPartIndex < MapPartList.Count - 1)
+                        {
+                            CurrentMapPartIndex++;
+                            IsFirstMatch = false;
+                            GameState = 1;
                         }
                         else
                         {
-                            Game.RunCommand("MSG RED TEAM WAS THE BEST OF " + NumberOfRoundsPerMapPart + "!");
-                            AddTeamExp(30 + NumberOfRoundsPerMapPart, 4, PlayerTeam.Team2, false);
                             GameState = -2;
-                            TimeToStart = 15;
                         }
                     }
+
+
                 }
                 else if (GameState == 6)
                 {
@@ -4597,7 +4610,7 @@ namespace SFDScripts
                 if (TimeToStart == 0)
                 {
                     GameState = 1;
-                    Game.RunCommand("MSG BEST OF " + NumberOfRoundsPerMapPart + " WINS!");
+                    Game.RunCommand("MSG BEST OF " + RoundsPerMapPart + " WINS!");
                     BeginTimer.SetText("");
                 }
             }
