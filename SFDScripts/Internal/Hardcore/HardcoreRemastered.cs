@@ -830,7 +830,6 @@ namespace SFDScripts.Internal.Hardcore
 
             public void Restart()
             {
-                CurrentRound++;
                 for (int i = 0; i < PlayerList.Count; i++)
                 {
                     var p = PlayerList[i];
@@ -4412,8 +4411,10 @@ namespace SFDScripts.Internal.Hardcore
                         GameState = 1;
                         TimeToStart = 5;
                         AddTeamExp(10, 4, PlayerTeam.Team1, false);
+                        IsFirstMatch = false;
                         Game.RunCommand("MSG BLUE WON THIS ROUND!");
                         Game.RunCommand("MSG RED: " + mapPart.RedRoundsWon + " - BLUE: " + mapPart.BlueRoundsWon);
+                        mapPart.CurrentRound++;
                         Game.RunCommand("MSG STARTING NEXT ROUND (" + MapPartList[CurrentMapPartIndex].CurrentRound + "/" + RoundsPerMapPart + ")");
                     }
                     else
@@ -4423,7 +4424,6 @@ namespace SFDScripts.Internal.Hardcore
                         {
                             // more than one win was needed to advance
                             Game.RunCommand("MSG BLUE WAS THE BEST OF " + RoundsPerMapPart + "!");
-                            AddTeamExp(30 + RoundsPerMapPart, 4, PlayerTeam.Team1, false);
                             mapPart.RedRoundsWon = 0;
                             mapPart.BlueRoundsWon = 0;
                             TimeToStart = 5;
@@ -4437,6 +4437,7 @@ namespace SFDScripts.Internal.Hardcore
                         }
                         else
                         {
+                            AddTeamExp(30 + RoundsPerMapPart, 4, PlayerTeam.Team1, false);
                             GameState = -1;
                         }
                     }
@@ -4455,9 +4456,11 @@ namespace SFDScripts.Internal.Hardcore
                         RemoveWeapons();
                         GameState = 1;
                         TimeToStart = 5;
+                        IsFirstMatch = false;
                         AddTeamExp(10, 4, PlayerTeam.Team2, false);
                         Game.RunCommand("MSG RED TEAM WON THIS ROUND!");
                         Game.RunCommand("MSG RED: " + mapPart.RedRoundsWon + " - BLUE: " + mapPart.BlueRoundsWon);
+                        mapPart.CurrentRound++;
                         Game.RunCommand("MSG STARTING NEXT ROUND (" + MapPartList[CurrentMapPartIndex].CurrentRound + "/" + RoundsPerMapPart + ")");
                     }
                     else
@@ -4468,7 +4471,6 @@ namespace SFDScripts.Internal.Hardcore
                         {
                             // more than one win was needed to advance
                             Game.RunCommand("MSG RED TEAM WAS THE BEST OF " + RoundsPerMapPart + "!");
-                            AddTeamExp(30 + RoundsPerMapPart, 4, PlayerTeam.Team2, false);
                             mapPart.RedRoundsWon = 0;
                             mapPart.BlueRoundsWon = 0;
                             TimeToStart = 5;
@@ -4482,6 +4484,7 @@ namespace SFDScripts.Internal.Hardcore
                         }
                         else
                         {
+                            AddTeamExp(30 + RoundsPerMapPart, 4, PlayerTeam.Team2, false);
                             GameState = -2;
                         }
                     }
@@ -4771,15 +4774,14 @@ namespace SFDScripts.Internal.Hardcore
         public static void SaveData()
         {
             // clear the file before so that data doesn't get inserted at the end of file
-            GlobalGame.LocalStorage.Clear();
-
+            GlobalGame.GetSharedStorage("HARDCORE").Clear();
             string data = OtherData;
             for (int i = 0; i < PlayerMenuList.Count; i++)
             {
                 data += PlayerMenuList[i].Save();
             }
 
-            GlobalGame.LocalStorage.SetItem("SaveData", data);
+            GlobalGame.GetSharedStorage("HARDCORE").SetItem("SaveData", data);
             IsDataSaved = true;
 
             var playersSavedCount = data.Split(';').Count();
@@ -4790,7 +4792,7 @@ namespace SFDScripts.Internal.Hardcore
         public static void LoadData()
         {
             string data = "";
-            bool status = GlobalGame.LocalStorage.TryGetItemString("SaveData", out data);
+            bool status = GlobalGame.GetSharedStorage("HARDCORE").TryGetItemString("SaveData", out data);
             if (!status) data = "";
             // data = data.Replace("BEGIN" + "DATA", "").Replace("ENDDATA", "");
             string[] playerList = data.Split(';');

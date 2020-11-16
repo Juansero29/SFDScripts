@@ -86,7 +86,7 @@ namespace SFDScripts
         /// <remarks>
         /// Has to be an uneven number to avoid ties.
         /// </remarks>
-        public static int RoundsPerMapPart = 3;
+        public static int RoundsPerMapPart = 1;
         public static Vector2 CameraPosition;
         public static float CameraSpeed = 2.0f;
 
@@ -830,7 +830,6 @@ namespace SFDScripts
 
             public void Restart()
             {
-                CurrentRound++;
                 for (int i = 0; i < PlayerList.Count; i++)
                 {
                     var p = PlayerList[i];
@@ -4412,9 +4411,12 @@ namespace SFDScripts
                         GameState = 1;
                         TimeToStart = 5;
                         AddTeamExp(10, 4, PlayerTeam.Team1, false);
+                        IsFirstMatch = false;
                         Game.RunCommand("MSG BLUE WON THIS ROUND!");
                         Game.RunCommand("MSG RED: " + mapPart.RedRoundsWon + " - BLUE: " + mapPart.BlueRoundsWon);
+                        mapPart.CurrentRound++;
                         Game.RunCommand("MSG STARTING NEXT ROUND (" + MapPartList[CurrentMapPartIndex].CurrentRound + "/" + RoundsPerMapPart + ")");
+
                     }
                     else
                     {
@@ -4423,7 +4425,6 @@ namespace SFDScripts
                         {
                             // more than one win was needed to advance
                             Game.RunCommand("MSG BLUE WAS THE BEST OF " + RoundsPerMapPart + "!");
-                            AddTeamExp(30 + RoundsPerMapPart, 4, PlayerTeam.Team1, false);
                             mapPart.RedRoundsWon = 0;
                             mapPart.BlueRoundsWon = 0;
                             TimeToStart = 5;
@@ -4437,6 +4438,7 @@ namespace SFDScripts
                         }
                         else
                         {
+                            AddTeamExp(30 + RoundsPerMapPart, 4, PlayerTeam.Team1, false);
                             GameState = -1;
                         }
                     }
@@ -4456,8 +4458,10 @@ namespace SFDScripts
                         GameState = 1;
                         TimeToStart = 5;
                         AddTeamExp(10, 4, PlayerTeam.Team2, false);
+                        IsFirstMatch = false;
                         Game.RunCommand("MSG RED TEAM WON THIS ROUND!");
                         Game.RunCommand("MSG RED: " + mapPart.RedRoundsWon + " - BLUE: " + mapPart.BlueRoundsWon);
+                        mapPart.CurrentRound++;
                         Game.RunCommand("MSG STARTING NEXT ROUND (" + MapPartList[CurrentMapPartIndex].CurrentRound + "/" + RoundsPerMapPart + ")");
                     }
                     else
@@ -4468,7 +4472,6 @@ namespace SFDScripts
                         {
                             // more than one win was needed to advance
                             Game.RunCommand("MSG RED TEAM WAS THE BEST OF " + RoundsPerMapPart + "!");
-                            AddTeamExp(30 + RoundsPerMapPart, 4, PlayerTeam.Team2, false);
                             mapPart.RedRoundsWon = 0;
                             mapPart.BlueRoundsWon = 0;
                             TimeToStart = 5;
@@ -4482,6 +4485,7 @@ namespace SFDScripts
                         }
                         else
                         {
+                            AddTeamExp(30 + RoundsPerMapPart, 4, PlayerTeam.Team2, false);
                             GameState = -2;
                         }
                     }
