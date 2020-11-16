@@ -1,14 +1,14 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Collections.Generic;
 using SFDGameScriptInterface;
 using System.IO.IsolatedStorage;
 
-namespace SFDScripts
+namespace SFDScripts.Internal.Hardcore
 {
-    class HardcoreTemplate : GameScriptInterface
+    public class HardcoreClassic : GameScriptInterface
     {
-        public HardcoreTemplate() : base(null) { }
+        public HardcoreClassic() : base(null) { }
 
         #region Script To Copy
 
@@ -131,11 +131,12 @@ namespace SFDScripts
         /// <summary>
         /// Left bottom corner spot of the map. (x and  y coordinates)
         /// </summary>
-        public static Vector2 DroneAreaBegin = new Vector2(442, 218);
+        public static Vector2 DroneAreaBegin = new Vector2(-1168, -272);
         /// <summary>
         /// An area that covers each of the map parts (x = width, y = height)
         /// </summary>
-        public static Vector2 DroneAreaSize = new Vector2(600, 300); 
+        public static Vector2 DroneAreaSize = new Vector2(308, 150);
+
         #endregion
 
         public static List<List<int>> DroneMap1x1 = new List<List<int>>();

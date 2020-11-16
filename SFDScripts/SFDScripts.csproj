@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="External\#B.cs" />
     <Compile Include="External\#F.cs" />
+    <Compile Include="Internal\Hardcore\HardcoreClassic.cs" />
     <Compile Include="Internal\Hardcore\HardcoreTemplate.cs" />
     <Compile Include="External\#UK.cs" />
     <Compile Include="External\#UOP.cs" />
