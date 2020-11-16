@@ -6,9 +6,9 @@ using System.IO.IsolatedStorage;
 
 namespace SFDScripts
 {
-    class SFDHardCore : GameScriptInterface
+    class HardcoreTemplate : GameScriptInterface
     {
-        public SFDHardCore() : base(null) { }
+        public HardcoreTemplate() : base(null) { }
 
         #region Script To Copy
 
@@ -663,6 +663,10 @@ namespace SFDScripts
                                 {
                                     CaptureProgress++;
                                     PlayerList[i].AddExp(0.05f, 2);
+                                    if (CaptureProgress == MaxCapturePointProgress - 5)
+                                    {
+                                        GlobalGame.PlaySound("MenuOK", pl.GetWorldPosition(), 1f);
+                                    }
                                 }
                             }
                             else
@@ -671,8 +675,14 @@ namespace SFDScripts
                                 {
                                     CaptureProgress--;
                                     PlayerList[i].AddExp(0.05f, 2);
+                                    if (CaptureProgress == -MaxCapturePointProgress + 5)
+                                    {
+                                        GlobalGame.PlaySound("MenuOK", pl.GetWorldPosition(), 1f);
+                                    }
                                 }
                             }
+
+
                         }
                     }
                 }
@@ -686,6 +696,7 @@ namespace SFDScripts
                 {
                     Object.SetTextColor(new Color(255, (byte)(255 - color), (byte)(255 - color)));
                 }
+
             }
         }
 
