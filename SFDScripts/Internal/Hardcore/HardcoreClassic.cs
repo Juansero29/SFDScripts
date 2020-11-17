@@ -65,7 +65,7 @@ namespace SFDScripts.Internal.Hardcore
         /// <summary>
         /// Defines wether we want to show the debug messages or not
         /// </summary>
-        public static bool ShowDebugMessages = true;
+        public static bool ShowDebugMessages = false;
 
         /// <summary>
         /// Defines wether we want to allow players to keep their skins or not
@@ -167,24 +167,24 @@ namespace SFDScripts.Internal.Hardcore
             public static void DebugOnlyDialogLog(string message)
             {
                 if (!ShowDebugMessages) return;
-                Game.CreateDialogue(message, new Vector2(CameraPosition.X + 500, CameraPosition.Y + 500));
+                Game.CreateDialogue(message, new Vector2(CameraPosition.X + 500, CameraPosition.Y + 500), "LOG");
             }
 
 
             public static void DebugOnlyDialogLog(string message, Vector2 position)
             {
                 if (!ShowDebugMessages) return;
-                Game.CreateDialogue(message, position);
+                Game.CreateDialogue(message, position, "LOG");
             }
 
             public static void DialogLog(string message)
             {
-                Game.CreateDialogue(message, new Vector2(CameraPosition.X + 500, CameraPosition.Y + 500));
+                Game.CreateDialogue(message, new Vector2(CameraPosition.X + 500, CameraPosition.Y + 500), "LOG");
             }
 
             public static void DialogLog(string message, Vector2 position)
             {
-                Game.CreateDialogue(message, position);
+                Game.CreateDialogue(message, position, "LOG");
             }
         }
 
@@ -904,6 +904,11 @@ namespace SFDScripts.Internal.Hardcore
                     for (int i = 0; i < EquipmentList.Count; i++) Equipment.Add(0);
                 }
 
+                if (Player.User.IsBot)
+                {
+                    Ready = true;
+                }
+
                 Equipment[0] = 1;
                 Equipment[2] = 3;
             }
@@ -912,9 +917,17 @@ namespace SFDScripts.Internal.Hardcore
                 if (Player == null) return "";
                 if (saveOnlyIfActive)
                 {
-                    if (!Player.IsActive()) return "";
+                    if (!Player.IsActive())
+                    {
+                        DebugLogger.DialogLog("PLAYER " + Player.Name + " NOT BEING SAVED BECAUSE HE WASN'T ACTIVE");
+                        return "";
+                    }
                 }
-                if (Player.Name.Contains("Unnamed")) return "";
+                if (Player.Name.Contains("Unnamed"))
+                {
+                    DebugLogger.DebugOnlyDialogLog("PLAYER NOT BEING SAVED BECAUSE HE IS CALLED 'Unnamed'");
+                    return "";
+                }
                 string data = Player.Save();
                 for (int i = 0; i < Equipment.Count; i++)
                 {
@@ -1015,7 +1028,8 @@ namespace SFDScripts.Internal.Hardcore
             }
             public void Update()
             {
-                if (Menu == null || Player == null) return;
+                if (Menu == null || Player == null || Player.User == null) return;
+
                 IPlayer pl = Player.User.GetPlayer();
                 Player.UpdateActiveStatus();
                 if (pl == null) return;
@@ -3150,6 +3164,8 @@ namespace SFDScripts.Internal.Hardcore
             public bool ActiveStatus = true;
             public Vector2 Position;
             public string Name;
+            public IPlayer Body;
+
             //weapon
             public TWeapon PrimaryWeapon = null;
             public TWeapon SecondaryWeapon = null;
@@ -3158,8 +3174,9 @@ namespace SFDScripts.Internal.Hardcore
             public TPlayer(IUser user)
             {
                 User = user;
+                Body = user.GetPlayer();
                 Name = User.Name;
-                Team = User.GetPlayer().GetTeam();
+                Team = Body.GetTeam();
                 StatusDisplay = (IObjectText)GlobalGame.CreateObject("Text");
                 StatusDisplay.SetTextAlignment(TextAlignment.Middle);
             }
@@ -3269,12 +3286,12 @@ namespace SFDScripts.Internal.Hardcore
                 if (ReferenceEquals(this, obj)) return true;
                 if (!(obj is TPlayer)) return false;
                 var other = obj as TPlayer;
-                return User.AccountName.Equals(other.User.AccountName);
+                return User.Name.Equals(other.User.Name);
             }
 
             public override int GetHashCode()
             {
-                return unchecked(User.AccountName.GetHashCode() * 17);
+                return unchecked(User.Name.GetHashCode() * 17);
             }
 
             public IProfile GetSkin()
@@ -4163,7 +4180,7 @@ namespace SFDScripts.Internal.Hardcore
 
                         if (currentUser.GetPlayer() == null)
                         {
-                            DebugLogger.DialogLog("SPAWNING BODY FOR PLAYER " + currentUser.Name, CameraPosition);
+                            DebugLogger.DebugOnlyDialogLog("SPAWNING BODY FOR PLAYER " + currentUser.Name, CameraPosition);
                             var positionToSpawn = Game.GetSingleObjectByCustomId("StartSpawnPoint").GetWorldPosition();
                             var p = Game.CreatePlayer(positionToSpawn);
                             p.SetTeam(PlayerTeam.Team3);
@@ -4231,7 +4248,11 @@ namespace SFDScripts.Internal.Hardcore
 
                             if (!playerFound)
                             {
-                                DebugLogger.DebugOnlyDialogLog("DIDN'T FIND PLAYER " + player.Name + " IN MEMORY. THEY ARE AN EXISTING PLAYER ALREADY LOADED OR A NEW PLAYER!");
+                                DebugLogger.DebugOnlyDialogLog("ASSIGNING MENU TO PLAYER " + player.Name);
+                                if (ShowDebugMessages && !string.IsNullOrEmpty(OtherData))
+                                {
+                                    DebugLogger.DebugOnlyDialogLog("THEY ARE A NEW PLAYER! WELCOME " + player.Name + "!");
+                                }
                                 menu.SetPlayer(player);
                                 menu.Change = true;
                                 menu.Update();
@@ -4282,24 +4303,34 @@ namespace SFDScripts.Internal.Hardcore
                             DebugLogger.DebugOnlyDialogLog(e.StackTrace + (i).ToString(), CameraPosition);
                         }
 
-                        if (menu == null) continue;
+
+                        if (menu == null)
+                        {
+                            DebugLogger.DialogLog("MENU FOR PLAYER " + player.Name + " WAS NULL. IF HE LEFT HIS PROGRESS WILL NOT BE SAVED!!");
+                            continue;
+                        }
 
                         if (!users.Any(u => u.Name != null && u.Name.Equals(player.User.Name)) && GameState != -3 && GameState != -4)
                         {
-                            DebugLogger.DialogLog("REMOVING MENU FOR: " + player.User.Name + ". USER HAS LEFT THE MATCH");
+                            DebugLogger.DialogLog("REMOVING MENU FOR: " + player.User.Name + ". LEVEL " + player.Level + ". USER HAS LEFT THE MATCH");
                             var playersInMemoryCountBefore = OtherData.Split(';').Length;
                             var leavingPlayerData = menu.Save(saveOnlyIfActive: false);
                             OtherData += leavingPlayerData;
                             var playersInMemoryCountAfter = OtherData.Split(';').Length;
                             menu.Dispose();
                             PlayerList.Remove(player);
-                            if (player.User != null && player.User.GetPlayer() != null)
+                            if (player.Body != null)
                             {
-                                player.User.GetPlayer().Remove();
+                                player.Body.Remove();
+                                DebugLogger.DebugOnlyDialogLog("REMOVED BODY FOR PLAYER " + player.User.Name);
                             }
-                            DebugLogger.DebugOnlyDialogLog("REMOVED MENU FOR: " + player.User.Name + "SUCCESFULLY. ADDED TO MEMORY PLAYERS");
+                            else
+                            {
+                                DebugLogger.DebugOnlyDialogLog("COULDN'T REMOVE BODY FOR PLAYER " + player.User.Name);
+                            }
+                            DebugLogger.DebugOnlyDialogLog("REMOVED MENU FOR: " + player.User.Name + "SUCCESFULLY. DATA ADDED TO MEMORY PLAYERS");
                             DebugLogger.DebugOnlyDialogLog(playersInMemoryCountBefore + " LOADED IN MEMORY BEFORE AND " + playersInMemoryCountAfter + " AFTER. " + PlayerList.Count + " IN MATCH");
-                            DebugLogger.DebugOnlyDialogLog("DATA FOR LEAVING PLAYER " + leavingPlayerData);
+                            DebugLogger.DebugOnlyDialogLog("SAVED DATA FOR LEAVING PLAYER " + leavingPlayerData);
                         }
                     }
                 }
@@ -4325,12 +4356,26 @@ namespace SFDScripts.Internal.Hardcore
             {
                 if (GameState == 0)
                 {
-                    RefreshPlayerMenus();
+                    try
+                    {
+                        RefreshPlayerMenus();
+                    }
+                    catch (Exception e)
+                    {
+                        DebugLogger.DebugOnlyDialogLog("CAUSED BY REFRESHPLAYERMENUS" + e.StackTrace, CameraPosition);
+                        DebugLogger.DebugOnlyDialogLog(e.Message, CameraPosition);
+                        var st = new System.Diagnostics.StackTrace(e, true);
+                        var frame = st.GetFrame(0);
+                        var line = frame.GetFileLineNumber();
+                        DebugLogger.DebugOnlyDialogLog("METHOD: " + e.TargetSite.Name + " LINE: " + line, CameraPosition);
+                    }
 
                     foreach (var p in PlayerList)
                     {
                         if (p == null) continue;
+                        if (p.User == null) continue;
                         var player = p.User.GetPlayer();
+                        if (player == null) continue;
                         PlayerModifiers mods = player.GetModifiers();
                         mods.MaxEnergy = 0;
                         mods.MeleeStunImmunity = 1;
@@ -4378,7 +4423,6 @@ namespace SFDScripts.Internal.Hardcore
                         }
                         DebugLogger.DebugOnlyDialogLog("SET CURRENT CAMERA TO NONE. ONUPDATE GAMESTATE == 2");
                         GlobalGame.SetCurrentCameraMode(CameraMode.Static);
-                        GlobalGame.SetCurrentCameraMode(CameraMode.Dynamic);
                         Game.RunCommand("MSG BATTLE BEGINS");
                         GameState = 3;
                     }
@@ -4546,7 +4590,10 @@ namespace SFDScripts.Internal.Hardcore
                 {
                     if (TimeToStart <= 0)
                     {
-                        Game.RunCommand("MSG NOBODY CAPTURED THE AREA");
+                        var mapPart = MapPartList[CurrentMapPartIndex];
+                        mapPart.Restart();
+                        TimeToStart = 5;
+                        Game.RunCommand("MSG NOBODY CAPTURED THE AREA!");
                         GameState = 1;
                     }
                 }
@@ -4610,6 +4657,10 @@ namespace SFDScripts.Internal.Hardcore
             {
                 DebugLogger.DebugOnlyDialogLog(e.StackTrace, CameraPosition);
                 DebugLogger.DebugOnlyDialogLog(e.Message, CameraPosition);
+                var st = new System.Diagnostics.StackTrace(e, true);
+                var frame = st.GetFrame(0);
+                var line = frame.GetFileLineNumber();
+                DebugLogger.DebugOnlyDialogLog("METHOD: " + e.TargetSite.Name + " LINE: " + line, CameraPosition);
             }
 
         }
@@ -4828,9 +4879,17 @@ namespace SFDScripts.Internal.Hardcore
             // clear the file before so that data doesn't get inserted at the end of file
             GlobalGame.GetSharedStorage("HARDCORE").Clear();
             string data = OtherData;
-            for (int i = 0; i < PlayerMenuList.Count; i++)
+            var menusToSave = PlayerMenuList.Where(m => m.Player != null).ToList();
+            for (int i = 0; i < menusToSave.Count; i++)
             {
-                data += PlayerMenuList[i].Save();
+                var player = menusToSave[i].Player;
+                var playerData = menusToSave[i].Save(saveOnlyIfActive: false);
+                data += playerData;
+
+                if (ShowDebugMessages)
+                {
+                    DebugLogger.DebugOnlyDialogLog("SAVED DATA FOR PLAYER " + player.Name + ". PLAYER DATA SAVED: [ " + playerData + " ]");
+                }
             }
 
             GlobalGame.GetSharedStorage("HARDCORE").SetItem("SaveData", data);
@@ -4864,6 +4923,10 @@ namespace SFDScripts.Internal.Hardcore
                     string name = FormatName(PlayerList[l].Name);
                     if (name == plData[0])
                     {
+                        if (ShowDebugMessages)
+                        {
+                            DebugLogger.DebugOnlyDialogLog("LOADING DATA FOR PLAYER " + name + ": LEVEL " + plData[1]);
+                        }
                         PlayerMenuList[l].SetPlayer(PlayerList[l]);
                         PlayerList[l].Level = Math.Min(Convert.ToInt32(plData[1]), LevelList.Count - 1);
                         PlayerList[l].CurrentExp = Convert.ToInt32(plData[2]);
