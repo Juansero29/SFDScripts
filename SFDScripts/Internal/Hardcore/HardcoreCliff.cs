@@ -9,9 +9,8 @@ namespace SFDScripts.Internal.Hardcore
 {
     class HardcoreCliff : GameScriptInterface
     {
+
         public HardcoreCliff() : base(null) { }
-
-
 
         #region Script To Copy
 
@@ -21,6 +20,16 @@ namespace SFDScripts.Internal.Hardcore
         /// will be done in the 'OnStartup' method.
         /// </summary>
         public static int NumberOfMapParts = 1;
+
+
+        /// <summary>
+        /// Defines the number of wins required per map part to advance
+        /// </summary>
+        /// <remarks>
+        /// Has to be an uneven number to avoid ties.
+        /// </remarks>
+        public static int RoundsPerMapPart = 1;
+
 
         /// <summary>
         /// Defines the map part that we should start on
@@ -47,6 +56,7 @@ namespace SFDScripts.Internal.Hardcore
         public static int CameraHeight = 550;
         #endregion
 
+        #region Generic Script
 
         #region Debug
         /// <summary>
@@ -66,8 +76,31 @@ namespace SFDScripts.Internal.Hardcore
         public static bool ShowDebugMessages = false;
         #endregion
 
-        public static Dictionary<string, int> UserAccessList = new Dictionary<string, int>();
+        #region Settings
+        /// <summary>
+        /// Time per round in seconds
+        /// </summary>
+        public static int AreaTime = 30 * 3 + 5;
 
+        /// <summary>
+        /// Time in the menus
+        /// </summary>
+        public static int TimeToStart = 60;
+
+        /// <summary>
+        /// Defines wether we want to allow players to keep their skins or not
+        /// <remarks>
+        /// If false, players will use the dafult red and blue skins in the map
+        /// </remarks>
+        /// </summary>
+        public static bool KeepPlayersSkins = false;
+
+        #endregion
+
+        #region Hardcore Script Declarations
+
+        #region Fields
+        public static Dictionary<string, int> UserAccessList = new Dictionary<string, int>();
         public static Random rnd = new Random();
         public static IGame GlobalGame;
         public static List<TLevel> LevelList = new List<TLevel>();
@@ -76,64 +109,25 @@ namespace SFDScripts.Internal.Hardcore
         public static List<TEquipmentSlot> EquipmentList = new List<TEquipmentSlot>();
         public static List<TPlayerMenu> PlayerMenuList = new List<TPlayerMenu>();
         public static IObjectText BeginTimer;
-        public static int TimeToStart = 60;
-        public static int AreaTime = 30 * 3 + 5;
-
-        /// <summary>
-        /// Defines the current game state.
-        /// 
-        /// States:
-        /// 
-        /// 0 - equipment selection state
-        /// 1 - game is starting: map cleansing is done here, also checks if there is still enough players to start a new round
-        /// 3 - battle starts: players are spawned into the arena and are free to move
-        /// 4 & 7 - blue won this round: all the red team is dead
-        /// 5 & 8 - red won this round: all the blue team is dead
-        /// 6 - no one won the round: all players are dead - tie
-        /// 100 - no enough players to start the game
-        /// </summary>
-        public static int GameState = 0;
-
         public static Random GlobalRandom = new Random();
-
-
-        /// <summary>
-        /// Defines wether we want to allow players to keep their skins or not
-        /// </summary>
-        public static bool KeepPlayersSkins = false;
-
-        public static IObjectTrigger UpdateTrigger;
-        public static IObjectTimerTrigger BeginTimerTrigger;
-
-
-
-        /// <summary>
-        /// Defines the number of wins required per map part to advance
-        /// </summary>
-        /// <remarks>
-        /// Has to be an uneven number to avoid ties.
-        /// </remarks>
-        public static int RoundsPerMapPart = 3;
-        public static Vector2 CameraPosition;
-        public static float CameraSpeed = 2.0f;
-
-        public static int MaxCapturePointProgress = 100;
-        public static int CapturePointRadius = 35;
-
-        //bleeding
-        public static float EasyBleeding = (float)0.01;
-        public static float HardBleeding = (float)0.015;
-        public static float JumpBleeding = (float)2.5;
-        public static int BleedingEffectPeriod = 100;
-
-        //diving
-        public static float DivingDamageFactor = 0.25f;
-        public static float MinDivingHeight = 50;
 
 
         public static List<TPlayerStrikeInfo> AirPlayerList = new List<TPlayerStrikeInfo>();
 
-        //data
+
+
+        public static IObjectTrigger UpdateTrigger;
+        public static IObjectTimerTrigger BeginTimerTrigger;
+
+        public static bool IsDataSaved = false;
+
+        public static bool IsFirstMatch = true;
+
+
+        /// <summary>
+        /// Serves as a continer for the data of other players who aren't connected to the ongoing match
+        /// It is saved along with each player's data at the end of each match
+        /// </summary>
         public static string OtherData = "";
 
         //other
@@ -157,7 +151,47 @@ namespace SFDScripts.Internal.Hardcore
         public static List<List<int>> DroneMap1x1 = new List<List<int>>();
 
 
-        //weapon
+        /// <summary>
+        /// Defines the current game state.
+        /// 
+        /// States:
+        /// 
+        /// 0 - equipment selection state
+        /// 1 - game is starting: map cleansing is done here, also checks if there is still enough players to start a new round
+        /// 3 - battle starts: players are spawned into the arena and are free to move
+        /// 4 & 7 - blue won this round: all the red team is dead
+        /// 5 & 8 - red won this round: all the blue team is dead
+        /// 6 - no one won the round: all players are dead - tie
+        /// 100 - no enough players to start the game
+        /// </summary>
+        public static int GameState = 0;
+        #endregion
+
+        #region Miscelanous Settings
+
+
+        public static Vector2 CameraPosition;
+        public static float CameraSpeed = 2.0f;
+        #endregion
+
+        #region Game Mechanics Settings
+
+        // capture points
+        public static int MaxCapturePointProgress = 100;
+        public static int CapturePointRadius = 35;
+
+        //bleeding
+        public static float EasyBleeding = (float)0.01;
+        public static float HardBleeding = (float)0.015;
+        public static float JumpBleeding = (float)2.5;
+        public static int BleedingEffectPeriod = 100;
+
+        //diving
+        public static float DivingDamageFactor = 0.25f;
+        public static float MinDivingHeight = 50;
+
+
+        //weapons
         public static Dictionary<WeaponItem, string> WeaponItemNames = new Dictionary<WeaponItem, string>();
         public static List<TWeapon> WeaponTrackingList = new List<TWeapon>();
         public static List<TThrownWeapon> ThrownTrackingList = new List<TThrownWeapon>();
@@ -165,16 +199,16 @@ namespace SFDScripts.Internal.Hardcore
         public static List<WeaponItem> ExtraExplosiveWeapon = new List<WeaponItem>(new WeaponItem[] { WeaponItem.GRENADE_LAUNCHER, WeaponItem.GRENADES, WeaponItem.MOLOTOVS, WeaponItem.MINES, WeaponItem.FLAREGUN, WeaponItem.FLAMETHROWER, WeaponItem.BAZOOKA });
         public static List<WeaponItem> ExtraHeavyAmmoWeapon = new List<WeaponItem>(new WeaponItem[] { WeaponItem.REVOLVER, WeaponItem.SNIPER, WeaponItem.MAGNUM, WeaponItem.M60 });
 
-        //missile
+
+        // weapons allowed to be thrown
         public static List<string> AllowedMissile = new List<string>(new string[] { "WpnKnife", "WpnKatana", "WpnAxe", "WpnShurikenThrown" });
+        #endregion
 
-        public static bool IsDataSaved = false;
 
-        public static bool IsFirstMatch = true;
-        public void AddUserAccessLevels()
-        {
-            //UserAccessList.Add("Admin", 2);
-        }
+        #region Class Declarations
+
+
+        #region Debug Logger Class
 
         public static class DebugLogger
         {
@@ -204,6 +238,9 @@ namespace SFDScripts.Internal.Hardcore
             }
         }
 
+        #endregion
+
+        #region Thrown Weapon Class
         public class TThrownWeapon
         {
             public int Id = 0;
@@ -305,6 +342,7 @@ namespace SFDScripts.Internal.Hardcore
             }
         }
 
+
         public static void CreateThrownWeapon(WeaponItem item, int id, Vector2 pos)
         {
             string name = "";
@@ -355,6 +393,9 @@ namespace SFDScripts.Internal.Hardcore
             }
         }
 
+        #endregion
+
+        #region Weapon Class
         public class TWeapon
         {
             public IObject Object = null;
@@ -571,7 +612,9 @@ namespace SFDScripts.Internal.Hardcore
             }
         }
 
+        #endregion
 
+        #region Effect Class
 
         public class TEffect
         {
@@ -602,7 +645,9 @@ namespace SFDScripts.Internal.Hardcore
                 return true;
             }
         }
+        #endregion
 
+        #region Equipment Slot Class
         public class TEquipmentSlot
         {
             public string Name = "";
@@ -632,6 +677,16 @@ namespace SFDScripts.Internal.Hardcore
             LevelList.Add(level);
         }
 
+        public TEquipmentSlot AddEquipmentSlot(string name)
+        {
+            TEquipmentSlot newSlot = new TEquipmentSlot(name);
+            newSlot.AddEquipment(0, 0, 0, "None");
+            EquipmentList.Add(newSlot);
+            return newSlot;
+        }
+        #endregion
+
+        #region Strikes Related Classes
         public class TStrikeInfo
         {
             public int Id = 0;
@@ -643,7 +698,9 @@ namespace SFDScripts.Internal.Hardcore
             public IPlayer Player;
             public List<TStrikeInfo> StrikeList = new List<TStrikeInfo>();
         }
+        #endregion
 
+        #region Capture Point Class
         public class TCapturePoint
         {
             public IObjectText Object;
@@ -716,6 +773,9 @@ namespace SFDScripts.Internal.Hardcore
             }
         }
 
+        #endregion
+
+        #region Map Part Class
         public class TMapPart
         {
             public List<TCapturePoint> PointList = new List<TCapturePoint>();
@@ -897,6 +957,9 @@ namespace SFDScripts.Internal.Hardcore
             }
         }
 
+        #endregion
+
+        #region Player Menu Class
         public class TPlayerMenu
         {
             public IObjectText Menu;
@@ -1255,6 +1318,9 @@ namespace SFDScripts.Internal.Hardcore
             }
         }
 
+        #endregion
+
+        #region Shield Generator Class
         public class TShieldGenerator
         {
             public class TShieldBlock
@@ -1522,6 +1588,9 @@ namespace SFDScripts.Internal.Hardcore
             ShieldGeneratorList.Add(generator);
         }
 
+        #endregion
+
+        #region Turret Class
         public class TTurret
         {
             public class TTurretWeapon
@@ -2173,6 +2242,9 @@ namespace SFDScripts.Internal.Hardcore
             TurretList.Add(turret);
         }
 
+        #endregion
+
+        #region Equipment Class
         public class TEquipment
         {
             public int Id = 0;
@@ -2191,7 +2263,9 @@ namespace SFDScripts.Internal.Hardcore
                 AccessLevel = accessLevel;
             }
         }
+        #endregion
 
+        #region Level Class
         public class TLevel
         {
             public string Name;
@@ -2204,6 +2278,10 @@ namespace SFDScripts.Internal.Hardcore
                 AllowPoints = allowPoints;
             }
         }
+
+        #endregion
+
+        #region Custom Armor Class
 
         public class TCustomArmor
         {
@@ -2287,7 +2365,9 @@ namespace SFDScripts.Internal.Hardcore
             }
         }
 
+        #endregion
 
+        #region Custom Equipment Class
         public class TCustomEquipment
         {
             public int Id = 0;
@@ -3121,6 +3201,9 @@ namespace SFDScripts.Internal.Hardcore
             }
         }
 
+        #endregion
+
+        #region Player Class
         public class TPlayer
         {
             //global values
@@ -3898,13 +3981,13 @@ namespace SFDScripts.Internal.Hardcore
             }
         }
 
-        public TEquipmentSlot AddEquipmentSlot(string name)
-        {
-            TEquipmentSlot newSlot = new TEquipmentSlot(name);
-            newSlot.AddEquipment(0, 0, 0, "None");
-            EquipmentList.Add(newSlot);
-            return newSlot;
-        }
+        #endregion
+
+        #endregion
+
+        #endregion
+
+        #region Lifecycle
 
         public void OnStartup()
         {
@@ -4138,231 +4221,6 @@ namespace SFDScripts.Internal.Hardcore
             BeginTimerTrigger.SetIntervalTime(1000);
             BeginTimerTrigger.SetScriptMethod("OnBeginTimer");
             BeginTimerTrigger.Trigger();
-
-        }
-
-
-        private void PreparePlayerMenus()
-        {
-            for (int i = 0; i <= 7; i++)
-            {
-                PlayerMenuList.Add(new TPlayerMenu()
-                {
-                    Menu = (IObjectText)Game.GetSingleObjectByCustomId("PlayerMenu" + (i).ToString()),
-                });
-            }
-        }
-
-        private void RefreshPlayerMenus()
-        {
-
-            IUser[] users = Game.GetActiveUsers();
-
-            if (users == null || users.Length == 0) return;
-
-            foreach (var u in users)
-            {
-                var menus = PlayerMenuList.Where(m => m.Player != null && m.Player.User != null && m.Player.User.Name == u.Name).ToList();
-                if (menus.Count > 1)
-                {
-                    DebugLogger.DialogLog("PLAYER " + u.Name + " HAD MORE THAN ONE MENU. DELETING THE OTHER MENUS");
-                    menus[1].Player = null;
-                    menus[1].Menu.SetText(string.Empty);
-                    menus[1].Ready = false;
-                }
-            }
-
-            if (PlayerList.Count == users.Length) return;
-            try
-            {
-                int initialPlayercount = PlayerList.Count;
-
-
-
-                if (PlayerList.Count < users.Length)
-                {
-                    var availableMenus = PlayerMenuList.Where(m => m.Player == null || m.Player.User == null).ToList();
-                    for (int i = 0; i < users.Length; i++)
-                    {
-                        IUser currentUser = null;
-                        currentUser = users[i];
-                        if (currentUser == null) continue;
-                        if (currentUser.IsSpectator) continue;
-
-                        if (PlayerList.Any(p => p.User.Name.Equals(currentUser.Name)))
-                        {
-                            continue;
-                        }
-
-                        if (currentUser.GetPlayer() == null)
-                        {
-                            DebugLogger.DebugOnlyDialogLog("SPAWNING BODY FOR PLAYER " + currentUser.Name, CameraPosition);
-                            var positionToSpawn = Game.GetSingleObjectByCustomId("StartSpawnPoint").GetWorldPosition();
-                            var p = Game.CreatePlayer(positionToSpawn);
-                            p.SetTeam(PlayerTeam.Team3);
-                            p.SetUser(currentUser);
-                            p.SetProfile(currentUser.GetProfile());
-                            p.SetWorldPosition(positionToSpawn);
-                        }
-
-                        var player = new TPlayer(currentUser);
-
-
-
-                        if (availableMenus.Count == 0)
-                        {
-                            DebugLogger.DebugOnlyDialogLog("NO AVAILABLE MENUS FOR PLAYER " + player.Name);
-                            return;
-                        }
-                        TPlayerMenu menu = null;
-                        menu = availableMenus.FirstOrDefault();
-                        availableMenus.RemoveAt(availableMenus.IndexOf(menu));
-                        if (menu == null)
-                        {
-                            return;
-                        }
-
-
-                        try
-                        {
-                            var playerFound = false;
-                            if (!string.IsNullOrEmpty(OtherData))
-                            {
-                                // try to look for player in OtherData
-                                var playerList = OtherData.Split(';');
-
-                                for (int p = 0; p < playerList.Length; p++)
-                                {
-                                    string[] plData = playerList[p].Split(':');
-                                    if (plData.Length == 11)
-                                    {
-                                        List<string> list = new List<string>(plData);
-                                        list.RemoveAt(3);
-                                        plData = list.ToArray();
-                                    }
-
-                                    string name = FormatName(player.Name);
-                                    if (name == plData[0])
-                                    {
-                                        menu.SetPlayer(player);
-                                        player.Level = Math.Min(Convert.ToInt32(plData[1]), LevelList.Count - 1);
-                                        player.CurrentExp = Convert.ToInt32(plData[2]);
-                                        for (int u = 0; u < menu.Equipment.Count; u++)
-                                        {
-                                            menu.Equipment[u] = Convert.ToInt32(plData[3 + u]);
-                                        }
-                                        menu.ValidateEquipment();
-                                        menu.Change = true;
-                                        menu.Update();
-                                        playerFound = true;
-                                        DebugLogger.DebugOnlyDialogLog("PLAYER FOUND IN MEMORY DATA. WELCOME BACK!" + player.Name);
-                                        break;
-                                    }
-
-                                }
-                            }
-
-                            if (!playerFound)
-                            {
-                                DebugLogger.DebugOnlyDialogLog("ASSIGNING MENU TO PLAYER " + player.Name);
-                                if (ShowDebugMessages && !string.IsNullOrEmpty(OtherData))
-                                {
-                                    DebugLogger.DebugOnlyDialogLog("THEY ARE A NEW PLAYER! WELCOME " + player.Name + "!");
-                                }
-                                menu.SetPlayer(player);
-                                menu.Change = true;
-                                menu.Update();
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            DebugLogger.DebugOnlyDialogLog(e.Message);
-                            DebugLogger.DebugOnlyDialogLog(e.StackTrace);
-                            DebugLogger.DebugOnlyDialogLog("COULDN'T INSTANTIATE PLAYER " + player.Name);
-                        }
-
-                        PlayerList.Add(player);
-                    }
-
-                }
-
-
-                if (PlayerList.Count > users.Length)
-                {
-                    DebugLogger.DebugOnlyDialogLog("More players in PlayersList than active users");
-                    for (int i = PlayerMenuList.Count - 1; i >= 0; i--)
-                    {
-                        TPlayer player = null;
-                        try
-                        {
-
-                            player = PlayerList.ElementAtOrDefault(i);
-                        }
-                        catch (Exception)
-                        {
-                            DebugLogger.DebugOnlyDialogLog("PlayerList.ElementAtOrDefault(i) was out of range, i:" + (i).ToString(), CameraPosition);
-                        }
-
-                        if (player == null)
-                        {
-                            continue;
-                        }
-                        TPlayerMenu menu = null;
-                        try
-                        {
-                            menu = PlayerMenuList.Where(m => m.Player != null && m.Player.Name != null && m.Player.Name.Equals(player.Name)).FirstOrDefault();
-                        }
-                        catch (Exception e)
-                        {
-                            DebugLogger.DebugOnlyDialogLog("PlayerMenuList.Where(m => m.Player.Name.Equals(m.Player)).FirstOrDefault()" + (i).ToString(), CameraPosition);
-                            DebugLogger.DebugOnlyDialogLog(e.Message + (i).ToString(), CameraPosition);
-                            DebugLogger.DebugOnlyDialogLog(e.StackTrace + (i).ToString(), CameraPosition);
-                        }
-
-
-                        if (menu == null)
-                        {
-                            DebugLogger.DialogLog("MENU FOR PLAYER " + player.Name + " WAS NULL. IF HE LEFT HIS PROGRESS WILL NOT BE SAVED!!");
-                            continue;
-                        }
-
-                        if (!users.Any(u => u.Name != null && u.Name.Equals(player.User.Name)) && GameState != -3 && GameState != -4)
-                        {
-                            DebugLogger.DialogLog("REMOVING MENU FOR: " + player.User.Name + ". LEVEL " + player.Level + ". USER HAS LEFT THE MATCH");
-                            var playersInMemoryCountBefore = OtherData.Split(';').Length;
-                            var leavingPlayerData = menu.Save(saveOnlyIfActive: false);
-                            OtherData += leavingPlayerData;
-                            var playersInMemoryCountAfter = OtherData.Split(';').Length;
-                            menu.Dispose();
-                            PlayerList.Remove(player);
-                            if (player.Body != null)
-                            {
-                                player.Body.Remove();
-                                DebugLogger.DebugOnlyDialogLog("REMOVED BODY FOR PLAYER " + player.User.Name);
-                            }
-                            else
-                            {
-                                DebugLogger.DebugOnlyDialogLog("COULDN'T REMOVE BODY FOR PLAYER " + player.User.Name);
-                            }
-                            DebugLogger.DebugOnlyDialogLog("REMOVED MENU FOR: " + player.User.Name + "SUCCESFULLY. DATA ADDED TO MEMORY PLAYERS");
-                            DebugLogger.DebugOnlyDialogLog(playersInMemoryCountBefore + " LOADED IN MEMORY BEFORE AND " + playersInMemoryCountAfter + " AFTER. " + PlayerList.Count + " IN MATCH");
-                            DebugLogger.DebugOnlyDialogLog("SAVED DATA FOR LEAVING PLAYER " + leavingPlayerData);
-                        }
-                    }
-                }
-
-                // ONLY LOAD DATA ONCE PER GAME
-                if (OtherData == string.Empty)
-                {
-                    LoadData();
-                }
-
-            }
-            catch (Exception e)
-            {
-                DebugLogger.DebugOnlyDialogLog(e.StackTrace, CameraPosition);
-                DebugLogger.DebugOnlyDialogLog(e.Source, CameraPosition);
-            }
 
         }
 
@@ -4682,35 +4540,236 @@ namespace SFDScripts.Internal.Hardcore
 
         }
 
-        private void SpawnPlayers()
-        {
-            var spawn = Game.GetSingleObjectByCustomId("StartSpawnPoint");
-            if (spawn == null)
-            {
-                DebugLogger.DebugOnlyDialogLog("Starting spawn point doesn't exist");
-                return;
-            }
-            var positionToSpawn = spawn.GetWorldPosition();
-            IPlayer p = null;
+        #endregion
 
-            foreach (var user in Game.GetActiveUsers())
+        #region Player Menus Methods
+        private void PreparePlayerMenus()
+        {
+            for (int i = 0; i <= 7; i++)
             {
-                if (user.GetPlayer() == null)
+                PlayerMenuList.Add(new TPlayerMenu()
                 {
-                    p = Game.CreatePlayer(positionToSpawn);
-                    p.SetUser(user);
-                    p.SetTeam(PlayerTeam.Team3);
-                    p.SetProfile(user.GetProfile());
-                }
-                else
-                {
-                    p = user.GetPlayer();
-                    p.SetTeam(PlayerTeam.Team3);
-                    p.SetWorldPosition(positionToSpawn);
-                }
+                    Menu = (IObjectText)Game.GetSingleObjectByCustomId("PlayerMenu" + (i).ToString()),
+                });
             }
         }
 
+        private void RefreshPlayerMenus()
+        {
+
+            IUser[] users = Game.GetActiveUsers();
+
+            if (users == null || users.Length == 0) return;
+
+            foreach (var u in users)
+            {
+                var menus = PlayerMenuList.Where(m => m.Player != null && m.Player.User != null && m.Player.User.Name == u.Name).ToList();
+                if (menus.Count > 1)
+                {
+                    DebugLogger.DialogLog("PLAYER " + u.Name + " HAD MORE THAN ONE MENU. DELETING THE OTHER MENUS");
+                    menus[1].Player = null;
+                    menus[1].Menu.SetText(string.Empty);
+                    menus[1].Ready = false;
+                }
+            }
+
+            if (PlayerList.Count == users.Length) return;
+            try
+            {
+                int initialPlayercount = PlayerList.Count;
+
+
+
+                if (PlayerList.Count < users.Length)
+                {
+                    var availableMenus = PlayerMenuList.Where(m => m.Player == null || m.Player.User == null).ToList();
+                    for (int i = 0; i < users.Length; i++)
+                    {
+                        IUser currentUser = null;
+                        currentUser = users[i];
+                        if (currentUser == null) continue;
+                        if (currentUser.IsSpectator) continue;
+
+                        if (PlayerList.Any(p => p.User.Name.Equals(currentUser.Name)))
+                        {
+                            continue;
+                        }
+
+                        if (currentUser.GetPlayer() == null)
+                        {
+                            DebugLogger.DebugOnlyDialogLog("SPAWNING BODY FOR PLAYER " + currentUser.Name, CameraPosition);
+                            var positionToSpawn = Game.GetSingleObjectByCustomId("StartSpawnPoint").GetWorldPosition();
+                            var p = Game.CreatePlayer(positionToSpawn);
+                            p.SetTeam(PlayerTeam.Team3);
+                            p.SetUser(currentUser);
+                            p.SetProfile(currentUser.GetProfile());
+                            p.SetWorldPosition(positionToSpawn);
+                        }
+
+                        var player = new TPlayer(currentUser);
+
+
+
+                        if (availableMenus.Count == 0)
+                        {
+                            DebugLogger.DebugOnlyDialogLog("NO AVAILABLE MENUS FOR PLAYER " + player.Name);
+                            return;
+                        }
+                        TPlayerMenu menu = null;
+                        menu = availableMenus.FirstOrDefault();
+                        availableMenus.RemoveAt(availableMenus.IndexOf(menu));
+                        if (menu == null)
+                        {
+                            return;
+                        }
+
+
+                        try
+                        {
+                            var playerFound = false;
+                            if (!string.IsNullOrEmpty(OtherData))
+                            {
+                                // try to look for player in OtherData
+                                var playerList = OtherData.Split(';');
+
+                                for (int p = 0; p < playerList.Length; p++)
+                                {
+                                    string[] plData = playerList[p].Split(':');
+                                    if (plData.Length == 11)
+                                    {
+                                        List<string> list = new List<string>(plData);
+                                        list.RemoveAt(3);
+                                        plData = list.ToArray();
+                                    }
+
+                                    string name = FormatName(player.Name);
+                                    if (name == plData[0])
+                                    {
+                                        menu.SetPlayer(player);
+                                        player.Level = Math.Min(Convert.ToInt32(plData[1]), LevelList.Count - 1);
+                                        player.CurrentExp = Convert.ToInt32(plData[2]);
+                                        for (int u = 0; u < menu.Equipment.Count; u++)
+                                        {
+                                            menu.Equipment[u] = Convert.ToInt32(plData[3 + u]);
+                                        }
+                                        menu.ValidateEquipment();
+                                        menu.Change = true;
+                                        menu.Update();
+                                        playerFound = true;
+                                        DebugLogger.DebugOnlyDialogLog("PLAYER FOUND IN MEMORY DATA. WELCOME BACK!" + player.Name);
+                                        break;
+                                    }
+
+                                }
+                            }
+
+                            if (!playerFound)
+                            {
+                                DebugLogger.DebugOnlyDialogLog("ASSIGNING MENU TO PLAYER " + player.Name);
+                                if (ShowDebugMessages && !string.IsNullOrEmpty(OtherData))
+                                {
+                                    DebugLogger.DebugOnlyDialogLog("THEY ARE A NEW PLAYER! WELCOME " + player.Name + "!");
+                                }
+                                menu.SetPlayer(player);
+                                menu.Change = true;
+                                menu.Update();
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            DebugLogger.DebugOnlyDialogLog(e.Message);
+                            DebugLogger.DebugOnlyDialogLog(e.StackTrace);
+                            DebugLogger.DebugOnlyDialogLog("COULDN'T INSTANTIATE PLAYER " + player.Name);
+                        }
+
+                        PlayerList.Add(player);
+                    }
+
+                }
+
+
+                if (PlayerList.Count > users.Length)
+                {
+                    DebugLogger.DebugOnlyDialogLog("More players in PlayersList than active users");
+                    for (int i = PlayerMenuList.Count - 1; i >= 0; i--)
+                    {
+                        TPlayer player = null;
+                        try
+                        {
+
+                            player = PlayerList.ElementAtOrDefault(i);
+                        }
+                        catch (Exception)
+                        {
+                            DebugLogger.DebugOnlyDialogLog("PlayerList.ElementAtOrDefault(i) was out of range, i:" + (i).ToString(), CameraPosition);
+                        }
+
+                        if (player == null)
+                        {
+                            continue;
+                        }
+                        TPlayerMenu menu = null;
+                        try
+                        {
+                            menu = PlayerMenuList.Where(m => m.Player != null && m.Player.Name != null && m.Player.Name.Equals(player.Name)).FirstOrDefault();
+                        }
+                        catch (Exception e)
+                        {
+                            DebugLogger.DebugOnlyDialogLog("PlayerMenuList.Where(m => m.Player.Name.Equals(m.Player)).FirstOrDefault()" + (i).ToString(), CameraPosition);
+                            DebugLogger.DebugOnlyDialogLog(e.Message + (i).ToString(), CameraPosition);
+                            DebugLogger.DebugOnlyDialogLog(e.StackTrace + (i).ToString(), CameraPosition);
+                        }
+
+
+                        if (menu == null)
+                        {
+                            DebugLogger.DialogLog("MENU FOR PLAYER " + player.Name + " WAS NULL. IF HE LEFT HIS PROGRESS WILL NOT BE SAVED!!");
+                            continue;
+                        }
+
+                        if (!users.Any(u => u.Name != null && u.Name.Equals(player.User.Name)) && GameState != -3 && GameState != -4)
+                        {
+                            DebugLogger.DialogLog("REMOVING MENU FOR: " + player.User.Name + ". LEVEL " + player.Level + ". USER HAS LEFT THE MATCH");
+                            var playersInMemoryCountBefore = OtherData.Split(';').Length;
+                            var leavingPlayerData = menu.Save(saveOnlyIfActive: false);
+                            OtherData += leavingPlayerData;
+                            var playersInMemoryCountAfter = OtherData.Split(';').Length;
+                            menu.Dispose();
+                            PlayerList.Remove(player);
+                            if (player.Body != null)
+                            {
+                                player.Body.Remove();
+                                DebugLogger.DebugOnlyDialogLog("REMOVED BODY FOR PLAYER " + player.User.Name);
+                            }
+                            else
+                            {
+                                DebugLogger.DebugOnlyDialogLog("COULDN'T REMOVE BODY FOR PLAYER " + player.User.Name);
+                            }
+                            DebugLogger.DebugOnlyDialogLog("REMOVED MENU FOR: " + player.User.Name + "SUCCESFULLY. DATA ADDED TO MEMORY PLAYERS");
+                            DebugLogger.DebugOnlyDialogLog(playersInMemoryCountBefore + " LOADED IN MEMORY BEFORE AND " + playersInMemoryCountAfter + " AFTER. " + PlayerList.Count + " IN MATCH");
+                            DebugLogger.DebugOnlyDialogLog("SAVED DATA FOR LEAVING PLAYER " + leavingPlayerData);
+                        }
+                    }
+                }
+
+                // ONLY LOAD DATA ONCE PER GAME
+                if (OtherData == string.Empty)
+                {
+                    LoadData();
+                }
+
+            }
+            catch (Exception e)
+            {
+                DebugLogger.DebugOnlyDialogLog(e.StackTrace, CameraPosition);
+                DebugLogger.DebugOnlyDialogLog(e.Source, CameraPosition);
+            }
+
+        }
+
+        #endregion
+
+        #region Timer Methods
         public void OnBeginTimer(TriggerArgs args)
         {
             if (TimeToStart > 0)
@@ -4810,87 +4869,9 @@ namespace SFDScripts.Internal.Hardcore
                 }
             }
         }
+        #endregion
 
-        public void UpdateCamera()
-        {
-            Area cameraArea = Game.GetCameraArea();
-            if (cameraArea.Left != CameraPosition.X)
-            {
-                if (Math.Abs(cameraArea.Left - CameraPosition.X) <= CameraSpeed)
-                {
-                    cameraArea.Left = CameraPosition.X;
-                }
-                else if (cameraArea.Left < CameraPosition.X)
-                {
-                    cameraArea.Left += CameraSpeed;
-                }
-                else
-                {
-                    cameraArea.Left -= CameraSpeed;
-                }
-                cameraArea.Right = cameraArea.Left + CameraWidth;
-            }
-            if (cameraArea.Top != CameraPosition.Y)
-            {
-                if (Math.Abs(cameraArea.Top - CameraPosition.Y) <= CameraSpeed)
-                {
-                    cameraArea.Top = CameraPosition.Y;
-                }
-                else if (cameraArea.Top < CameraPosition.Y)
-                {
-                    cameraArea.Top += CameraSpeed;
-                }
-                else
-                {
-                    cameraArea.Top -= CameraSpeed;
-                }
-                cameraArea.Bottom = cameraArea.Top - CameraHeight;
-            }
-            Game.SetCameraArea(cameraArea);
-            //Game.SetBorderArea(cameraArea);
-        }
-
-        public static bool TestDistance(Vector2 p1, Vector2 p2, int radius)
-        {
-            return (Math.Abs(p1.X - p2.X) <= radius) && (Math.Abs(p1.Y - p2.Y) <= radius);
-        }
-
-        public static bool IsAllPlayerDead()
-        {
-            if (IsDebug) return false;
-            for (int i = 0; i < PlayerList.Count; i++)
-            {
-                if (PlayerList[i].IsAlive() && PlayerList[i].Team != PlayerTeam.Independent)
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        public static int IsOneTeamDead()
-        {
-            if (IsDebug) return 0;
-            bool team1 = false;
-            bool team2 = false;
-            for (int i = 0; i < PlayerList.Count; i++)
-            {
-                if (PlayerList[i].IsAlive())
-                {
-                    if (PlayerList[i].Team == PlayerTeam.Team1)
-                    {
-                        team1 = true;
-                    }
-                    else if (PlayerList[i].Team == PlayerTeam.Team2)
-                    {
-                        team2 = true;
-                    }
-                }
-            }
-            if (!team2 && team1) return 1;
-            else if (!team1 && team2) return 2;
-            else return 0;
-        }
+        #region Data Persistence
         public static void SaveData()
         {
             // clear the file before so that data doesn't get inserted at the end of file
@@ -4962,6 +4943,126 @@ namespace SFDScripts.Internal.Hardcore
                 }
             }
         }
+        #endregion
+
+        #region Camera Methods
+        public void UpdateCamera()
+        {
+            Area cameraArea = Game.GetCameraArea();
+            if (cameraArea.Left != CameraPosition.X)
+            {
+                if (Math.Abs(cameraArea.Left - CameraPosition.X) <= CameraSpeed)
+                {
+                    cameraArea.Left = CameraPosition.X;
+                }
+                else if (cameraArea.Left < CameraPosition.X)
+                {
+                    cameraArea.Left += CameraSpeed;
+                }
+                else
+                {
+                    cameraArea.Left -= CameraSpeed;
+                }
+                cameraArea.Right = cameraArea.Left + CameraWidth;
+            }
+            if (cameraArea.Top != CameraPosition.Y)
+            {
+                if (Math.Abs(cameraArea.Top - CameraPosition.Y) <= CameraSpeed)
+                {
+                    cameraArea.Top = CameraPosition.Y;
+                }
+                else if (cameraArea.Top < CameraPosition.Y)
+                {
+                    cameraArea.Top += CameraSpeed;
+                }
+                else
+                {
+                    cameraArea.Top -= CameraSpeed;
+                }
+                cameraArea.Bottom = cameraArea.Top - CameraHeight;
+            }
+            Game.SetCameraArea(cameraArea);
+            //Game.SetBorderArea(cameraArea);
+        }
+
+
+
+        #endregion
+
+        #region Game Core Methods
+
+        private void SpawnPlayers()
+        {
+            var spawn = Game.GetSingleObjectByCustomId("StartSpawnPoint");
+            if (spawn == null)
+            {
+                DebugLogger.DebugOnlyDialogLog("Starting spawn point doesn't exist");
+                return;
+            }
+            var positionToSpawn = spawn.GetWorldPosition();
+            IPlayer p = null;
+
+            foreach (var user in Game.GetActiveUsers())
+            {
+                if (user.GetPlayer() == null)
+                {
+                    p = Game.CreatePlayer(positionToSpawn);
+                    p.SetUser(user);
+                    p.SetTeam(PlayerTeam.Team3);
+                    p.SetProfile(user.GetProfile());
+                }
+                else
+                {
+                    p = user.GetPlayer();
+                    p.SetTeam(PlayerTeam.Team3);
+                    p.SetWorldPosition(positionToSpawn);
+                }
+            }
+        }
+
+
+        public static bool TestDistance(Vector2 p1, Vector2 p2, int radius)
+        {
+            return (Math.Abs(p1.X - p2.X) <= radius) && (Math.Abs(p1.Y - p2.Y) <= radius);
+        }
+
+        public static bool IsAllPlayerDead()
+        {
+            if (IsDebug) return false;
+            for (int i = 0; i < PlayerList.Count; i++)
+            {
+                if (PlayerList[i].IsAlive() && PlayerList[i].Team != PlayerTeam.Independent)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public static int IsOneTeamDead()
+        {
+            if (IsDebug) return 0;
+            bool team1 = false;
+            bool team2 = false;
+            for (int i = 0; i < PlayerList.Count; i++)
+            {
+                if (PlayerList[i].IsAlive())
+                {
+                    if (PlayerList[i].Team == PlayerTeam.Team1)
+                    {
+                        team1 = true;
+                    }
+                    else if (PlayerList[i].Team == PlayerTeam.Team2)
+                    {
+                        team2 = true;
+                    }
+                }
+            }
+            if (!team2 && team1) return 1;
+            else if (!team1 && team2) return 2;
+            else return 0;
+        }
+
 
         public static void AddTeamExp(int exp, int type, PlayerTeam team, bool aliveOnly)
         {
@@ -5723,6 +5824,20 @@ namespace SFDScripts.Internal.Hardcore
                 }
             }
         }
+
+        #endregion
+
+        #region Not Used Methods
+
+        public void AddUserAccessLevels()
+        {
+            //UserAccessList.Add("Admin", 2);
+        }
+
+        #endregion
+
+        #endregion
+
         #endregion
     }
 }
