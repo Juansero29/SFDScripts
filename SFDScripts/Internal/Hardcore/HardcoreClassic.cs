@@ -12,6 +12,57 @@ namespace SFDScripts.Internal.Hardcore
 
         #region Script To Copy
 
+        #region Map Dependant Data
+        /// <summary>
+        /// The number of map parts in this map. For each map part, an startup process
+        /// will be done in the 'OnStartup' method.
+        /// </summary>
+        public static int NumberOfMapParts = 3;
+
+        /// <summary>
+        /// Defines the map part that we should start on
+        /// </summary>
+        public static int CurrentMapPartIndex = 1;
+
+        /// <summary>
+        /// The world top position (where airstrikes get launched from)
+        /// </summary>
+        public static int WorldTop = 500;
+
+        #region Drones
+        /// <summary>
+        /// Left bottom corner spot of the map. (x and  y coordinates)
+        /// </summary>
+        public static Vector2 DroneAreaBegin = new Vector2(-1168, -272);
+        /// <summary>
+        /// An area that covers each of the map parts (x = width, y = height)
+        /// </summary>
+        public static Vector2 DroneAreaSize = new Vector2(308, 150);
+        #endregion
+
+        public static int CameraWidth = 770;
+        public static int CameraHeight = 550;
+        #endregion
+
+
+        #region Debug
+        /// <summary>
+        /// Is the debug mode enabled
+        /// </summary>
+        /// <remakrs>
+        /// Changes the game a little bit :
+        /// - Never finishes a matches by player's death
+        /// - Doesn't show timer
+        /// - Doesn't end the game when there isn't enough players
+        /// </remakrs>
+        public static bool IsDebug = false;
+
+        /// <summary>
+        /// Defines wether we want to show the debug messages or not as logs in the chat
+        /// </summary>
+        public static bool ShowDebugMessages = false;
+        #endregion
+
         public static Dictionary<string, int> UserAccessList = new Dictionary<string, int>();
 
         public static Random rnd = new Random();
@@ -24,7 +75,6 @@ namespace SFDScripts.Internal.Hardcore
         public static IObjectText BeginTimer;
         public static int TimeToStart = 60;
         public static int AreaTime = 30 * 3 + 5;
-
 
         /// <summary>
         /// Defines the current game state.
@@ -45,29 +95,6 @@ namespace SFDScripts.Internal.Hardcore
 
 
         /// <summary>
-        /// The number of map parts in this map. For each map part, an startup process
-        /// will be done in the 'OnStartup' method.
-        /// </summary>
-        public static int NumberOfMapParts = 3;
-
-
-        /// <summary>
-        /// Is the debug mode enabled
-        /// </summary>
-        /// <remakrs>
-        /// Changes the game a little bit :
-        /// - Never finishes a matches by player's death
-        /// - Doesn't show timer
-        /// - Doesn't end the game when there isn't enough players
-        /// </remakrs>
-        public static bool IsDebug = false;
-
-        /// <summary>
-        /// Defines wether we want to show the debug messages or not
-        /// </summary>
-        public static bool ShowDebugMessages = false;
-
-        /// <summary>
         /// Defines wether we want to allow players to keep their skins or not
         /// </summary>
         public static bool KeepPlayersSkins = false;
@@ -75,10 +102,7 @@ namespace SFDScripts.Internal.Hardcore
         public static IObjectTrigger UpdateTrigger;
         public static IObjectTimerTrigger BeginTimerTrigger;
 
-        /// <summary>
-        /// Defines the map part that we should start on
-        /// </summary>
-        public static int CurrentMapPartIndex = 1;
+
 
         /// <summary>
         /// Defines the number of wins required per map part to advance
@@ -86,7 +110,7 @@ namespace SFDScripts.Internal.Hardcore
         /// <remarks>
         /// Has to be an uneven number to avoid ties.
         /// </remarks>
-        public static int RoundsPerMapPart = 1;
+        public static int RoundsPerMapPart = 3;
         public static Vector2 CameraPosition;
         public static float CameraSpeed = 2.0f;
 
@@ -103,8 +127,7 @@ namespace SFDScripts.Internal.Hardcore
         public static float DivingDamageFactor = 0.25f;
         public static float MinDivingHeight = 50;
 
-        //air
-        public static int WorldTop = 500;
+
         public static List<TPlayerStrikeInfo> AirPlayerList = new List<TPlayerStrikeInfo>();
 
         //data
@@ -127,16 +150,6 @@ namespace SFDScripts.Internal.Hardcore
         //shield generators
         public static List<TShieldGenerator> ShieldGeneratorList = new List<TShieldGenerator>();
 
-        #region Drones
-        /// <summary>
-        /// Left bottom corner spot of the map. (x and  y coordinates)
-        /// </summary>
-        public static Vector2 DroneAreaBegin = new Vector2(-1168, -272);
-        /// <summary>
-        /// An area that covers each of the map parts (x = width, y = height)
-        /// </summary>
-        public static Vector2 DroneAreaSize = new Vector2(308, 150);
-        #endregion
 
         public static List<List<int>> DroneMap1x1 = new List<List<int>>();
 
@@ -4026,8 +4039,8 @@ namespace SFDScripts.Internal.Hardcore
             weaponModSlot.AddEquipment(2, 25, 4, "Extra Ammo", "Add extra ammo to your light weapon."); //2
             weaponModSlot.AddEquipment(3, 50, 8, "Extra Explosives", "Add extra ammo to your explosive weapon."); //3
             weaponModSlot.AddEquipment(4, 50, 10, "Extra Heavy Ammo", "Add extra ammo to your heavy weapon."); //4
-            weaponModSlot.AddEquipment(5, 25, 4, "DNA Scanner", "If the enemy try to shoot from your gun, it will explode.", 1); //4
-                                                                                                                                 //weaponModSlot.AddEquipment(6, 100, 11, "Bouncing ammo"); //5
+            weaponModSlot.AddEquipment(5, 25, 4, "DNA Scanner", "If the enemy tries to shoot from your gun, it will explode.", 1); //4
+                                                                                                                                   //weaponModSlot.AddEquipment(6, 100, 11, "Bouncing ammo"); //5
 
             //equipment
             equipmentSlot.AddEquipment(1, 25, 1, "Small Medkit", "Allows one time stop the bleeding or revive teammate."); //1
@@ -4391,6 +4404,7 @@ namespace SFDScripts.Internal.Hardcore
                 else if (GameState == 1)
                 {
                     if (TimeToStart > 0) return;
+                    CameraWidth = 500;
                     GameState = 2;
                     AirPlayerList.Clear();
                     ThrownTrackingList.Clear();
@@ -4811,7 +4825,7 @@ namespace SFDScripts.Internal.Hardcore
                 {
                     cameraArea.Left -= CameraSpeed;
                 }
-                cameraArea.Right = cameraArea.Left + 770;
+                cameraArea.Right = cameraArea.Left + CameraWidth;
             }
             if (cameraArea.Top != CameraPosition.Y)
             {
@@ -4827,7 +4841,7 @@ namespace SFDScripts.Internal.Hardcore
                 {
                     cameraArea.Top -= CameraSpeed;
                 }
-                cameraArea.Bottom = cameraArea.Top - 550;
+                cameraArea.Bottom = cameraArea.Top - CameraHeight;
             }
             Game.SetCameraArea(cameraArea);
             //Game.SetBorderArea(cameraArea);

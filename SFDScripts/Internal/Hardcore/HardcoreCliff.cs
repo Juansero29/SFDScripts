@@ -1,14 +1,17 @@
-﻿using System;
-using System.Linq;
+﻿using SFDGameScriptInterface;
+using System;
 using System.Collections.Generic;
-using SFDGameScriptInterface;
-using System.IO.IsolatedStorage;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace SFDScripts.Internal.Hardcore
 {
-    public class HardcoreRemastered : GameScriptInterface
+    class HardcoreCliff : GameScriptInterface
     {
-        public HardcoreRemastered() : base(null) { }
+        public HardcoreCliff() : base(null) { }
+
+
 
         #region Script To Copy
 
@@ -27,20 +30,20 @@ namespace SFDScripts.Internal.Hardcore
         /// <summary>
         /// The world top position (where airstrikes get launched from)
         /// </summary>
-        public static int WorldTop = 600;
+        public static int WorldTop = 700;
 
         #region Drones
         /// <summary>
-        /// Left bottom corner spot of the map. (x and  y coordinates)
+        /// Left bottom corner spot of the map (x and  y coordinates)
         /// </summary>
-        public static Vector2 DroneAreaBegin = new Vector2(0, 0);
+        public static Vector2 DroneAreaBegin = new Vector2(258, 62);
         /// <summary>
-        /// An area that covers each of the map parts (x = width, y = height)
+        /// An area that covers all of the map playable parts (x = width, y = height) with a begining point at <see cref="DroneAreaBegin"/>
         /// </summary>
-        public static Vector2 DroneAreaSize = new Vector2(600, 550);
+        public static Vector2 DroneAreaSize = new Vector2(632, 470);
         #endregion
 
-        public static int CameraWidth = 770;
+        public static int CameraWidth = 600;
         public static int CameraHeight = 550;
         #endregion
 
