@@ -1089,7 +1089,7 @@ namespace SFDScripts.Internal.Hardcore
                     {
                         var previousLevelEquipmentPoints = LevelList[Player.Level - 1].AllowPoints;
                         var wonEquipmentPoints = LevelList[Player.Level].AllowPoints - previousLevelEquipmentPoints;
-                        text = "+" + wonEquipmentPoints + " Equipment Points";
+                        text += "\n +" + wonEquipmentPoints + " Equipment Points";
                     }
 
                 }
@@ -5875,7 +5875,6 @@ namespace SFDScripts.Internal.Hardcore
         #endregion
 
         #endregion
-
         #endregion
     }
 }

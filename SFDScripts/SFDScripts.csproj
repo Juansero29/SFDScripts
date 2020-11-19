@@ -50,6 +50,7 @@
     <Compile Include="External\#F.cs" />
     <Compile Include="Internal\Hardcore\HardcoreClassic.cs" />
     <Compile Include="Internal\Hardcore\HardcoreCliff.cs" />
+    <Compile Include="Internal\Hardcore\HardcoreSmallHill.cs" />
     <Compile Include="Internal\Hardcore\HardcoreTemplate.cs" />
     <Compile Include="External\#UK.cs" />
     <Compile Include="External\#UOP.cs" />

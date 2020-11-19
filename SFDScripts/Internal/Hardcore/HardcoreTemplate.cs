@@ -52,6 +52,7 @@ namespace SFDScripts
         public static int CameraWidth = 770;
         public static int CameraHeight = 550;
         #endregion
+
         #region Generic Script
 
         #region Debug
@@ -1088,7 +1089,7 @@ namespace SFDScripts
                     {
                         var previousLevelEquipmentPoints = LevelList[Player.Level - 1].AllowPoints;
                         var wonEquipmentPoints = LevelList[Player.Level].AllowPoints - previousLevelEquipmentPoints;
-                        text = "+" + wonEquipmentPoints + " Equipment Points";
+                        text += "\n +" + wonEquipmentPoints + " Equipment Points";
                     }
 
                 }
