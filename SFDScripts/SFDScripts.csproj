@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="External\#B.cs" />
     <Compile Include="External\#F.cs" />
+    <Compile Include="Internal\Hardcore\Hardcore.cs" />
     <Compile Include="Internal\Hardcore\HardcoreClassic.cs" />
     <Compile Include="Internal\Hardcore\HardcoreCliff.cs" />
     <Compile Include="Internal\Hardcore\HardcoreSmallHill.cs" />
