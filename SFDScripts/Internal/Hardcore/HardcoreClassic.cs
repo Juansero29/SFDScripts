@@ -49,8 +49,8 @@ namespace SFDScripts.Internal.Hardcore
         public static Vector2 DroneAreaSize = new Vector2(308, 150);
         #endregion
 
-        public static int CameraWidth = 770;
-        public static int CameraHeight = 550;
+        public static int CameraWidth = 768;
+        public static int CameraHeight = 552;
         #endregion
 
         #region Generic Script
@@ -2788,6 +2788,13 @@ namespace SFDScripts.Internal.Hardcore
                             PlaceShieldGenerator(player);
                             break;
                         }
+
+                    case 21:
+                        {
+                            MinusAmmo();
+                            SpawnStreetsweeper(player);
+                            break;
+                        }
                 }
             }
             public bool StopBleedingNear(TPlayer player)
@@ -3033,11 +3040,13 @@ namespace SFDScripts.Internal.Hardcore
                     if (pl != null && pl.IsActive() && pl != player && pl.Team == player.Team && !pl.IsAlive())
                     {
                         float x = GlobalRandom.Next((int)(area.Left + area.Width / 5), (int)(area.Right - area.Width / 5));
-                        float y = WorldTop + 200;
+                        float y = WorldTop + 50;
                         IObject crate = GlobalGame.CreateObject("SupplyCrate00", new Vector2(x, y));
                         IObject platf = GlobalGame.CreateObject("Lift00A", new Vector2(x, y - 10));
-                        IObject leftBorder = GlobalGame.CreateObject("Duct00C_D", new Vector2(x - 10, y), (float)Math.PI / 2);
-                        IObject rightBorder = GlobalGame.CreateObject("Duct00C_D", new Vector2(x + 10, y), (float)Math.PI / 2);
+                        IObject leftBorder = GlobalGame.CreateObject("Lift00A", new Vector2(x - 10, y), (float)Math.PI / -2);
+                        IObject rightBorder = GlobalGame.CreateObject("Lift00A", new Vector2(x + 10, y), (float)Math.PI / 2);
+                        leftBorder.SetBodyType(BodyType.Dynamic);
+                        rightBorder.SetBodyType(BodyType.Dynamic);
                         IObjectDestroyTargets destroy = (IObjectDestroyTargets)GlobalGame.CreateObject("DestroyTargets", new Vector2(x, y));
                         platf.SetMass(1e-3f);
                         leftBorder.SetMass(1e-3f);
@@ -3076,6 +3085,15 @@ namespace SFDScripts.Internal.Hardcore
                 position += new Vector2(player.User.GetPlayer().FacingDirection * 10, 15);
                 CreateShieldGenerator(50, position, 50, player.Team);
             }
+
+            public void SpawnStreetsweeper(TPlayer player)
+            {
+                var streetSweeper = Game.CreateObject("Streetsweeper", new Vector2(player.Position.X, WorldTop)) as IObjectStreetsweeper;
+                streetSweeper.SetOwnerTeam(player.Team);
+                streetSweeper.SetOwnerPlayer(player.User.GetPlayer());
+                ObjectToRemove.Add(streetSweeper);
+            }
+
             public void SpawnDrone(TPlayer player, int id)
             {
                 Area area = GlobalGame.GetCameraArea();
@@ -4107,8 +4125,9 @@ namespace SFDScripts.Internal.Hardcore
             primaryWeaponSlot.AddEquipment(29, 150, 13, "Grenade Launcher", "When you account for the arc of the grenade, it can become much more accurate than a bazooka (without a laser sight). The grenade launcher also must reload after each shot fired. 1 grenade mag and two extra mags"); //8
             primaryWeaponSlot.AddEquipment(6, 150, 15, "M60", "Big damage and fire rate, but low accuracy. Too heavy, you can't sprint."); //9
             primaryWeaponSlot.AddEquipment(9, 150, 13, "Sniper Rifle", "Best accurate weapon with huge damage. Too heavy, you can't sprint."); //10
-            primaryWeaponSlot.AddEquipment(17, 150, 12, "Bazooka", "The Bazooka fires a rocket off in a straight line, however the trajectory is not constantly straight, as it has the tendency to shift which can help avoid excessively long ranged kills. The random directional shift can partially be prevented with a Laser Sight attached to the Bazooka. 1 rocket mag and two extra mags."); //11
-                                                                                                                                                                                                                                                                                                                                                                                                      //primaryWeaponSlot.AddEquipment(64, 150, 9, "Bow"); //12
+            primaryWeaponSlot.AddEquipment(17, 175, 12, "Bazooka", "The Bazooka fires a rocket off in a straight line, however the trajectory is not constantly straight, as it has the tendency to shift which can help avoid excessively long ranged kills. The random directional shift can partially be prevented with a Laser Sight attached to the Bazooka. 1 rocket mag and two extra mags."); //11
+            primaryWeaponSlot.AddEquipment((int)WeaponItem.BOW, 175, 20, "Bow", "How 'bout this, with some fire arrows? huh?"); //11
+
 
             thrownWeaponSlot.AddEquipment(1, 50, 6, "Grenades", "Everyone loves grenades, make them explode. These grenades can't touch people though. 3 grenades"); //1	
             thrownWeaponSlot.AddEquipment(2, 25, 5, "Molotovs", "These little russian bottles we love. 3 in here for your pleasure."); //2
@@ -4121,9 +4140,10 @@ namespace SFDScripts.Internal.Hardcore
             weaponModSlot.AddEquipment(1, 25, 3, "Lazer Scope", "Helps to aim precisely."); //1
             weaponModSlot.AddEquipment(2, 25, 4, "Extra Ammo", "Add extra ammo to your light weapon."); //2
             weaponModSlot.AddEquipment(3, 50, 8, "Extra Explosives", "Add extra ammo to your explosive weapon."); //3
-            weaponModSlot.AddEquipment(4, 50, 10, "Extra Heavy Ammo", "Add extra ammo to your heavy weapon."); //4
-            weaponModSlot.AddEquipment(5, 25, 4, "DNA Scanner", "If the enemy tries to shoot from your gun, it will explode.", 1); //4
-                                                                                                                                   //weaponModSlot.AddEquipment(6, 100, 11, "Bouncing ammo"); //5
+            weaponModSlot.AddEquipment(4, 50, 10, "Extra Heavy Ammo", "Add extra ammo to your heavy weapon: Revolvers, Snipers, Magnums and M60s"); //4
+            weaponModSlot.AddEquipment(5, 25, 4, "DNA Scanner", "If the enemy tries to shoot from your gun, it will explode!"); //4
+            weaponModSlot.AddEquipment(6, 250, 17, "Bouncing ammo", "Bounce some ammo around"); //5
+            weaponModSlot.AddEquipment(7, 275, 20, "Fire ammo", "Fire? Who asked for it anyway!"); //5
 
             //equipment
             equipmentSlot.AddEquipment(1, 25, 1, "Small Medkit", "Allows one time stop the bleeding or revive teammate."); //1
@@ -4141,11 +4161,13 @@ namespace SFDScripts.Internal.Hardcore
             equipmentSlot.AddEquipment(13, 150, 11, "Light Turret", "Automatically shoots at enemies in range of the minigun");
             equipmentSlot.AddEquipment(14, 175, 14, "Rocket Turret", "Automatically shoots at enemies in range of the rocket launcher");
             equipmentSlot.AddEquipment(15, 200, 15, "Heavy Turret", "Automatically shoots at enemies in range. It have minigun and rocket launcher.");
-            equipmentSlot.AddEquipment(16, 175, 14, "Sniper Turret", "Automatically shoots at enemies in range of the sniper.", 1);
+            equipmentSlot.AddEquipment(16, 275, 21, "Sniper Turret", "Automatically shoots at enemies in range of the sniper.");
             equipmentSlot.AddEquipment(17, 50, 4, "Police Shield", "Protects you from some bullets.");
-            equipmentSlot.AddEquipment(18, 50, 3, "Adrenaline", "Gives temporary immunity to damage. You will receive all damage when adrenaline is over.", 1);
+            equipmentSlot.AddEquipment(18, 100, 3, "Adrenaline", "Gives temporary immunity to damage. You will receive all damage when adrenaline is over.");
             // equipmentSlot.AddEquipment(19, 200, 15, "Shield Generator", "Creates an energy shield that protects from bullets and enemies.", 2);
             equipmentSlot.AddEquipment(20, 100, 15, "Jet Pack", "Allows you to make jet jumps. And protect from falling.");
+            equipmentSlot.AddEquipment(21, 250, 17, "Streetsweeper", "Hate drones? Well try this shit."); //12
+
 
             //armor
             bodySlot.AddEquipment(1, 50, 2, "Light Armor", "Decrease the damage a bit."); //1
@@ -4160,20 +4182,25 @@ namespace SFDScripts.Internal.Hardcore
                 //human 0
                 AddLevel("Private", 0, 100);
                 AddLevel("First Private", 100, 125);
-                AddLevel("Specialist", 150, 150);
-                AddLevel("Corporal", 200, 175);
-                AddLevel("Sergeant", 250, 200);
-                AddLevel("Staff Sergeant", 350, 200);
-                AddLevel("Master Sergeant", 400, 225);
-                AddLevel("Master Sergeant II", 470, 225);
-                AddLevel("First Sergeant", 550, 250);
-                AddLevel("Second Lieutenant", 620, 275);
-                AddLevel("First Lieutenant", 690, 275);
-                AddLevel("Captain", 800, 300);
-                AddLevel("Major", 900, 325);
-                AddLevel("Colonel", 1000, 350);
-                AddLevel("Colonel II", 1200, 350);
-                AddLevel("General", 1500, 350);
+                AddLevel("Private First Class", 150, 150);
+                AddLevel("Specialist", 200, 175);
+                AddLevel("Corporal", 250, 200);
+                AddLevel("Sergeant", 350, 200);
+                AddLevel("Staff Sergeant", 400, 225);
+                AddLevel("Sergeant First Class", 470, 225);
+                AddLevel("Master Sergeant", 550, 250);
+                AddLevel("First Sergeant", 620, 275);
+                AddLevel("Sergeant Major", 690, 275);
+                AddLevel("Command Sergeant Major", 800, 300);
+                AddLevel("Sergeant Major \n of the Army", 900, 325);
+                AddLevel("Chief Warrant Officer 2", 1000, 350);
+                AddLevel("Chief Warrant Officer 3", 1200, 350);
+                AddLevel("Chief Warrant Officer 4", 1500, 350);
+                AddLevel("Chief Warrant Officer 5", 2000, 375);
+                AddLevel("Second Lieutenant", 2500, 400);
+                AddLevel("First Lieutenant", 300, 425);
+                AddLevel("Captain", 300, 450);
+                AddLevel("General of the Army", 300, 500);
             }
 
             //Game.RunCommand("MSG HARDCORE: Loading maps...");
@@ -5462,6 +5489,11 @@ namespace SFDScripts.Internal.Hardcore
                 case 6:
                     {
                         pl.GiveWeaponItem(WeaponItem.BOUNCINGAMMO);
+                        break;
+                    }
+                case 7:
+                    {
+                        pl.GiveWeaponItem(WeaponItem.FIREAMMO);
                         break;
                     }
             }
