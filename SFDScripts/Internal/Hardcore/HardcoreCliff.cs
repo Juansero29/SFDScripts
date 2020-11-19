@@ -100,6 +100,8 @@ namespace SFDScripts.Internal.Hardcore
         #region Hardcore Script Declarations
 
         #region Fields
+        private static System.Threading.Mutex Mutex = new System.Threading.Mutex();
+
         public static Dictionary<string, int> UserAccessList = new Dictionary<string, int>();
         public static Random rnd = new Random();
         public static IGame GlobalGame;
@@ -1085,6 +1087,14 @@ namespace SFDScripts.Internal.Hardcore
                             }
                         }
                     }
+
+                    if (Player.Level >= 1)
+                    {
+                        var previousLevelEquipmentPoints = LevelList[Player.Level - 1].AllowPoints;
+                        var wonEquipmentPoints = LevelList[Player.Level].AllowPoints - previousLevelEquipmentPoints;
+                        text = "+" + wonEquipmentPoints + " Equipment Points";
+                    }
+
                 }
                 Menu.SetTextColor(Color.White);
                 Menu.SetText(text);
@@ -4136,8 +4146,8 @@ namespace SFDScripts.Internal.Hardcore
             thrownWeaponSlot.AddEquipment(2, 25, 5, "Molotovs", "These little russian bottles we love. 3 in here for your pleasure."); //2
             thrownWeaponSlot.AddEquipment(3, 50, 7, "Mines", "Mines have a priming 'timer' in which while it flashes it will not detonate. 3 mines."); //3
             thrownWeaponSlot.AddEquipment(4, 100, 10, "Incendiary grenades"); //4
-            thrownWeaponSlot.AddEquipment(5, 25, 5, "Smoke grenades", "", 1); //5
-            thrownWeaponSlot.AddEquipment(6, 50, 7, "Flashbang", "", 1); //6
+            thrownWeaponSlot.AddEquipment(5, 25, 23, "Smoke grenades", ""); //5
+            thrownWeaponSlot.AddEquipment(6, 50, 24, "Flashbang", ""); //6
             thrownWeaponSlot.AddEquipment(7, 50, 3, "Shuriken"); //7
 
             weaponModSlot.AddEquipment(1, 25, 3, "Lazer Scope", "Helps to aim precisely."); //1
@@ -4146,7 +4156,7 @@ namespace SFDScripts.Internal.Hardcore
             weaponModSlot.AddEquipment(4, 50, 10, "Extra Heavy Ammo", "Add extra ammo to your heavy weapon: Revolvers, Snipers, Magnums and M60s"); //4
             weaponModSlot.AddEquipment(5, 25, 4, "DNA Scanner", "If the enemy tries to shoot from your gun, it will explode!"); //4
             weaponModSlot.AddEquipment(6, 250, 17, "Bouncing ammo", "Bounce some ammo around"); //5
-            weaponModSlot.AddEquipment(7, 275, 20, "Fire ammo", "Fire? Who asked for it anyway!"); //5
+            weaponModSlot.AddEquipment(7, 275, 25, "Fire ammo", "Fire? Who asked for it anyway!"); //5
 
             //equipment
             equipmentSlot.AddEquipment(1, 25, 1, "Small Medkit", "Allows one time stop the bleeding or revive teammate."); //1
@@ -4183,27 +4193,31 @@ namespace SFDScripts.Internal.Hardcore
 
             {
                 //human 0
-                AddLevel("Private", 0, 100);
-                AddLevel("First Private", 100, 125);
-                AddLevel("Private First Class", 150, 150);
-                AddLevel("Specialist", 200, 175);
-                AddLevel("Corporal", 250, 200);
-                AddLevel("Sergeant", 350, 200);
-                AddLevel("Staff Sergeant", 400, 225);
-                AddLevel("Sergeant First Class", 470, 225);
-                AddLevel("Master Sergeant", 550, 250);
-                AddLevel("First Sergeant", 620, 275);
-                AddLevel("Sergeant Major", 690, 275);
-                AddLevel("Command Sergeant Major", 800, 300);
-                AddLevel("Sergeant Major \n of the Army", 900, 325);
-                AddLevel("Chief Warrant Officer 2", 1000, 350);
-                AddLevel("Chief Warrant Officer 3", 1200, 350);
-                AddLevel("Chief Warrant Officer 4", 1500, 350);
-                AddLevel("Chief Warrant Officer 5", 2000, 375);
-                AddLevel("Second Lieutenant", 2500, 400);
-                AddLevel("First Lieutenant", 300, 425);
-                AddLevel("Captain", 300, 450);
-                AddLevel("General of the Army", 300, 500);
+                AddLevel("Private", 0, 100); // 1
+                AddLevel("First Private", 100, 125); // 2
+                AddLevel("Private First Class", 150, 150); // 3
+                AddLevel("Specialist", 200, 175); // 4 
+                AddLevel("Corporal", 250, 200); // 5
+                AddLevel("Sergeant", 350, 200); // 6
+                AddLevel("Staff Sergeant", 400, 225); // 7
+                AddLevel("Sergeant First Class", 470, 225); // 8
+                AddLevel("Master Sergeant", 550, 250); // 9
+                AddLevel("First Sergeant", 620, 275); // 10
+                AddLevel("Sergeant Major", 690, 275); // 11
+                AddLevel("Command Sergeant Major", 800, 300); // 12
+                AddLevel("Sergeant Major \n of the Army", 900, 325); // 13
+                AddLevel("Chief Warrant Officer 2", 1000, 350); // 14
+                AddLevel("Chief Warrant Officer 3", 1200, 350); // 15
+                AddLevel("Chief Warrant Officer 4", 1500, 350); // 16
+                AddLevel("Chief Warrant Officer 5", 2000, 375); // 17 
+                AddLevel("Second Lieutenant", 2500, 400); // 18
+                AddLevel("First Lieutenant", 3000, 425); // 19 
+                AddLevel("Captain", 3500, 450); // 20
+                AddLevel("Major", 4000, 450); // 21
+                AddLevel("Lieutenant Colonel", 4500, 475); // 22
+                AddLevel("Colonel", 4500, 500); // 23
+                AddLevel("Brigadier General", 5000, 525); // 24
+                AddLevel("Major General", 6000, 550); // 25
             }
 
             //Game.RunCommand("MSG HARDCORE: Loading maps...");
@@ -4890,7 +4904,11 @@ namespace SFDScripts.Internal.Hardcore
         #region Data Persistence
         public static void SaveData()
         {
+
+
             // clear the file before so that data doesn't get inserted at the end of file
+            Mutex.WaitOne();   // Wait until it is safe to enter. 
+
             GlobalGame.GetSharedStorage("HARDCORE").Clear();
             string data = OtherData;
             var menusToSave = PlayerMenuList.Where(m => m.Player != null).ToList();
@@ -4905,17 +4923,18 @@ namespace SFDScripts.Internal.Hardcore
                     DebugLogger.DebugOnlyDialogLog("SAVED DATA FOR PLAYER " + player.Name + ". PLAYER DATA SAVED: [ " + playerData + " ]");
                 }
             }
-
             GlobalGame.GetSharedStorage("HARDCORE").SetItem("SaveData", data);
             IsDataSaved = true;
-
             var playersSavedCount = data.Split(';').Count();
             DebugLogger.DebugOnlyDialogLog("GAME SAVED " + playersSavedCount + " PLAYERS IN DATABASE");
+            Mutex.ReleaseMutex();
+
             // GlobalGame.Data = "BEGIN" + "DATA" + data + "ENDDATA";
         }
 
         public static void LoadData()
         {
+            Mutex.WaitOne();   // Wait until it is safe to enter. 
             string data = "";
             bool status = GlobalGame.GetSharedStorage("HARDCORE").TryGetItemString("SaveData", out data);
             if (!status) data = "";
@@ -4958,6 +4977,7 @@ namespace SFDScripts.Internal.Hardcore
                     OtherData += playerList[p] + ";";
                 }
             }
+            Mutex.ReleaseMutex();
         }
         #endregion
 
