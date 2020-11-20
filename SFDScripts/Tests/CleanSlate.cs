@@ -36,16 +36,26 @@ namespace SFDScripts.Tests
             var users = Game.GetActiveUsers();
             if (users.Length == 0) return;
 
-            using (System.IO.StreamWriter file = new System.IO.StreamWriter(@".\logs.txt"))
+            //using (System.IO.StreamWriter file = new System.IO.StreamWriter(@".\logs.txt"))
+            //{
+            //    for (int i = 0; i < users.Length; i++)
+            //    {
+            //        var user = users[i];
+            //        if (user == null) continue;
+            //        var player = user.GetPlayer();
+            //        if (player == null) continue;
+            //        file.WriteLine(user.AccountID + ":" + user.AccountName);
+            //    }
+            //}
+
+            for (int i = 0; i < users.Length; i++)
             {
-                for (int i = 0; i < users.Length; i++)
-                {
-                    var user = users[i];
-                    if (user == null) continue;
-                    var player = user.GetPlayer();
-                    if (player == null) continue;
-                    file.WriteLine(user.AccountID + ":" + user.AccountName);
-                }
+                var user = users[i];
+                if (user == null) continue;
+                var player = user.GetPlayer();
+                if (player == null) continue;
+                player.GiveWeaponItem(WeaponItem.M60);
+                
             }
 
         }
@@ -56,6 +66,21 @@ namespace SFDScripts.Tests
         /// <param name="elapsed">Time elapsed</param>
         public void OnUpdate(float elapsed)
         {
+            var users = Game.GetActiveUsers();
+            if (users.Length == 0) return;
+
+            for (int i = 0; i < users.Length; i++)
+            {
+                var user = users[i];
+                if (user == null) continue;
+                var player = user.GetPlayer();
+                if (player == null) continue;
+
+                if(player.CurrentPrimaryWeapon.WeaponItem == WeaponItem.M60 && player.CurrentPrimaryWeapon.TotalAmmo == 0)
+                {
+                    player.SetCurrentPrimaryWeaponAmmo(200);
+                }
+            }
         }
 
         /// <summary>

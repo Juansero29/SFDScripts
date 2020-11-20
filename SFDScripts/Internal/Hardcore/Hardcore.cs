@@ -71,12 +71,12 @@ namespace SFDScripts
         /// - Doesn't show timer
         /// - Doesn't end the game when there isn't enough players
         /// </remakrs>
-        public static bool IsDebug = false;
+        public static bool IsDebug = true;
 
         /// <summary>
         /// Defines wether we want to show the debug messages or not as logs in the chat
         /// </summary>
-        public static bool ShowDebugMessages = false;
+        public static bool ShowDebugMessages = true;
         #endregion
 
         #region Settings
@@ -3377,6 +3377,9 @@ namespace SFDScripts
             public TWeapon PrimaryWeapon = null;
             public TWeapon SecondaryWeapon = null;
             public TWeapon ThrownWeapon = null;
+
+            public bool HasExtraHeavyAmmo { get; internal set; }
+
             //methods
             public TPlayer(IUser user)
             {
@@ -3687,6 +3690,12 @@ namespace SFDScripts
                 {
                     Position = pl.GetWorldPosition();
                     WeaponTrackingUpdate(false);
+                    var heavyWeapon = pl.CurrentPrimaryWeapon.WeaponItem;
+                    if (ExtraHeavyAmmoWeapon.Contains(heavyWeapon) && pl.CurrentPrimaryWeapon.CurrentAmmo < (pl.CurrentPrimaryWeapon.MaxTotalAmmo / 2) && HasExtraHeavyAmmo)
+                    {
+                        pl.GiveWeaponItem(heavyWeapon);
+                        HasExtraHeavyAmmo = false;
+                    }
                 }
                 if (pl != null && Status >= 0)
                 {
@@ -3822,7 +3831,13 @@ namespace SFDScripts
                         }
                     }
                     WeaponItem heavyWeapon = pl.CurrentPrimaryWeapon.WeaponItem;
-                    if (heavyWeapon == WeaponItem.M60 || heavyWeapon == WeaponItem.GRENADE_LAUNCHER || heavyWeapon == WeaponItem.BAZOOKA || heavyWeapon == WeaponItem.SNIPER || Armor.Heavy) IsSlow = true;
+                    if (heavyWeapon == WeaponItem.M60 || heavyWeapon == WeaponItem.GRENADE_LAUNCHER || heavyWeapon == WeaponItem.BAZOOKA || heavyWeapon == WeaponItem.SNIPER || Armor.Heavy)
+                    {
+                        IsSlow = true;
+                    }
+
+
+
                     else IsSlow = false;
                     if (IsSlow)
                     {
@@ -5384,7 +5399,7 @@ namespace SFDScripts
             // sorts the levels list in an ascending manner
             levelList.Sort((x, y) => x.Key.CompareTo(y.Key));
 
-            if(GlobalRandom.Next(0, 2) == 0)
+            if (GlobalRandom.Next(0, 2) == 0)
             {
                 // there's a chance in two to get the list ordered in a descending manner
                 // this has been added so that teams don't always stay the same between matches
@@ -5604,8 +5619,16 @@ namespace SFDScripts
                     {
                         WeaponItem first = pl.CurrentPrimaryWeapon.WeaponItem;
                         WeaponItem second = pl.CurrentSecondaryWeapon.WeaponItem;
-                        if (ExtraAmmoWeapon.Contains(first)) pl.GiveWeaponItem(first);
-                        if (ExtraAmmoWeapon.Contains(second)) pl.GiveWeaponItem(second);
+                        if (ExtraAmmoWeapon.Contains(first))
+                        {
+
+                            pl.GiveWeaponItem(first);
+
+                        }
+                        if (ExtraAmmoWeapon.Contains(second))
+                        {
+                            pl.GiveWeaponItem(second);
+                        }
                         break;
                     }
                 case 3:
@@ -5622,8 +5645,18 @@ namespace SFDScripts
                     {
                         WeaponItem first = pl.CurrentPrimaryWeapon.WeaponItem;
                         WeaponItem second = pl.CurrentSecondaryWeapon.WeaponItem;
-                        if (ExtraHeavyAmmoWeapon.Contains(first)) pl.GiveWeaponItem(first);
-                        if (ExtraHeavyAmmoWeapon.Contains(second)) pl.GiveWeaponItem(second);
+                        if (ExtraHeavyAmmoWeapon.Contains(first))
+                        {
+                            pl.GiveWeaponItem(first);
+                            player.HasExtraHeavyAmmo = true;
+                            DebugLogger.DebugOnlyDialogLog("player.HasExtraHeavyAmmo = " + player.HasExtraHeavyAmmo);
+                        }
+                        if (ExtraHeavyAmmoWeapon.Contains(second))
+                        {
+                            pl.GiveWeaponItem(second);
+                            player.HasExtraHeavyAmmo = true;
+                            DebugLogger.DebugOnlyDialogLog("player.HasExtraHeavyAmmo = " + player.HasExtraHeavyAmmo);
+                        }
                         break;
                     }
                 case 5:
