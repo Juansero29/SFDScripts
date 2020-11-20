@@ -4107,14 +4107,23 @@ namespace SFDScripts
             Game.StartupSequenceEnabled = false;
             Game.DeathSequenceEnabled = false;
             GlobalGame = Game;
+
+            // so all player's see the complete menu
             GlobalGame.SetCurrentCameraMode(CameraMode.Static);
+
+
             var menuCameraPosition = GlobalGame.GetSingleObjectByCustomId("MenuCameraPosition").GetWorldPosition();
             CameraPosition.X = menuCameraPosition.X;
             CameraPosition.Y = menuCameraPosition.Y;
             CameraSpeed = 20000.0f;
+
             UpdateCamera();
             SpawnPlayers();
+
             BeginTimer = (IObjectText)Game.GetSingleObjectByCustomId("BeginTimer");
+
+            #region Vision Objects
+
             VisionObjects.Add("Concrete01A", 3);
             VisionObjects.Add("Concrete01B", 3);
             VisionObjects.Add("Concrete00A", 3);
@@ -4149,6 +4158,10 @@ namespace SFDScripts
             VisionObjects.Add("MetalTable00", 1);
             VisionObjects.Add("Safe00", 2);
 
+            #endregion
+
+            #region Weapon Item Names
+
             WeaponItemNames.Add(WeaponItem.PISTOL, "WpnPistol");
             WeaponItemNames.Add(WeaponItem.SILENCEDPISTOL, "WpnSilencedPistol");
             WeaponItemNames.Add(WeaponItem.MAGNUM, "WpnMagnum");
@@ -4174,12 +4187,9 @@ namespace SFDScripts
             WeaponItemNames.Add(WeaponItem.BOW, "WpnBow");
             WeaponItemNames.Add(WeaponItem.SHOCK_BATON, "WpnShockBaton");
 
-            //Game.RunCommand("MSG HARDCORE V2.0");
-            //Game.RunCommand("MSG HARDCORE: Loading equipment...");
-            //Game.RunCommand("MSG GAME DATABASE: SFD-HARDCORE.WIKIA.COM");
-            //Game.RunCommand("MSG https://discord.gg/Y7zGwNN");
+            #endregion
 
-            //slots
+            #region Slots
             TEquipmentSlot meleeWeaponSlot = AddEquipmentSlot("Melee Weapon");
             TEquipmentSlot secondaryWeaponSlot = AddEquipmentSlot("Secondary Weapon");
             TEquipmentSlot primaryWeaponSlot = AddEquipmentSlot("Primary Weapon");
@@ -4187,8 +4197,9 @@ namespace SFDScripts
             TEquipmentSlot weaponModSlot = AddEquipmentSlot("Weapon Mod");
             TEquipmentSlot bodySlot = AddEquipmentSlot("Body");
             TEquipmentSlot equipmentSlot = AddEquipmentSlot("Equipment");
+            #endregion
 
-            //weapon
+            #region Adding Weapons and Equipment
             meleeWeaponSlot.AddEquipment(8, 0, 0, "Machete", "A wonderful mexican machete."); //1
             meleeWeaponSlot.AddEquipment(49, 25, 3, "Knife", "A knife that can be thrown.");
             meleeWeaponSlot.AddEquipment(4, 0, 0, "Pipe", "A solid metal pipe."); //2
@@ -4270,37 +4281,37 @@ namespace SFDScripts
             bodySlot.AddEquipment(6, 150, 12, "Heavy Armor", "Decrease the damage greatly. Very heavy. You can't sprint and roll."); //6
             bodySlot.AddEquipment(7, 50, 9, "Kevlar Armor", "Protects you from one-shot death."); //7
 
-            {
-                //human 0
-                AddLevel("Private", 0, 100); // 1
-                AddLevel("First Private", 100, 125); // 2
-                AddLevel("Private First Class", 150, 150); // 3
-                AddLevel("Specialist", 200, 175); // 4 
-                AddLevel("Corporal", 250, 200); // 5
-                AddLevel("Sergeant", 350, 200); // 6
-                AddLevel("Staff Sergeant", 400, 225); // 7
-                AddLevel("Sergeant First Class", 470, 225); // 8
-                AddLevel("Master Sergeant", 550, 250); // 9
-                AddLevel("First Sergeant", 620, 275); // 10
-                AddLevel("Sergeant Major", 690, 275); // 11
-                AddLevel("Command Sergeant Major", 800, 300); // 12
-                AddLevel("Sergeant Major \n of the Army", 900, 325); // 13
-                AddLevel("Chief Warrant Officer 2", 1000, 350); // 14
-                AddLevel("Chief Warrant Officer 3", 1200, 350); // 15
-                AddLevel("Chief Warrant Officer 4", 1500, 350); // 16
-                AddLevel("Chief Warrant Officer 5", 2000, 375); // 17 
-                AddLevel("Second Lieutenant", 2500, 400); // 18
-                AddLevel("First Lieutenant", 3000, 425); // 19 
-                AddLevel("Captain", 3500, 450); // 20
-                AddLevel("Major", 4000, 450); // 21
-                AddLevel("Lieutenant Colonel", 4500, 475); // 22
-                AddLevel("Colonel", 4500, 500); // 23
-                AddLevel("Brigadier General", 5000, 525); // 24
-                AddLevel("Major General", 6000, 550); // 25
-            }
+            #endregion
 
-            //Game.RunCommand("MSG HARDCORE: Loading maps...");
+            #region Adding Levels
+            //human 0
+            AddLevel("Private", 0, 100); // 1
+            AddLevel("First Private", 100, 125); // 2
+            AddLevel("Private First Class", 150, 150); // 3
+            AddLevel("Specialist", 200, 175); // 4 
+            AddLevel("Corporal", 250, 200); // 5
+            AddLevel("Sergeant", 350, 200); // 6
+            AddLevel("Staff Sergeant", 400, 225); // 7
+            AddLevel("Sergeant First Class", 470, 225); // 8
+            AddLevel("Master Sergeant", 550, 250); // 9
+            AddLevel("First Sergeant", 620, 275); // 10
+            AddLevel("Sergeant Major", 690, 275); // 11
+            AddLevel("Command Sergeant Major", 800, 300); // 12
+            AddLevel("Sergeant Major \n of the Army", 900, 325); // 13
+            AddLevel("Chief Warrant Officer 2", 1000, 350); // 14
+            AddLevel("Chief Warrant Officer 3", 1200, 350); // 15
+            AddLevel("Chief Warrant Officer 4", 1500, 350); // 16
+            AddLevel("Chief Warrant Officer 5", 2000, 375); // 17 
+            AddLevel("Second Lieutenant", 2500, 400); // 18
+            AddLevel("First Lieutenant", 3000, 425); // 19 
+            AddLevel("Captain", 3500, 450); // 20
+            AddLevel("Major", 4000, 450); // 21
+            AddLevel("Lieutenant Colonel", 4500, 475); // 22
+            AddLevel("Colonel", 4500, 500); // 23
+            AddLevel("Brigadier General", 5000, 525); // 24
+            AddLevel("Major General", 6000, 550); // 25
 
+            #endregion
 
             // load different map parts
             for (int i = 0; i < NumberOfMapParts; i++)
@@ -4324,16 +4335,15 @@ namespace SFDScripts
 
 
 
-
             GenerateDroneMap();
-            //Game.RunCommand("MSG HARDCORE: Loading players...");
+
             PreparePlayerMenus();
             RefreshPlayerMenus();
-            //if (Game.Data == "") Game.Data = SavedData;
 
             CameraSpeed = 2.0f;
 
             Events.UpdateCallback.Start(OnUpdate, 1);
+
 
             BeginTimerTrigger = (IObjectTimerTrigger)Game.CreateObject("TimerTrigger", new Vector2(0, 0), 0);
             BeginTimerTrigger.SetRepeatCount(0);
