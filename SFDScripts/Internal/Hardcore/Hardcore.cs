@@ -109,13 +109,13 @@ namespace SFDScripts
         private static System.Threading.Mutex Mutex = new System.Threading.Mutex();
 
         public static Dictionary<string, int> UserAccessList = new Dictionary<string, int>();
-        
+
         /// <summary>
         /// Couple of variables used for randomness in the game
         /// </summary>
         public static Random rnd = new Random();
         public static Random GlobalRandom = new Random();
-        
+
         public static IGame GlobalGame;
 
 
@@ -868,9 +868,21 @@ namespace SFDScripts
                 if (GlobalRandom.Next(0, 100) <= 20)
                 {
                     WeatherType weather = GlobalGame.GetWeatherType();
-                    if (weather == WeatherType.None) GlobalGame.SetWeatherType(WeatherType.Rain);
-                    if (weather == WeatherType.Rain) GlobalGame.SetWeatherType(WeatherType.Snow);
-                    else GlobalGame.SetWeatherType(WeatherType.None);
+                    if (weather == WeatherType.None)
+                    {
+                        GlobalGame.SetWeatherType(WeatherType.Rain);
+                        return;
+                    }
+                    if (weather == WeatherType.Rain)
+                    {
+                        GlobalGame.SetWeatherType(WeatherType.Snow);
+                        return;
+                    }
+                    if (weather == WeatherType.Snow)
+                    {
+                        GlobalGame.SetWeatherType(WeatherType.None);
+                        return;
+                    }
                 }
             }
             public int Update()
@@ -4323,7 +4335,7 @@ namespace SFDScripts
 
             CameraSpeed = 2.0f;
 
-            Events.UpdateCallback.Start(OnUpdate, 1000);
+            Events.UpdateCallback.Start(OnUpdate, 1);
 
             BeginTimerTrigger = (IObjectTimerTrigger)Game.CreateObject("TimerTrigger", new Vector2(0, 0), 0);
             BeginTimerTrigger.SetRepeatCount(0);
