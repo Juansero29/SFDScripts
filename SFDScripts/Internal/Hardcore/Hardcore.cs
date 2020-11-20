@@ -4107,16 +4107,14 @@ namespace SFDScripts
             Game.StartupSequenceEnabled = false;
             Game.DeathSequenceEnabled = false;
             GlobalGame = Game;
-            GlobalGame.SetAllowedCameraModes(CameraMode.Static);
+            GlobalGame.SetCurrentCameraMode(CameraMode.Static);
             var menuCameraPosition = GlobalGame.GetSingleObjectByCustomId("MenuCameraPosition").GetWorldPosition();
             CameraPosition.X = menuCameraPosition.X;
             CameraPosition.Y = menuCameraPosition.Y;
             CameraSpeed = 20000.0f;
             UpdateCamera();
             SpawnPlayers();
-
             BeginTimer = (IObjectText)Game.GetSingleObjectByCustomId("BeginTimer");
-
             VisionObjects.Add("Concrete01A", 3);
             VisionObjects.Add("Concrete01B", 3);
             VisionObjects.Add("Concrete00A", 3);
@@ -4400,6 +4398,7 @@ namespace SFDScripts
                 else if (GameState == 1)
                 {
                     if (TimeToStart > 0) return;
+                    GlobalGame.SetCurrentCameraMode(CameraMode.Static);
                     GameState = 2;
                     AirPlayerList.Clear();
                     ThrownTrackingList.Clear();
@@ -4413,7 +4412,6 @@ namespace SFDScripts
                     RemoveWeapons();
                     MapPartList[CurrentMapPartIndex].Start();
                     TimeToStart = AreaTime;
-
                     if (!IsDebug && PlayerList.Count < 2)
                     {
                         Game.SetGameOver("NOT ENOUGH PLAYERS");
