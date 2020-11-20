@@ -68,7 +68,7 @@
     <Compile Include="Internal\PirateWars.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tests\#Per.cs" />
-    <Compile Include="Tests\StreetSweeper.cs" />
+    <Compile Include="Tests\CleanSlate.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

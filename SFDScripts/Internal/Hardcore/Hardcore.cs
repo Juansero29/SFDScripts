@@ -48,7 +48,14 @@ namespace SFDScripts
         public static Vector2 DroneAreaSize = new Vector2(600, 300);
         #endregion
 
+        /// <summary>
+        /// The camera width for this game
+        /// </summary>
         public static int CameraWidth = 770;
+
+        /// <summary>
+        /// The camera height for this game
+        /// </summary>
         public static int CameraHeight = 550;
         #endregion
 
@@ -96,41 +103,88 @@ namespace SFDScripts
         #region Hardcore Script Declarations
 
         #region Fields
+        /// <summary>
+        /// A semaphore used for saved data file access
+        /// </summary>
         private static System.Threading.Mutex Mutex = new System.Threading.Mutex();
 
         public static Dictionary<string, int> UserAccessList = new Dictionary<string, int>();
+        
+        /// <summary>
+        /// Couple of variables used for randomness in the game
+        /// </summary>
         public static Random rnd = new Random();
-        public static IGame GlobalGame;
-        public static List<TLevel> LevelList = new List<TLevel>();
-        public static List<TMapPart> MapPartList = new List<TMapPart>();
-        public static List<TPlayer> PlayerList = new List<TPlayer>();
-        public static List<TEquipmentSlot> EquipmentList = new List<TEquipmentSlot>();
-        public static List<TPlayerMenu> PlayerMenuList = new List<TPlayerMenu>();
-        public static IObjectText BeginTimer;
         public static Random GlobalRandom = new Random();
+        
+        public static IGame GlobalGame;
 
 
+        /// <summary>
+        /// The complete list of levels (ranks) that players can win
+        /// </summary>
+        public static List<TLevel> LevelList = new List<TLevel>();
+
+        /// <summary>
+        /// The list of map parts
+        /// </summary>
+        public static List<TMapPart> MapPartList = new List<TMapPart>();
+
+        /// <summary>
+        /// The list of all players in match
+        /// </summary>
+        public static List<TPlayer> PlayerList = new List<TPlayer>();
+
+        /// <summary>
+        /// The list containing all the equipment available to players
+        /// </summary>
+        public static List<TEquipmentSlot> EquipmentList = new List<TEquipmentSlot>();
+
+        /// <summary>
+        /// The list of menu's for the players
+        /// </summary>
+        public static List<TPlayerMenu> PlayerMenuList = new List<TPlayerMenu>();
+
+        /// <summary>
+        /// The timer that shows up at the beginning of the game
+        /// </summary>
+        public static IObjectText BeginTimer;
+
+        /// <summary>
+        /// The list of players that are inside an strike area in-game
+        /// </summary>
         public static List<TPlayerStrikeInfo> AirPlayerList = new List<TPlayerStrikeInfo>();
 
 
-
-        public static IObjectTrigger UpdateTrigger;
         public static IObjectTimerTrigger BeginTimerTrigger;
 
+        /// <summary>
+        /// Is the data already saved?
+        /// </summary>
         public static bool IsDataSaved = false;
 
+        /// <summary>
+        /// Is this the first match (round) in the game?
+        /// </summary>
         public static bool IsFirstMatch = true;
 
 
         /// <summary>
-        /// Serves as a continer for the data of other players who aren't connected to the ongoing match
+        /// Serves as a container for the data of other players who aren't connected to the on-going match
         /// It is saved along with each player's data at the end of each match
         /// </summary>
         public static string OtherData = "";
 
         //other
+
+        /// <summary>
+        /// A list of objects to remove from the game, it's cleaned at each GameState == 1
+        /// </summary>
         public static List<IObject> ObjectToRemove = new List<IObject>();
         public static float MaxSlowSpeed = 1;
+
+        /// <summary>
+        /// List of <see cref="TEffect"/> available
+        /// </summary>
         public static List<TEffect> EffectList = new List<TEffect>();
         public static float XPBonus = 1f;
 
@@ -140,12 +194,19 @@ namespace SFDScripts
 
         //turrets
         public static List<TTurret> TurretList = new List<TTurret>();
+        /// <summary>
+        /// Objects used by the turrets to know if they can shoot or not
+        /// </summary>
         public static Dictionary<string, int> VisionObjects = new Dictionary<string, int>();
 
-        //shield generators
+        /// <summary>
+        /// List of shield generators
+        /// </summary>
         public static List<TShieldGenerator> ShieldGeneratorList = new List<TShieldGenerator>();
 
-
+        /// <summary>
+        /// The drone map they use to navigate
+        /// </summary>
         public static List<List<int>> DroneMap1x1 = new List<List<int>>();
 
 
@@ -165,10 +226,18 @@ namespace SFDScripts
         public static int GameState = 0;
         #endregion
 
-        #region Miscelanous Settings
+        #region Camera Settings
 
 
+        /// <summary>
+        /// The camera position. When changed, the camera will go to this position at the <see cref="CameraSpeed"/> set. 
+        /// It will be updated on the <see cref="UpdateCamera"/> method.
+        /// </summary>
         public static Vector2 CameraPosition;
+
+        /// <summary>
+        /// The speed used to move the camera each time it is updated in the <see cref="UpdateCamera"/> method
+        /// </summary>
         public static float CameraSpeed = 2.0f;
         #endregion
 
@@ -996,7 +1065,7 @@ namespace SFDScripts
                 {
                     if (!Player.IsActive())
                     {
-                        DebugLogger.DialogLog("PLAYER " + Player.Name + " NOT BEING SAVED BECAUSE HE WASN'T ACTIVE");
+                        DebugLogger.DebugOnlyDialogLog("PLAYER " + Player.Name + " NOT BEING SAVED BECAUSE HE WASN'T ACTIVE");
                         return "";
                     }
                 }
@@ -1088,7 +1157,7 @@ namespace SFDScripts
                     {
                         var previousLevelEquipmentPoints = LevelList[Player.Level - 1].AllowPoints;
                         var wonEquipmentPoints = LevelList[Player.Level].AllowPoints - previousLevelEquipmentPoints;
-                        if(wonEquipmentPoints > 0)
+                        if (wonEquipmentPoints > 0)
                         {
                             text += "\n +" + wonEquipmentPoints + " Equipment Points";
                         }
@@ -4015,13 +4084,17 @@ namespace SFDScripts
         #endregion
 
         #region Lifecycle
-
+        /// <summary>
+        /// The game will always call the following method "public void OnStartup()" during a map start (or script activates). 
+        /// </summary>
+        /// <remarks>
+        /// No triggers required. This is run before triggers that activate on startup (and before OnStartup triggers).
+        /// </remarks>
         public void OnStartup()
         {
             Game.StartupSequenceEnabled = false;
             Game.DeathSequenceEnabled = false;
             GlobalGame = Game;
-            DebugLogger.DebugOnlyDialogLog("SETTING CAMERA STATIC: ONSTARTUP()");
             GlobalGame.SetAllowedCameraModes(CameraMode.Static);
             var menuCameraPosition = GlobalGame.GetSingleObjectByCustomId("MenuCameraPosition").GetWorldPosition();
             CameraPosition.X = menuCameraPosition.X;
@@ -4031,9 +4104,6 @@ namespace SFDScripts
             SpawnPlayers();
 
             BeginTimer = (IObjectText)Game.GetSingleObjectByCustomId("BeginTimer");
-
-            // AddUserAccessLevels();
-            // GlobalGame.RunCommand("IE 1");
 
             VisionObjects.Add("Concrete01A", 3);
             VisionObjects.Add("Concrete01B", 3);
@@ -4252,8 +4322,9 @@ namespace SFDScripts
             //if (Game.Data == "") Game.Data = SavedData;
 
             CameraSpeed = 2.0f;
-            UpdateTrigger = (IObjectTrigger)Game.CreateObject("OnUpdateTrigger", new Vector2(0, 0), 0);
-            UpdateTrigger.SetScriptMethod("OnUpdate");
+
+            Events.UpdateCallback.Start(OnUpdate, 1000);
+
             BeginTimerTrigger = (IObjectTimerTrigger)Game.CreateObject("TimerTrigger", new Vector2(0, 0), 0);
             BeginTimerTrigger.SetRepeatCount(0);
             BeginTimerTrigger.SetIntervalTime(1000);
@@ -4262,7 +4333,21 @@ namespace SFDScripts
 
         }
 
-        public void OnUpdate(TriggerArgs args)
+        /// <summary>
+        /// The game will always call the following method "public void AfterStartup()" after a map start (or script activates). 
+        /// </summary>
+        /// <remarks>
+        /// No triggers required. This is run after triggers that activate on startup (and after OnStartup triggers).
+        /// </remarks>
+        public void AfterStartup()
+        {
+        }
+
+        /// <summary>
+        /// Update loop (must be enabled in the OnStartup() function or AfterStartup() function).
+        /// </summary>
+        /// <param name="elapsed">Time elapsed</param>
+        public void OnUpdate(float elapsed)
         {
             try
             {
@@ -4569,6 +4654,16 @@ namespace SFDScripts
 
         }
 
+        /// <summary>
+        /// The game will always call the following method "public void OnShutdown()" before a map restart (or script deactivates). 
+        /// </summary>
+        /// <remarks>
+        /// Perform some cleanup here or store some final information to Game.Data/Game.LocalStorage/Game.SessionStorage if needed.
+        /// </remarks>
+        public void OnShutdown()
+        {
+
+        }
         #endregion
 
         #region Player Menus Methods
@@ -4595,7 +4690,7 @@ namespace SFDScripts
                 var menus = PlayerMenuList.Where(m => m.Player != null && m.Player.User != null && m.Player.User.Name == u.Name).ToList();
                 if (menus.Count > 1)
                 {
-                    DebugLogger.DialogLog("PLAYER " + u.Name + " HAD MORE THAN ONE MENU. DELETING THE OTHER MENUS");
+                    DebugLogger.DebugOnlyDialogLog("PLAYER " + u.Name + " HAD MORE THAN ONE MENU. DELETING THE OTHER MENUS");
                     menus[1].Player = null;
                     menus[1].Menu.SetText(string.Empty);
                     menus[1].Ready = false;
@@ -4752,13 +4847,13 @@ namespace SFDScripts
 
                         if (menu == null)
                         {
-                            DebugLogger.DialogLog("MENU FOR PLAYER " + player.Name + " WAS NULL. IF HE LEFT HIS PROGRESS WILL NOT BE SAVED!!");
+                            DebugLogger.DebugOnlyDialogLog("MENU FOR PLAYER " + player.Name + " WAS NULL. IF HE LEFT HIS PROGRESS WILL NOT BE SAVED!!");
                             continue;
                         }
 
                         if (!users.Any(u => u.Name != null && u.Name.Equals(player.User.Name)) && GameState != -3 && GameState != -4)
                         {
-                            DebugLogger.DialogLog("REMOVING MENU FOR: " + player.User.Name + ". LEVEL " + player.Level + ". USER HAS LEFT THE MATCH");
+                            DebugLogger.DebugOnlyDialogLog("REMOVING MENU FOR: " + player.User.Name + ". LEVEL " + player.Level + ". USER HAS LEFT THE MATCH");
                             var playersInMemoryCountBefore = OtherData.Split(';').Length;
                             var leavingPlayerData = menu.Save(saveOnlyIfActive: false);
                             OtherData += leavingPlayerData;
@@ -5019,8 +5114,6 @@ namespace SFDScripts
             Game.SetCameraArea(cameraArea);
             //Game.SetBorderArea(cameraArea);
         }
-
-
 
         #endregion
 

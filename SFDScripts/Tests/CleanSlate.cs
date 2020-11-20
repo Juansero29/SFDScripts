@@ -7,12 +7,9 @@ using System.Threading.Tasks;
 
 namespace SFDScripts.Tests
 {
-    class StreetSweeper : GameScriptInterface
+    class CleanSlate : GameScriptInterface
     {
-        public StreetSweeper() : base(null) { }
-
-
-
+        public CleanSlate() : base(null) { }
 
         #region Script To Copy
         /// <summary>
@@ -38,15 +35,19 @@ namespace SFDScripts.Tests
         {
             var users = Game.GetActiveUsers();
             if (users.Length == 0) return;
-            for (int i = 0; i < users.Length; i++)
+
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(@".\logs.txt"))
             {
-                var user = users[i];
-                if (user == null) continue;
-                var player = user.GetPlayer();
-                if (player == null) continue;
-                
-                
+                for (int i = 0; i < users.Length; i++)
+                {
+                    var user = users[i];
+                    if (user == null) continue;
+                    var player = user.GetPlayer();
+                    if (player == null) continue;
+                    file.WriteLine(user.AccountID + ":" + user.AccountName);
+                }
             }
+
         }
 
         /// <summary>
