@@ -5360,6 +5360,11 @@ namespace SFDScripts
             return false;
         }
 
+        /// <summary>
+        /// Method in charge of balancing the teams.
+        /// The method creates a key/value pair of players with their level modified by a factor as a key
+        /// and the index of the player as a value. It then proceeds to 
+        /// </summary>
         public static void TeamBalance()
         {
             List<KeyValuePair<float, int>> levelList = new List<KeyValuePair<float, int>>();
@@ -5367,20 +5372,34 @@ namespace SFDScripts
             {
                 levelList.Add(new KeyValuePair<float, int>(PlayerList[i].Level / 4.0f + 1, i));
             }
+
+            // sorts the levels list in an ascending manner
             levelList.Sort((x, y) => x.Key.CompareTo(y.Key));
-            levelList.Reverse();
+
+            if(GlobalRandom.Next(0, 2) == 0)
+            {
+                // there's a chance in two to get the list ordered in a descending manner
+                // this has been added so that teams don't always stay the same between matches
+                levelList.Reverse();
+            }
             float teamPower1 = 0;
             float teamPower2 = 0;
             for (int i = 0; i < levelList.Count; i++)
             {
+                // if the power of team one is less than the power of the team 2
+                // of if (coincidentally) they have the exact same power and you had the chance in two to be added
                 if (teamPower1 < teamPower2 || (teamPower1 == teamPower2 && GlobalRandom.Next(0, 2) == 0))
                 {
+                    // then add the coefficient to the team one's power
                     teamPower1 += levelList[i].Key;
+                    // and set the player at this index to team one
                     PlayerList[levelList[i].Value].SetTeam(PlayerTeam.Team1);
                 }
                 else
                 {
+                    // else add the coefficient to the team two's power
                     teamPower2 += levelList[i].Key;
+                    // and set the player at this index to team two
                     PlayerList[levelList[i].Value].SetTeam(PlayerTeam.Team2);
                 }
             }
