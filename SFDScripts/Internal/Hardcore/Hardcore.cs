@@ -71,12 +71,12 @@ namespace SFDScripts
         /// - Doesn't show timer
         /// - Doesn't end the game when there isn't enough players
         /// </remakrs>
-        public static bool IsDebug = true;
+        public static bool IsDebug = false;
 
         /// <summary>
         /// Defines wether we want to show the debug messages or not as logs in the chat
         /// </summary>
-        public static bool ShowDebugMessages = true;
+        public static bool ShowDebugMessages = false;
         #endregion
 
         #region Settings
@@ -3848,7 +3848,17 @@ namespace SFDScripts
                         if (Armor.Heavy) mods.SizeModifier = 1.15f;
                         pl.SetModifiers(mods);
                     }
-                    /*if (IsSlow) {
+                    if (IsSlow && ((heavyWeapon == WeaponItem.M60 || heavyWeapon == WeaponItem.GRENADE_LAUNCHER || heavyWeapon == WeaponItem.BAZOOKA || heavyWeapon == WeaponItem.SNIPER) && Armor.Heavy)) {
+
+                        PlayerModifiers mods = pl.GetModifiers();
+                        mods.MaxEnergy = 0;
+                        mods.MeleeStunImmunity = 1;
+                        mods.EnergyRechargeModifier = 0;
+                        mods.RunSpeedModifier = 0.5f;
+                        mods.MeleeForceModifier = 2f;
+                        mods.SizeModifier = 2.6f;
+
+                        pl.SetModifiers(mods);
                         if (pl.IsRolling  || pl.IsDiving) {
                             Vector2 vel = pl.GetLinearVelocity() / 3;
                             vel.Y = 0;
@@ -3872,7 +3882,9 @@ namespace SFDScripts
                         if (SlowTimer > 0) SlowTimer--;
                     } else if (!pl.IsInputEnabled) {
                         pl.SetInputEnabled(true);
-                    }*/
+                    }
+
+
                     JumpCount = stat.TotalJumps;
                     if (Status == 0)
                     {
@@ -4230,8 +4242,8 @@ namespace SFDScripts
             secondaryWeaponSlot.AddEquipment(12, 75, 1, "Uzi", "Israeli Uzi pistol, 19mm bullets. 25 bullets mag size and 1 extra mag."); //3
             secondaryWeaponSlot.AddEquipment(40, 75, 1, "Silenced Uzi", "Silenced Israeli Uzi pistol, 19mm bullets. 25 bullets mag size and 1 extra mag."); //4
             secondaryWeaponSlot.AddEquipment(27, 50, 6, "Flare Gun", "A fire shooting flare gun. 1 bullet mag size and 2 extra mags. "); //5
-            secondaryWeaponSlot.AddEquipment(28, 150, 9, "Revolver", "That ol' cowboy revolver. 6 bullets mag size and 1 extra mag."); //6
-            secondaryWeaponSlot.AddEquipment(1, 175, 14, "Magnum", "Like a revolver but with higher damage and slower recharge. 6 bullets mag size and 1 extra mag."); //7
+            secondaryWeaponSlot.AddEquipment(28, 200, 9, "Revolver", "That ol' cowboy revolver. 6 bullets mag size and 1 extra mag."); //6
+            secondaryWeaponSlot.AddEquipment(1, 225, 14, "Magnum", "Like a revolver but with higher damage and slower recharge. 6 bullets mag size and 1 extra mag."); //7
 
             primaryWeaponSlot.AddEquipment(5, 100, 2, "Tommy Gun", "Having a rather high spread when compared to other automatic rifles, it should be used as a primary counterpart of the Uzi. 35 bullets mag size with 1 extra mag."); //1
             primaryWeaponSlot.AddEquipment(10, 100, 0, "Sawed-Off Shotgun", "This shotgun shoots extremely fast, dealing tremendous damage at close range if all the bullets hit the target. The small clip compensates this, so it is best used when cover is available to reload. 2 shells with 6 extra shells"); //2
@@ -4240,11 +4252,11 @@ namespace SFDScripts
             primaryWeaponSlot.AddEquipment(19, 125, 5, "Assault Rifle", "Good damage and accuracy. Medium fire rate. 24 bullets mag and 1 extra mag."); //5
             primaryWeaponSlot.AddEquipment(2, 125, 4, "Shotgun", "Great close and medium range. Extremely high damage. Slow reload. 6 shells with  6 extra shells.");   //6
             primaryWeaponSlot.AddEquipment(26, 125, 8, "Flamethrower", "LET IT BURN!!!! 50 mag size with 0 extra mags."); //7
-            primaryWeaponSlot.AddEquipment(29, 150, 13, "Grenade Launcher", "When you account for the arc of the grenade, it can become much more accurate than a bazooka (without a laser sight). The grenade launcher also must reload after each shot fired. 1 grenade mag and two extra mags"); //8
             primaryWeaponSlot.AddEquipment(6, 150, 15, "M60", "Big damage and fire rate, but low accuracy. Too heavy, you can't sprint."); //9
-            primaryWeaponSlot.AddEquipment(9, 150, 13, "Sniper Rifle", "Best accurate weapon with huge damage. Too heavy, you can't sprint."); //10
-            primaryWeaponSlot.AddEquipment(17, 175, 12, "Bazooka", "The Bazooka fires a rocket off in a straight line, however the trajectory is not constantly straight, as it has the tendency to shift which can help avoid excessively long ranged kills. The random directional shift can partially be prevented with a Laser Sight attached to the Bazooka. 1 rocket mag and two extra mags."); //11
-            primaryWeaponSlot.AddEquipment((int)WeaponItem.BOW, 175, 20, "Bow", "How 'bout this, with some fire arrows? huh?"); //11
+            primaryWeaponSlot.AddEquipment(9, 200, 13, "Sniper Rifle", "Best accurate weapon with huge damage. Too heavy, you can't sprint."); //10
+            primaryWeaponSlot.AddEquipment((int)WeaponItem.BOW, 200, 20, "Bow", "How 'bout this, with some fire arrows? huh?"); //11
+            primaryWeaponSlot.AddEquipment(17, 250, 12, "Bazooka", "The Bazooka fires a rocket off in a straight line, however the trajectory is not constantly straight, as it has the tendency to shift which can help avoid excessively long ranged kills. The random directional shift can partially be prevented with a Laser Sight attached to the Bazooka. 1 rocket mag and two extra mags."); //11
+            primaryWeaponSlot.AddEquipment(29, 300, 13, "Grenade Launcher", "When you account for the arc of the grenade, it can become much more accurate than a bazooka (without a laser sight). The grenade launcher also must reload after each shot fired. 1 grenade mag and two extra mags"); //8
 
 
             thrownWeaponSlot.AddEquipment(1, 50, 6, "Grenades", "Everyone loves grenades, make them explode. These grenades can't touch people though. 3 grenades"); //1	
@@ -4293,8 +4305,8 @@ namespace SFDScripts
             bodySlot.AddEquipment(3, 25, 6, "Suicide Vest", "Leaves a small surprise after your death. "); //3
             bodySlot.AddEquipment(4, 50, 12, "Personal Jammer", "You can't be a target for strikes."); //4
             bodySlot.AddEquipment(5, 50, 10, "Blast Suit", "Decrease the explosion damage."); //5
-            bodySlot.AddEquipment(6, 150, 12, "Heavy Armor", "Decrease the damage greatly. Very heavy. You can't sprint and roll."); //6
-            bodySlot.AddEquipment(7, 50, 9, "Kevlar Armor", "Protects you from one-shot death."); //7
+            bodySlot.AddEquipment(6, 200, 12, "Heavy Armor", "Decrease the damage greatly. Very heavy. You can't sprint and roll."); //6
+            bodySlot.AddEquipment(7, 75, 9, "Kevlar Armor", "Protects you from one-shot death."); //7
 
             #endregion
 
