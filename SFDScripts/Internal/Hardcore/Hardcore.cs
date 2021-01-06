@@ -179,7 +179,7 @@ namespace SFDScripts
         /// <summary>
         /// A list of objects to remove from the game, it's cleaned at each GameState == 1
         /// </summary>
-        public static List<IObject> ObjectToRemove = new List<IObject>();
+        public static List<IObject> ObjectsToRemove = new List<IObject>();
         public static float MaxSlowSpeed = 1;
 
         /// <summary>
@@ -324,7 +324,7 @@ namespace SFDScripts
                 if (Id == 2 || Id == 3)
                 {
                     Object = GlobalGame.CreateObject("DrinkingGlass00", obj.GetWorldPosition(), obj.GetAngle(), obj.GetLinearVelocity(), obj.GetAngularVelocity());
-                    ObjectToRemove.Add(Object);
+                    ObjectsToRemove.Add(Object);
                     obj.Remove();
                 }
                 else
@@ -3154,11 +3154,11 @@ namespace SFDScripts
                         destroy.AddObjectToDestroy(platf);
                         destroy.AddObjectToDestroy(leftBorder);
                         destroy.AddObjectToDestroy(rightBorder);
-                        ObjectToRemove.Add(destroy);
-                        ObjectToRemove.Add(platf);
-                        ObjectToRemove.Add(joint);
-                        ObjectToRemove.Add(leftBorder);
-                        ObjectToRemove.Add(rightBorder);
+                        ObjectsToRemove.Add(destroy);
+                        ObjectsToRemove.Add(platf);
+                        ObjectsToRemove.Add(joint);
+                        ObjectsToRemove.Add(leftBorder);
+                        ObjectsToRemove.Add(rightBorder);
                         pl.Equipment.Clear();
                         pl.Armor.SetId(0);
                         pl.Revive(100, true, x, y);
@@ -3184,7 +3184,7 @@ namespace SFDScripts
                 var streetSweeper = Game.CreateObject("Streetsweeper", new Vector2(player.Position.X, WorldTop)) as IObjectStreetsweeper;
                 streetSweeper.SetOwnerTeam(player.Team);
                 streetSweeper.SetOwnerPlayer(player.User.GetPlayer());
-                ObjectToRemove.Add(streetSweeper);
+                ObjectsToRemove.Add(streetSweeper);
             }
 
             public void SpawnDrone(TPlayer player, int id)
@@ -4445,6 +4445,7 @@ namespace SFDScripts
                     RemoveTurrets();
                     RemoveShieldGenerators();
                     ResetElectronicWarfare();
+                    RespawnUnknownObjects();
                     ResetEffects();
                     RemoveWeapons();
                     MapPartList[CurrentMapPartIndex].Start();
@@ -4699,6 +4700,24 @@ namespace SFDScripts
                 DebugLogger.DebugOnlyDialogLog("METHOD: " + e.TargetSite.Name + " LINE: " + line, CameraPosition);
             }
 
+        }
+
+        private List<string> PossibleUnknownObjects = new List<string>() { "Barrel00", "BarrelExplosive", "PropaneTank", "Crate00" };
+        
+        private void RespawnUnknownObjects()
+        {
+            var unknownSpawnPositions = Game.GetObjectsByCustomId("SpawnUnknown");
+            if (unknownSpawnPositions.Length == 0) return;
+            for (int i = 0; i < unknownSpawnPositions.Length; i++)
+            {
+                var trigger = unknownSpawnPositions[i];
+                if (trigger == null) return;
+                var position = trigger.GetWorldPosition();
+                if (position == null) return;
+                var index = GlobalRandom.Next(0, PossibleUnknownObjects.Count);
+                var obj = Game.CreateObject(PossibleUnknownObjects[index], position);
+                ObjectsToRemove.Add(obj);
+            }
         }
 
         /// <summary>
@@ -5319,14 +5338,14 @@ namespace SFDScripts
             {
                 objects[i].Remove();
             }
-            for (int i = 0; i < ObjectToRemove.Count; i++)
+            for (int i = 0; i < ObjectsToRemove.Count; i++)
             {
-                if (ObjectToRemove[i] != null)
+                if (ObjectsToRemove[i] != null)
                 {
-                    ObjectToRemove[i].Remove();
+                    ObjectsToRemove[i].Remove();
                 }
             }
-            ObjectToRemove.Clear();
+            ObjectsToRemove.Clear();
         }
 
         public static PlayerTeam GetEnemyTeam(PlayerTeam team)
