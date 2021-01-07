@@ -16,8 +16,7 @@ namespace SFDScripts
         /// The number of map parts in this map. For each map part, an startup process
         /// will be done in the 'OnStartup' method.
         /// </summary>
-        public static int NumberOfMapParts = 3;
-
+        public static int NumberOfMapParts = 1;
 
         /// <summary>
         /// Defines the number of wins required per map part to advance
@@ -25,38 +24,31 @@ namespace SFDScripts
         /// <remarks>
         /// Has to be an uneven number to avoid ties.
         /// </remarks>
-        public static int RoundsPerMapPart = 1;
+        public static int RoundsPerMapPart = 3;
 
         /// <summary>
         /// Defines the map part that we should start on
         /// </summary>
-        public static int CurrentMapPartIndex = 1;
+        public static int CurrentMapPartIndex = 0;
 
         /// <summary>
         /// The world top position (where airstrikes get launched from)
         /// </summary>
-        public static int WorldTop = 500;
+        public static int WorldTop = 200;
 
         #region Drones
         /// <summary>
         /// Left bottom corner spot of the map. (x and  y coordinates)
         /// </summary>
-        public static Vector2 DroneAreaBegin = new Vector2(442, 218);
+        public static Vector2 DroneAreaBegin = new Vector2(-270, -220);
         /// <summary>
         /// An area that covers each of the map parts (x = width, y = height)
         /// </summary>
-        public static Vector2 DroneAreaSize = new Vector2(600, 300);
+        public static Vector2 DroneAreaSize = new Vector2(632, 424);
         #endregion
 
-        /// <summary>
-        /// The camera width for this game
-        /// </summary>
-        public static int CameraWidth = 770;
-
-        /// <summary>
-        /// The camera height for this game
-        /// </summary>
-        public static int CameraHeight = 550;
+        public static int CameraWidth = 600;
+        public static int CameraHeight = 425;
         #endregion
 
         #region Generic Script
@@ -2137,6 +2129,8 @@ namespace SFDScripts
                 if (IsPlayer(Target.Name)) targetPos = GetPlayerCenter((IPlayer)Target);
                 float targetAngle = TwoPointAngle(MainMotor.GetWorldPosition(), targetPos);
                 targetAngle = GetAngleDistance(targetAngle, MainBlockAngle + MainBlock.GetAngle());
+
+
                 if (Math.Abs(targetAngle) > 0.01f * RotationSpeed)
                 {
                     if (targetAngle > 0) MainMotor.SetMotorSpeed(RotationSpeed);
@@ -2146,7 +2140,47 @@ namespace SFDScripts
                 {
                     MainMotor.SetMotorSpeed(0);
                     MainBlock.SetAngle(MainBlock.GetAngle() + targetAngle);
-                    Fire(TargetVision);
+
+                    var startPos = MainMotor.GetWorldPosition();
+                    var endPos = targetPos;
+                    Game.DrawLine(startPos, endPos, Color.Red);
+                    var rci = new RayCastInput()
+                    {
+                        // doesn't include the objects that are overlaping the source of the raycast (the drone)
+                        IncludeOverlap = false,
+                        // only look at the closest hit
+                        ClosestHitOnly = true,
+                        //// masks background objects
+                        //MaskBits = 0xFFFF,
+                        //// activates mask
+                        //FilterOnMaskBits = true,
+                        // mark as hit the objects that projectiles hit
+                        ProjectileHit = RayCastFilterMode.True,
+                        // mark as hit the objects that absorb the projectile
+                        AbsorbProjectile = RayCastFilterMode.True
+                    };
+                
+                    var raycastResult = Game.RayCast(startPos, endPos, rci);
+
+                    foreach (var result in raycastResult)
+                    {
+                        Game.DrawCircle(result.Position, 1f, Color.Yellow);
+                        Game.DrawLine(result.Position, result.Position + result.Normal * 5f, Color.Yellow);
+                        Game.DrawArea(result.HitObject.GetAABB(), Color.Yellow);
+                        Game.DrawText(result.HitObject.UniqueID.ToString(), result.Position, Color.Yellow);
+                        if (result.Hit && result.IsPlayer)
+                        {
+                            // no obstacles in the way, fire!
+                            DebugLogger.DialogLog("RAY CAST TEST HITS THE PLAYER");
+                            Fire(TargetVision);
+                        }
+
+                        if (result.Fraction < 0.3f && result.HitObject.Name.IndexOf("glass", StringComparison.OrdinalIgnoreCase) >= 0)
+                        {
+                            result.HitObject.Destroy();
+                        }
+                    }
+
                 }
             }
             public void FindPathToTarget()
@@ -2886,6 +2920,12 @@ namespace SFDScripts
                         {
                             MinusAmmo();
                             SpawnStreetsweeper(player);
+                            break;
+                        }
+                    case 22:
+                        {
+                            MinusAmmo();
+                            SpawnDrone(player, 4);
                             break;
                         }
                 }
@@ -3848,7 +3888,8 @@ namespace SFDScripts
                         if (Armor.Heavy) mods.SizeModifier = 1.15f;
                         pl.SetModifiers(mods);
                     }
-                    if (IsSlow && ((heavyWeapon == WeaponItem.M60 || heavyWeapon == WeaponItem.GRENADE_LAUNCHER || heavyWeapon == WeaponItem.BAZOOKA || heavyWeapon == WeaponItem.SNIPER) && Armor.Heavy)) {
+                    if (IsSlow && ((heavyWeapon == WeaponItem.M60 || heavyWeapon == WeaponItem.GRENADE_LAUNCHER || heavyWeapon == WeaponItem.BAZOOKA || heavyWeapon == WeaponItem.SNIPER) && Armor.Heavy))
+                    {
 
                         PlayerModifiers mods = pl.GetModifiers();
                         mods.MaxEnergy = 0;
@@ -3859,28 +3900,36 @@ namespace SFDScripts
                         mods.SizeModifier = 2.6f;
 
                         pl.SetModifiers(mods);
-                        if (pl.IsRolling  || pl.IsDiving) {
+                        if (pl.IsRolling || pl.IsDiving)
+                        {
                             Vector2 vel = pl.GetLinearVelocity() / 3;
                             vel.Y = 0;
                             pl.SetWorldPosition(Position - vel);
                             if (SlowEffectTimer == 0) SlowEffectTimer = -1;
                         }
-                        if (SlowTimer == 0 && pl.IsSprinting) {					
+                        if (SlowTimer == 0 && pl.IsSprinting)
+                        {
                             SlowTimer = 4;
                             if (SlowEffectTimer == 0) SlowEffectTimer = -1;
-                        } 
-                        if (SlowTimer <= 2) {
+                        }
+                        if (SlowTimer <= 2)
+                        {
                             pl.SetInputEnabled(true);
-                        } else {
+                        }
+                        else
+                        {
                             pl.SetInputEnabled(false);
                         }
-                        if (SlowEffectTimer == -1) {
+                        if (SlowEffectTimer == -1)
+                        {
                             GlobalGame.PlayEffect("CFTXT", pl.GetWorldPosition(), "TOO HEAVY");
                             SlowEffectTimer = 100;
                         }
                         if (SlowEffectTimer > 0) SlowEffectTimer--;
                         if (SlowTimer > 0) SlowTimer--;
-                    } else if (!pl.IsInputEnabled) {
+                    }
+                    else if (!pl.IsInputEnabled)
+                    {
                         pl.SetInputEnabled(true);
                     }
 
@@ -4296,7 +4345,8 @@ namespace SFDScripts
             equipmentSlot.AddEquipment(18, 100, 3, "Adrenaline", "Gives temporary immunity to damage. You will receive all damage when adrenaline is over.");
             // equipmentSlot.AddEquipment(19, 200, 15, "Shield Generator", "Creates an energy shield that protects from bullets and enemies.", 2);
             equipmentSlot.AddEquipment(20, 100, 15, "Jet Pack", "Allows you to make jet jumps. And protect from falling.");
-            equipmentSlot.AddEquipment(21, 250, 17, "Streetsweeper", "Hate drones? Well try this shit."); //12
+            equipmentSlot.AddEquipment(21, 250, 17, "Streetsweeper", "Hate drones? Well try this shit."); // 21
+            equipmentSlot.AddEquipment(22, 500, 25, "Assault Drone", "I know, streetsweepers are dumb. Now try this. A drone that actually moves, with a machine gun."); // 22
 
 
             //armor
@@ -4703,7 +4753,7 @@ namespace SFDScripts
         }
 
         private List<string> PossibleUnknownObjects = new List<string>() { "Barrel00", "BarrelExplosive", "PropaneTank", "Crate00" };
-        
+
         private void RespawnUnknownObjects()
         {
             var unknownSpawnPositions = Game.GetObjectsByCustomId("SpawnUnknown");
