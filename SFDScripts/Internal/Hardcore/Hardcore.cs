@@ -1724,6 +1724,11 @@ namespace SFDScripts
             public bool IsCapturer = false;
             public float DroneMinDistance = 0;
             public int SmokeEffectTime = 0;
+
+            public bool CanFire = false;
+
+            public bool ChangingRoute { get; private set; }
+
             public TTurret(int id, Vector2 position, int dir, PlayerTeam team)
             {
                 Id = id;
@@ -1751,7 +1756,7 @@ namespace SFDScripts
                     leftLeg.SetMass(leftLeg.GetMass() * 20);
                     rightLeg.SetMass(rightLeg.GetMass() * 20);
                 }
-                else if (Id == 4 || Id == 5)
+                else if (Id == 4 || Id == 5 || Id == 6 || Id == 7)
                 {
                     RotationLimit = 0;
                     Hull = GlobalGame.CreateObject("BgMetal08H", position + new Vector2(-4, 4), (float)Math.PI / 2);
@@ -1762,20 +1767,28 @@ namespace SFDScripts
                     hull3.SetBodyType(BodyType.Dynamic);
                     hull4.SetBodyType(BodyType.Dynamic);
                 }
-                else if (Id == 6)
+                else if (Id == 6 || Id == 7)
                 {
                     RotationLimit = 0;
-                    Hull = GlobalGame.CreateObject("InvisibleBlockNoCollision", position);
+                    Hull = GlobalGame.CreateObject("BgMetal08H", position + new Vector2(-4, 4), (float)Math.PI / 2);
+                    hull2 = GlobalGame.CreateObject("BgMetal08H", position + new Vector2(4, 4), 0);
+                    hull3 = GlobalGame.CreateObject("BgMetal08H", position + new Vector2(4, -4), -(float)Math.PI / 2);
+                    hull4 = GlobalGame.CreateObject("BgMetal08H", position + new Vector2(-4, -4), -(float)Math.PI);
+                    hull2.SetBodyType(BodyType.Dynamic);
+                    hull3.SetBodyType(BodyType.Dynamic);
+                    hull4.SetBodyType(BodyType.Dynamic);
                 }
 
-                if (Id == 6) MainBlock = GlobalGame.CreateObject("CrabCan00", position, -(float)Math.PI / 2 * dir);
+
+                if (Id == 6 || Id == 7) MainBlock = GlobalGame.CreateObject("CrabCan00", position, -(float)Math.PI / 2 * dir);
                 else MainBlock = GlobalGame.CreateObject("Computer00", position, -(float)Math.PI / 2 * dir);
                 if (Id >= 4)
                 {
                     IObjectAlterCollisionTile collisionDisabler = (IObjectAlterCollisionTile)GlobalGame.CreateObject("AlterCollisionTile", position);
                     collisionDisabler.SetDisableCollisionTargetObjects(true);
+                    collisionDisabler.SetDisableProjectileHit(false);
                     collisionDisabler.AddTargetObject(MainBlock);
-                    IObject[] platforms = GlobalGame.GetObjectsByName(new string[] { "MetalPlat01A", "Lift00C", "Lift00B", "MetalPlat00G", "Elevator02B" });
+                    IObject[] platforms = GlobalGame.GetObjectsByName(new string[] { "MetalPlat01A", "Lift00C", "Lift00B", "MetalPlat00G", "Elevator02B", "InvisiblePlatform", "MetalPlat01F" });
                     for (int i = 0; i < platforms.Length; ++i)
                     {
                         collisionDisabler.AddTargetObject(platforms[i]);
@@ -1793,7 +1806,7 @@ namespace SFDScripts
                     OtherObjects.Add(leftLeg);
                     OtherObjects.Add(rightLeg);
                 }
-                else if (Id == 4 || Id == 5)
+                else if (Id == 4 || Id == 5 || Id == 6 || Id == 7)
                 {
                     hullJoint.AddTargetObject(Hull);
                     hullJoint.AddTargetObject(hull2);
@@ -1803,11 +1816,6 @@ namespace SFDScripts
                     OtherObjects.Add(hull2);
                     OtherObjects.Add(hull3);
                     OtherObjects.Add(hull4);
-                }
-                else if (Id == 6)
-                {
-                    hullJoint.AddTargetObject(Hull);
-                    OtherObjects.Add(Hull);
                 }
                 bodyJoint.AddTargetObject(MainBlock);
                 bodyJoint.AddTargetObject(antenna);
@@ -1828,21 +1836,33 @@ namespace SFDScripts
                 }
                 else if (Id == 6)
                 {
-                    HackingProtection = true;
+                    HackingProtection = false;
                     EnableMovement = true;
-                    PathSize = 1;
-                    Speed = 5;
-                    RotationSpeed = 3f;
-                    DamageFactor = 0.2f;
+                    PathSize = 2;
+                    Speed = 4;
+                    RotationSpeed = 2f;
+                    DamageFactor = 0.05f;
+                    DroneMinDistance = 4 * 8;
+                }
+                else if (Id == 7)
+                {
+                    HackingProtection = false;
+                    EnableMovement = true;
+                    PathSize = 2;
+                    Speed = 4;
+                    RotationSpeed = 2f;
+                    DamageFactor = 0.5f;
+                    DroneMinDistance = 4 * 8;
                 }
 
                 if (id == 0) Name = "Light Turret";
                 else if (id == 1) Name = "Rocket Turret";
                 else if (id == 2) Name = "Heavy Turret";
                 else if (id == 3) Name = "Sniper Turret";
-                else if (id == 4) Name = "Drone";
-                else if (id == 5) Name = "Assault Drone";
-                else if (id == 6) Name = "Melee Drone";
+                else if (id == 4) Name = "Assault Drone";
+                else if (id == 5) Name = "Fire Drone";
+                else if (id == 6) Name = "Tazer Drone";
+                else if (id == 7) Name = "Melee Drone";
                 if (id == 1 || id == 2)
                 { //@0:5B=8F0
                     IObject gun2 = GlobalGame.CreateObject("BgBarberPole00", position + new Vector2(dir, -2), (float)Math.PI / 2);
@@ -1970,7 +1990,19 @@ namespace SFDScripts
                     weapon.Sound = "Splash";
                     weapon.ReloadingTime = 150;
                     weapon.SuppressiveFire = true;
-                    weapon.Ammo = 10;
+                    weapon.Ammo = 25;
+                    weapon.TurretTarget = false;
+                    WeaponList.Add(weapon);
+                }
+                if (Id == 7)
+                {
+                    TTurretWeapon weapon = new TTurretWeapon();
+                    weapon.Distance = 60;
+                    weapon.BulletType = -3;
+                    weapon.Sound = "MeleeSwing";
+                    weapon.ReloadingTime = 50;
+                    weapon.SuppressiveFire = true;
+                    weapon.Ammo = 15;
                     weapon.TurretTarget = false;
                     WeaponList.Add(weapon);
                 }
@@ -2025,6 +2057,9 @@ namespace SFDScripts
                 }
                 return max;
             }
+
+
+
             public void Update()
             {
                 if (SmokeEffectTime > 0) SmokeEffectTime--;
@@ -2102,7 +2137,7 @@ namespace SFDScripts
                 }
                 if (EnableMovement)
                 {
-                    if (Target != null && (MainMotor.GetWorldPosition() - Target.GetWorldPosition()).Length() <= DroneMinDistance)
+                    if (Target != null && (MainMotor.GetWorldPosition() - Target.GetWorldPosition()).Length() <= DroneMinDistance && CanFire)
                     {
                         CurrentPath.Clear();
                         StopMovement();
@@ -2111,7 +2146,7 @@ namespace SFDScripts
                     {
                         CurrentPath.Clear();
                         StopMovement();
-                        FindPathToTarget();
+                        FindPathToTarget(randomTarget: ChangingRoute);
                         LastPathFinding = 200;
                     }
                     if (LastPathFinding > 0)
@@ -2147,32 +2182,57 @@ namespace SFDScripts
                     var rci = new RayCastInput()
                     {
                         // doesn't include the objects that are overlaping the source of the raycast (the drone)
-                        IncludeOverlap = false,
+                        IncludeOverlap = true,
                         // only look at the closest hit
-                        ClosestHitOnly = true,
-                        //// masks background objects
-                        //MaskBits = 0xFFFF,
-                        //// activates mask
-                        //FilterOnMaskBits = true,
+                        ClosestHitOnly = false,
                         // mark as hit the objects that projectiles hit
                         ProjectileHit = RayCastFilterMode.True,
                         // mark as hit the objects that absorb the projectile
-                        AbsorbProjectile = RayCastFilterMode.True
+                        AbsorbProjectile = RayCastFilterMode.Any
                     };
-                
+
                     var raycastResult = Game.RayCast(startPos, endPos, rci);
 
                     foreach (var result in raycastResult)
                     {
+
                         Game.DrawCircle(result.Position, 1f, Color.Yellow);
                         Game.DrawLine(result.Position, result.Position + result.Normal * 5f, Color.Yellow);
                         Game.DrawArea(result.HitObject.GetAABB(), Color.Yellow);
-                        Game.DrawText(result.HitObject.UniqueID.ToString(), result.Position, Color.Yellow);
-                        if (result.Hit && result.IsPlayer)
+                        Game.DrawText((MainMotor.GetWorldPosition() - Target.GetWorldPosition()).Length().ToString(), result.Position, Color.Green);
+                        var raycastResultPlayersCount = raycastResult.Where(r => r.IsPlayer).Count();
+
+                        if (raycastResult.Length > 2 + raycastResultPlayersCount && (MainMotor.GetWorldPosition() - Target.GetWorldPosition()).Length() <= 50)
                         {
+                            // if there's more than 2 objects between drone and player, don't shoot
+                            // and choose another target
+                            ChangingRoute = true;
+                            var ply = Target as IPlayer;
+                            if (ply == null) continue;
+                            var originalTarget = Target;
+                            var possibleTargets = PlayerList.Where(pl => pl.Team != Team && !pl.Name.Equals(ply.Name));
+                            var i = GlobalRandom.Next(0, possibleTargets.Count());
+                            var player = possibleTargets.ElementAt(i);
+                            Target = player.Body;
+                            DebugLogger.DebugOnlyDialogLog("Target changed from " + ply.Name + " to " + player.Name);
+                            continue;
+                        }
+
+
+                        if (result.Hit &&
+                            (result.IsPlayer ||
+                                result.HitObject.Name.IndexOf("crab", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                result.HitObject.Name.IndexOf("computer", StringComparison.OrdinalIgnoreCase) >= 0))
+                        {
+                            CanFire = true;
+                            ChangingRoute = false;
                             // no obstacles in the way, fire!
-                            DebugLogger.DialogLog("RAY CAST TEST HITS THE PLAYER");
                             Fire(TargetVision);
+
+                        }
+                        else
+                        {
+                            CanFire = false;
                         }
 
                         if (result.Fraction < 0.3f && result.HitObject.Name.IndexOf("glass", StringComparison.OrdinalIgnoreCase) >= 0)
@@ -2183,7 +2243,7 @@ namespace SFDScripts
 
                 }
             }
-            public void FindPathToTarget()
+            public void FindPathToTarget(bool randomTarget = false)
             {
                 PlayerTeam team = Team;
                 if (IsHacking(Team)) team = PlayerTeam.Independent;
@@ -2198,6 +2258,11 @@ namespace SFDScripts
                         nearestTarget = targetList[i];
                         distance = dist;
                     }
+                }
+                if (randomTarget)
+                {
+                    var index = GlobalRandom.Next(0, targetList.Count);
+                    nearestTarget = targetList[index];
                 }
                 if (nearestTarget == null) return;
                 Vector2 targetCell = GetNearestDroneMapCell(nearestTarget.GetWorldPosition(), PathSize);
@@ -2342,10 +2407,42 @@ namespace SFDScripts
                 }
                 else if (weapon.BulletType == -2)
                 {
-                    ElectricExplosion(MainMotor.GetWorldPosition(), 75, 50);
+                    ElectricExplosion(MainMotor.GetWorldPosition(), 20, 50);
+                }
+                else if (weapon.BulletType == -3)
+                {
+                    ForceImpulse(MainMotor.GetWorldPosition(), 10, 50);
                 }
                 GlobalGame.PlaySound(weapon.Sound, MainMotor.GetWorldPosition(), 1.0f);
             }
+
+
+            private void ForceImpulse(Vector2 position, int damage, int range)
+            {
+                Vector2 plyPos = MainMotor.GetWorldPosition();
+
+
+                for (int i = 0; i < PlayerList.Count; i++)
+                {
+                    float mass = 1f;
+
+                    var player = PlayerList[i];
+                    if (player.User.GetPlayer() == null) continue;
+                    if (player.User.GetTeam() == Team) continue;
+                    float dist = (player.Position - position).Length();
+                    if (dist <= range)
+                    {
+                        Vector2 vel = player.User.GetPlayer().GetLinearVelocity() * 10 + new Vector2(MainMotor.GetFaceDirection() * 10, 10);
+                        mass = 1f;
+                        player.User.GetPlayer().SetLinearVelocity(vel / mass);
+                        PlayerList[i].Hp -= damage;
+                        CreateEffect(PlayerList[i].User.GetPlayer(), "STM", 10, 10);
+                    }
+                }
+            }
+
+
+
             public int TraceToObject(IObject obj)
             {
                 float angle = TwoPointAngle(MainMotor.GetWorldPosition(), obj.GetWorldPosition());
@@ -2925,6 +3022,26 @@ namespace SFDScripts
                     case 22:
                         {
                             MinusAmmo();
+                            SpawnDrone(player, 7);
+                            break;
+                        }
+
+                    case 23:
+                        {
+                            MinusAmmo();
+                            SpawnDrone(player, 6);
+                            break;
+                        }
+
+                    case 24:
+                        {
+                            MinusAmmo();
+                            SpawnDrone(player, 5);
+                            break;
+                        }
+                    case 25:
+                        {
+                            MinusAmmo();
                             SpawnDrone(player, 4);
                             break;
                         }
@@ -3233,6 +3350,8 @@ namespace SFDScripts
                 float x = GlobalRandom.Next((int)(area.Left + area.Width / 5), (int)(area.Right - area.Width / 5));
                 float y = area.Top + 10;
                 CreateTurret(id, new Vector2(x, y), player.User.GetPlayer().FacingDirection, player.Team);
+                GlobalGame.PlayEffect("EXP", new Vector2(x, y));
+                GlobalGame.PlaySound("Explosion", new Vector2(x, y), 1.0f);
             }
             public void UpdateJetPack(TPlayer player)
             {
@@ -4346,8 +4465,10 @@ namespace SFDScripts
             // equipmentSlot.AddEquipment(19, 200, 15, "Shield Generator", "Creates an energy shield that protects from bullets and enemies.", 2);
             equipmentSlot.AddEquipment(20, 100, 15, "Jet Pack", "Allows you to make jet jumps. And protect from falling.");
             equipmentSlot.AddEquipment(21, 250, 17, "Streetsweeper", "Hate drones? Well try this shit."); // 21
-            equipmentSlot.AddEquipment(22, 500, 25, "Assault Drone", "I know, streetsweepers are dumb. Now try this. A drone that actually moves, with a machine gun."); // 22
-
+            equipmentSlot.AddEquipment(22, 475, 22, "Melee Drone", "You want a robot that actually kicks ass? Try this baby."); // 22
+            equipmentSlot.AddEquipment(23, 500, 26, "Zap Drone", "I know, streetsweepers are dumb. This one is also kind of dumb, but it has a tazer."); // 23
+            equipmentSlot.AddEquipment(24, 550, 27, "Fire Drone", "Now try this. A drone that actually moves, with a flame thrower."); // 24
+            equipmentSlot.AddEquipment(25, 600, 29, "Assault Drone", "Now try this. A drone that actually moves, with a machine gun."); // 25
 
             //armor
             bodySlot.AddEquipment(1, 50, 2, "Light Armor", "Decrease the damage a bit."); //1
@@ -4387,6 +4508,12 @@ namespace SFDScripts
             AddLevel("Colonel", 4500, 500); // 23
             AddLevel("Brigadier General", 5000, 525); // 24
             AddLevel("Major General", 6000, 550); // 25
+            AddLevel("Lieutenant General", 7000, 575); // 26
+            AddLevel("General", 8000, 600); // 27
+            AddLevel("General of the Army (GOA)", 9000, 625); // 28
+            AddLevel("Führer", 10000, 650); // 29
+            AddLevel("Marshal of the Russian Federation", 10000, 700); // 30
+
 
             #endregion
 
@@ -6066,6 +6193,7 @@ namespace SFDScripts
             GlobalGame.PlayEffect("EXP", new Vector2(x, y));
             GlobalGame.PlaySound("Explosion", new Vector2(x, y), 1.0f);
         }
+
 
         public static void ElectricExplosion(Vector2 position, int damage, float range)
         {

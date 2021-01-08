@@ -40,11 +40,11 @@ namespace SFDScripts
         /// <summary>
         /// Left bottom corner spot of the map (x and  y coordinates)
         /// </summary>
-        public static Vector2 DroneAreaBegin = new Vector2(258, 62);
+        public static Vector2 DroneAreaBegin = new Vector2(226, 182);
         /// <summary>
         /// An area that covers all of the map playable parts (x = width, y = height) with a begining point at <see cref="DroneAreaBegin"/>
         /// </summary>
-        public static Vector2 DroneAreaSize = new Vector2(632, 470);
+        public static Vector2 DroneAreaSize = new Vector2(632, 532);
         #endregion
 
         public static int CameraWidth = 500;
