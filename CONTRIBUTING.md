@@ -12,6 +12,7 @@ Reading and following these guidelines will help everyone make the contribution 
 * [General Information](#getting-information)
 * [Issues](#issues)
 * [Pull Requests](#pull-requests)
+* [Projects, Milestones and Labels](#projects,-milestones-and-labels)
 * [Getting Started](#getting-started)
     * [Prerequisites](#prerequisites)
     * [Starting Up](#starting-up)
@@ -77,6 +78,8 @@ Some general rules:
 - Include a clear description of the problem
 - (Optional) If possible, describe what a good solution for the problem could be.
 
+
+
 ## Pull Requests
 
 PRs to this repo are always welcome and can be a quick way to get your fix or improvement slated soon. In general, PRs should:
@@ -99,6 +102,17 @@ In general, try to follow the [fork-and-pull](https://github.com/susam/gitpr) gi
 6. Push changes to your fork
 7. Open a PR in our repository and follow the PR template so that we can efficiently review the changes.
 
+## Projects, Milestones and Labels
+
+Issues are assigned to projects, are categorized with labels and are iterated through milestones.
+
+On the issues tab, you can filter the issues by project choosing the `Projects` dropdown, and concentrate in the ones that interest you.
+
+You can also check the iterations with the [Milestones](https://github.com/Juansero29/SFDScripts/milestones) button left to the `New Issue` button. Iterations are there to plan out the work to do in a period of time, settting a "delivery date" to the work that is going to be done in said-period. The issues present in these milestones are usually what I'm working on on my free time. They should be done by the end of the milestone period. Then at the end of the period, a new date should be set, and new issues should be added to it.
+
+To know exactly is a particular issue is being worked on right now, check the `In Progress` issues inside the [Projects](https://github.com/Juansero29/SFDScripts/projects) kanban board.
+
+You can also check the [Labels](https://github.com/Juansero29/SFDScripts/labels) to get a more precise idea on how I sort Issues and PRs.
 
 ## Getting Started
 
