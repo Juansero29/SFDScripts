@@ -3722,7 +3722,6 @@ namespace SFDScripts
                 pl.SetTeam(Team);
                 //pl.SetStatusBarsVisible(false);
                 Hp = hp;
-                //bleeding=True??
                 OnPlayerCreated();
             }
             public void AddEquipment(int id, int type)
