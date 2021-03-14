@@ -1,8 +1,10 @@
 # SFDScripts
 ## My Superfighters Deluxe Scripts
-This is a collection of the scripts I use when hosting, most of the time I take existing maps along with their scripts, then I modify them to "enhace" them: upgrade the performances, refactor them, make them more readable, remove useless code, change the naming of classes and variable, etc...
+This is a collection of the scripts I use when hosting, most of the time I take existing maps along with their scripts, then I modify them to "enhace" them: upgrade the performances, refactor them, make them more readable, remove useless code, change the naming of classes and variables, etc...
 
-For scripts I have made "myself", there's only "MarioPanadero.cs" which is largely inspired on the Battle Of Teams script used by Nets in most of his maps.
+As for scripts I have made "myself":
+-  "MarioPanadero.cs" which is largely inspired on the Battle Of Teams script used by Nets in most of his maps.
+- Hardcore script modifications and updates, which are here thanks to @Antonikon
 
 This repo is here solely as a collection of modified scripts. I, in no case, declare the author of all of the code that this repo contains.
 
