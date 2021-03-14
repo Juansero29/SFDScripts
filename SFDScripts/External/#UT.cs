@@ -17,8 +17,7 @@ namespace SFDScripts
         /// </summary>
         public UberThrow() : base(null) { }
 
-        #region ScriptToCopy
-        /* SCRIPT STARTS HERE */
+        #region Script To Copy
 
         /// <summary>
         /// This number controls the speed of the objects that are launched.
@@ -512,7 +511,6 @@ namespace SFDScripts
             }
         }
 
-        /* AND ENDS HERE */
         #endregion ScriptToCopy
     }
 }

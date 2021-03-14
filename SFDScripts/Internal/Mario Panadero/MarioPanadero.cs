@@ -7,7 +7,6 @@ namespace SFDScripts
 {
     class MarioPanadero : GameScriptInterface
     {
-
         public MarioPanadero() : base(null) { }
 
         #region Script To Copy

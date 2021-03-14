@@ -16,6 +16,9 @@ namespace SFDScripts
         /// Placeholder constructor that's not to be included in the ScriptWindow!
         /// </summary>
         public UsersOP() : base(null) { }
+
+        #region Script To Copy
+
         bool DestroyEveryThing = false;
 
         bool AffectStaticles = false;
@@ -274,6 +277,7 @@ namespace SFDScripts
                     }
                 }
             }
-        }
+        } 
+        #endregion
     }
 }

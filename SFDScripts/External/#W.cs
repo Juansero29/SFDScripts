@@ -19,6 +19,9 @@ namespace SFDScripts
         public Wizards() : base(null) { }
 
 
+        #region Script To Copy
+
+
         //==================================================================//
         //============<    #WIZARDS GAMEMODE BY #OCTOTHORP    >=============//
         //============<                  v1.1                 >=============//
@@ -878,7 +881,7 @@ namespace SFDScripts
                 case "Defender":
                     PlayerTeam defendingTeam = ply.GetTeam();
                     IPlayer defender = Game.CreatePlayer(ply.GetWorldPosition() + new Vector2(ply.FacingDirection * 25, 0f));
-                    BotBehavior bb = new BotBehavior(){ TutorialMelee = true};
+                    BotBehavior bb = new BotBehavior() { TutorialMelee = true };
                     defender.SetBotBehavior(bb);
                     defender.SetTeam(defendingTeam);
                     break;
@@ -1678,6 +1681,7 @@ namespace SFDScripts
             //		temp.Add(new PlayerData.BookData.SpellData("Demigod", 75, 10000f));
             //		temp.Add(new PlayerData.BookData.SpellData("Block", 25f, 500f));
             //		temp.Add(new PlayerData.BookData.SpellData("Minion", 100, 30000f));
-        }
+        } 
+        #endregion
     }
 }

@@ -10,10 +10,9 @@ namespace SFDScripts.Internal
 {
     class PirateWars : GameScriptInterface
     {
-
         public PirateWars() : base(null) { }
 
-        #region ScriptToCopy
+        #region Script To Copy
         private string[] _Classes = new string[] { "s", "d", "f", "g", "h" };
         private Random rnd;
         int TimeCDT = 5 * 60;
@@ -47,7 +46,6 @@ namespace SFDScripts.Internal
 
         int vBluKills = 0;
 
-
         public void WhoWins(TriggerArgs args = null)
         {
             IObjectText TimeText = (IObjectText)Game.GetSingleObjectByCustomId("TextCD");
@@ -75,8 +73,6 @@ namespace SFDScripts.Internal
         }
 
 
-
-        //--//
 
         private IObjectTrigger trig2 = null;
         private IObjectTrigger trig3 = null;
@@ -156,7 +152,6 @@ namespace SFDScripts.Internal
             }
             else { here = wee.GetWorldPosition(); }
         }
-        //--//
 
         String VBlueRnd;
 

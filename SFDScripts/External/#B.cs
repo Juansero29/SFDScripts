@@ -16,6 +16,9 @@ namespace SFDScripts
         /// Placeholder constructor that's not to be included in the ScriptWindow!
         /// </summary>
         public Battle() : base(null) { }
+        
+        #region Script To Copy
+
         public void OnStartup()
         {
             Shoot(300, 0, "Shoot", "");
@@ -43,6 +46,7 @@ namespace SFDScripts
             timerTrigger.SetScriptMethod(method);
             timerTrigger.CustomId = id;
             timerTrigger.Trigger();
-        }
+        } 
+        #endregion
     }
 }

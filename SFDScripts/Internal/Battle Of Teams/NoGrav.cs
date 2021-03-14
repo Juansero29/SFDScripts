@@ -1,5 +1,4 @@
-﻿// All available system namespaces in the ScriptAPI (as of Alpha 1.0.0).
-using SFDGameScriptInterface;
+﻿using SFDGameScriptInterface;
 using System;
 using System.Collections.Generic;
 
@@ -13,21 +12,8 @@ namespace SFDScripts
         /// </summary>
         public NoGrav() : base(null) { }
 
-        /* SCRIPT STARTS HERE - COPY BELOW INTO THE SCRIPT WINDOW */
 
-        /*		/*														/*
-// ======================================= \\
-||	The Ultimate Zero Gravity Method     ||
-||	 __  __            _		 	   ||
-||	|  \/  |Made by_ _| |_	  	   ||
-||	| \  / | ___  | |_   _|#73	 	   ||
-||	| |\/| |/ _ \|   || |/ _ \	 	   ||
-||	| |  | | (_)  | | | | (_) |	 	   ||
-||	|_|  |_|\___/ |_| |_|\___/ 	 	   ||
-||					  	   ||
-||	With thanks to Nerdist for	   	   ||
-||   giving me the idea in the forums!	   ||
-\\  ======================================= //						*/
+        #region Script To Copy
 
         public void OnStart()
         {
@@ -95,20 +81,20 @@ namespace SFDScripts
         }
 
         WeaponItem[] SpaceWeps ={
-    WeaponItem.ASSAULT,
-    WeaponItem.SUB_MACHINEGUN,
-    WeaponItem.GRENADES,
-    WeaponItem.BOTTLE,
-    WeaponItem.MOLOTOVS,
-    WeaponItem.ASSAULT,
-    WeaponItem.SUB_MACHINEGUN,
-    WeaponItem.GRENADES,
-    WeaponItem.BOTTLE,
-    WeaponItem.MOLOTOVS,
-    WeaponItem.BAT,
-    WeaponItem.BAZOOKA,
-    WeaponItem.GRENADE_LAUNCHER
-};
+            WeaponItem.ASSAULT,
+            WeaponItem.SUB_MACHINEGUN,
+            WeaponItem.GRENADES,
+            WeaponItem.BOTTLE,
+            WeaponItem.MOLOTOVS,
+            WeaponItem.ASSAULT,
+            WeaponItem.SUB_MACHINEGUN,
+            WeaponItem.GRENADES,
+            WeaponItem.BOTTLE,
+            WeaponItem.MOLOTOVS,
+            WeaponItem.BAT,
+            WeaponItem.BAZOOKA,
+            WeaponItem.GRENADE_LAUNCHER
+        };
         Random rnd = new Random();
         public void OnStartup()
         {
@@ -169,10 +155,13 @@ namespace SFDScripts
                 }
             }
         }
-        public void ShowDust(Vector2 pos) { for (int i = 0; i <= 4; i++) { Game.PlayEffect("TR_D", pos + new Vector2(rnd.Next(-16, 16), rnd.Next(-16, 16))); } }
-
-
-
-        /* SCRIPT ENDS HERE - COPY ABOVE INTO THE SCRIPT WINDOW */
+        public void ShowDust(Vector2 pos)
+        {
+            for (int i = 0; i <= 4; i++)
+            {
+                Game.PlayEffect("TR_D", pos + new Vector2(rnd.Next(-16, 16), rnd.Next(-16, 16)));
+            }
+        }
+        #endregion
     }
 }
