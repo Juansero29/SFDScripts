@@ -78,5 +78,8 @@
   <ItemGroup>
     <None Include="LICENSE" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Internal\Hardcore\Template Map\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

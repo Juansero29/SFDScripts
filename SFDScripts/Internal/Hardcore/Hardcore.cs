@@ -11,7 +11,7 @@ namespace SFDScripts
     {
         public Hardcore() : base(null) { }
 
-c        #region Script To Copy
+        #region Script To Copy
 
         #region Map Dependant Data
         /// <summary>
