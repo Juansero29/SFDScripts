@@ -30,13 +30,14 @@ Some basic code rules:
 
 - Be sure to respect [common guidelines for C# developers](https://github.com/ktaranov/naming-convention/blob/master/C%23%20Coding%20Standards%20and%20Naming%20Conventions.md) while you develop
 - All code is written in English
+- Get used to pulling changes from master every time you open your solution to avoid coding from an outdated base-code and having to resolve even more conflicts later on.
 - Untested code won't be merged with master
 - Avoid commenting code: rather spend time thinking on naming variables and functions correctly
 - Prefer adding a field or property to a class rather than passing around lots of arguments in the functions
 - Keep your functions as small as possible
 - Redact your commit messages well, in clear English, so that anyone can understand what was done in each commit. Do as much commits as you need to, as long as your commit messages are always clear and concise.
 - Make your branches have meaningful names. It is also a good idea to write the number of the Issue you are fixing with your PR in the name of your banch. Prefer a long, clear name rather than a concise unclear name: (e.g prefer `34-fixing-airstrike-cost` rather than `patch-1`)
-- As scripts are now a single file due to SFD, restrictions, please organize related methods, properties, fields, classes and interfaces into regions.
+- As scripts are a single file due to SFD's restrictions, please organize related methods, properties, fields, classes and interfaces into regions.
     - Regions can be collapsed, and searcheable, whick makes them very useful in single file scripts.
     - Declare them like this: 
         ```csharp
@@ -81,7 +82,7 @@ PRs to this repo are always welcome and can be a quick way to get your fix or im
 - Address a single concern in the least number of changed lines as possible.
 - This is optional but almost assures your PR will be quickly merged:
     - If what you did can be shown in a video, include a `.gif` file uploaded to the internet (giphy.com, gfycat.com, tenor.com, etc.) that shows that what you did is working. You can use a free tool like https://www.screentogif.com/ for capturing gifs from your screen and exporting them.
-    - If what you did is static but can be shown, include a screenshot of show-casing your work.
+    - If what you did is static but can be shown, include a screenshot show-casing your work.
     - If your work can't be seen, don't bother to include images or gifs to the PR.
 
 
