@@ -30,10 +30,13 @@ Some basic code rules:
 
 - Be sure to respect [common guidelines for C# developers](https://github.com/ktaranov/naming-convention/blob/master/C%23%20Coding%20Standards%20and%20Naming%20Conventions.md) while you develop
 - All code is written in English
-- Get used to pulling changes from master every time you open your solution to avoid coding from an outdated base-code and having to resolve even more conflicts later on.
+- Get used to pulling changes from master every time you open your solution to avoid coding from an outdated base-code and having to resolve even more conflicts later on when submitting your PR
 - Untested code won't be merged with master
 - Avoid commenting code: rather spend time thinking on naming variables and functions correctly
 - Prefer adding a field or property to a class rather than passing around lots of arguments in the functions
+- Leave the code cleaner than you found it
+    - Feel free to do small refactors and name changes whenever you feel it is useful and will leave the code at a better state than without those modifications. 
+    - Code that gets cleaner over time is way better than code that gets dirtier over time
 - Keep your functions as small as possible
 - Redact your commit messages well, in clear English, so that anyone can understand what was done in each commit. Do as much commits as you need to, as long as your commit messages are always clear and concise.
 - Make your branches have meaningful names. It is also a good idea to write the number of the Issue you are fixing with your PR in the name of your banch. Prefer a long, clear name rather than a concise unclear name: (e.g prefer `34-fixing-airstrike-cost` rather than `patch-1`)
@@ -123,7 +126,7 @@ You need to have downloaded:
 
 Once your file is open and you know what you want to do, it is time to start coding!
 
-> The C# API for the game is accesible from the map editor.  Click on "Script" at the top-right corner next to "Common", then press `F1` or click on  `Script API`. You can also find a versin online tied to this repo [by clicking here](https://juansero29.github.io/SFDScripts/).
+> The C# API for the game is accesible from the map editor.  Click on "Script" at the top-right corner next to "Common", then press `F1` or click on  `Script API`. You can also find a version online of the documentation tied to this repo [by clicking here](https://juansero29.github.io/SFDScripts/).
 
 Check again the Code of Conduct for the coding rules to keep them in mind while coding, but also have fun :) This is the only fun part of all this mess ^^
 
@@ -154,7 +157,7 @@ Some work-arounds
 
 #### What does testing mean?
 
-It means you have confirmed that the bug/feature you have worked on is having the expected behavior by executing the script directly in Superfighters Deluxe. It also means you are have debuugged the script at least once to confirm the variables you worked on have the expected values and behavior. 
+It means you have confirmed that the bug/feature you have worked on is having the expected behavior by executing the script directly in Superfighters Deluxe. It also means you have debuugged the script at least once to confirm the variables you worked on have the expected values and behavior. 
 
 #### How to test?
 To test your script:
@@ -169,7 +172,7 @@ To test your script:
 
 **For the moment no unit test are done in this repo.** 
 
-This sucks, but that's how it is for the moment, I haven't got the time to include them. Maybe in the future it will also be necessary to include a unit test to show that the feature/bug you solved, is actually solved.
+This sucks, but that's how it is for the moment, I haven't got the time to include them. Maybe in the future it will also be necessary to include a unit test to show that the feature/bug you solved, is actually solved. Or, if you're kind enough, you can start adding Unit Tests with a PR!
 
 
 
@@ -185,11 +188,12 @@ What would be of us, poor developers, if we couldn't get any help at all.
 
 - If you're still having trouble with C# or an specific C# API, please check the [official documentation]("https://docs.microsoft.com/en-us/dotnet/csharp/").
 
-- If you're having trouble with the SFD API, be sure to check the documentation as pointed out in [developing](#developing).
+- If you're having trouble with the SFD API, be sure to check the documentation as pointed out in [developing](#developing). 
+- The [Superfighters Deluxe Script API](https://mythologicinteractiveforums.com/viewforum.php?f=15) forum may also be helpful. You can explore questions asked, or make a new post so others can help you. You can also make suggestions to developers so that they (maybe) make additions to the API according your needs.
 
 - May you need quick help in your long voyage in the obscure paths of the code in this repo, you can ping me on discord: `Juansero29#8880` directly.
 
-- You can also get help from other fellow scripters in the [Mythologic Interactive discord server](https://store.steampowered.com/news/app/855860/view/2880577391820768632).
+- You can also get help from other fellow scripters in the [Mythologic Interactive Discord Server](https://store.steampowered.com/news/app/855860/view/2880577391820768632).
 
 # Thanks!
 
