@@ -33,7 +33,7 @@ namespace SFDScripts
         /// <summary>
         /// The world top position (where airstrikes get launched from)
         /// </summary>
-        public static int WorldTop = 500;
+        public static int WorldTop = 750;
 
         #region Drones
         /// <summary>

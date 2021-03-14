@@ -1710,7 +1710,7 @@ namespace SFDScripts
             public float RotationLimit = (float)Math.PI / 3;
             public float MainBlockAngle;
             public float DefaultAngle;
-            public float DamageFactor = 3f;
+            public float DamageFactor = 0.15f;
             public IObject Target = null;
             public int TargetVision = 3;
             public int LastTargetFinding = 10;
@@ -1782,6 +1782,9 @@ namespace SFDScripts
 
                 if (Id == 6 || Id == 7) MainBlock = GlobalGame.CreateObject("CrabCan00", position, -(float)Math.PI / 2 * dir);
                 else MainBlock = GlobalGame.CreateObject("Computer00", position, -(float)Math.PI / 2 * dir);
+
+                MainBlock.SetHealth(1000);
+
                 if (Id >= 4)
                 {
                     IObjectAlterCollisionTile collisionDisabler = (IObjectAlterCollisionTile)GlobalGame.CreateObject("AlterCollisionTile", position);
@@ -1831,7 +1834,7 @@ namespace SFDScripts
                     PathSize = 2;
                     Speed = 3;
                     RotationSpeed = 3f;
-                    DamageFactor = 0.2f;
+                    DamageFactor = 1f;
                     DroneMinDistance = 5 * 8;
                 }
                 else if (Id == 6)
@@ -1841,7 +1844,7 @@ namespace SFDScripts
                     PathSize = 2;
                     Speed = 4;
                     RotationSpeed = 2f;
-                    DamageFactor = 0.05f;
+                    DamageFactor = 1.5f;
                     DroneMinDistance = 4 * 8;
                 }
                 else if (Id == 7)
@@ -1851,7 +1854,7 @@ namespace SFDScripts
                     PathSize = 2;
                     Speed = 4;
                     RotationSpeed = 2f;
-                    DamageFactor = 0.5f;
+                    DamageFactor = 1f;
                     DroneMinDistance = 4 * 8;
                 }
 
@@ -1982,7 +1985,7 @@ namespace SFDScripts
                     weapon.TurretTarget = false;
                     WeaponList.Add(weapon);
                 }
-                if (Id == 5 || Id == 6)
+                if (Id == 6)
                 { //2>;=0 <>;=89 
                     TTurretWeapon weapon = new TTurretWeapon();
                     weapon.Distance = 50;
@@ -2204,7 +2207,7 @@ namespace SFDScripts
 
                         if (raycastResult.Length > 2 + raycastResultPlayersCount && (MainMotor.GetWorldPosition() - Target.GetWorldPosition()).Length() <= 50)
                         {
-                            // if there's more than 2 objects between drone and player, don't shoot
+                            // if there's more than 2 object between drone and player, don't shoot
                             // and choose another target
                             ChangingRoute = true;
                             var ply = Target as IPlayer;
@@ -2215,14 +2218,13 @@ namespace SFDScripts
                             var player = possibleTargets.ElementAt(i);
                             Target = player.Body;
                             DebugLogger.DebugOnlyDialogLog("Target changed from " + ply.Name + " to " + player.Name);
-                            continue;
+                            break;
                         }
-
-
-                        if (result.Hit &&
-                            (result.IsPlayer ||
-                                result.HitObject.Name.IndexOf("crab", StringComparison.OrdinalIgnoreCase) >= 0 ||
-                                result.HitObject.Name.IndexOf("computer", StringComparison.OrdinalIgnoreCase) >= 0))
+                        else if (result.Hit &&
+                            !(raycastResult.Length > 2 + raycastResultPlayersCount) &&
+                          (result.IsPlayer ||
+                              result.HitObject.Name.IndexOf("crab", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                              result.HitObject.Name.IndexOf("computer", StringComparison.OrdinalIgnoreCase) >= 0))
                         {
                             CanFire = true;
                             ChangingRoute = false;
@@ -2323,6 +2325,8 @@ namespace SFDScripts
                     float ch = (DamagedObjectMaxHp[i] - DamagedObjects[i].GetHealth()) * DamageFactor;
                     DamagedObjectHp[i] -= ch;
                     DamagedObjects[i].SetHealth(DamagedObjectMaxHp[i]);
+
+                    Game.DrawText(DamagedObjectHp[i].ToString(), MainMotor.GetWorldPosition());
                     if (DamagedObjectHp[i] <= 0)
                     {
                         Destroy();
