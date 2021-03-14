@@ -4449,7 +4449,7 @@ namespace SFDScripts
             equipmentSlot.AddEquipment(3, 25, 1, "Airdrop", "Drops one supply crate with random weapon."); //3
             equipmentSlot.AddEquipment(4, 100, 10, "Napalm Strike", "Strike of Napalm bombs on the whole map."); //4
             equipmentSlot.AddEquipment(5, 100, 11, "Pinpoint Strike", "The missile tries to hit your enemy."); //5
-            equipmentSlot.AddEquipment(6, 100, 14, "Airstrike", "Attack aircraft tries to hit your enemy."); //6
+            equipmentSlot.AddEquipment(6, 125, 14, "Airstrike", "Attack aircraft tries to hit your enemy."); //6
             equipmentSlot.AddEquipment(7, 50, 7, "Big Airdrop", "Drops three supply crates with random weapon."); //7
             equipmentSlot.AddEquipment(8, 125, 13, "Artillery Strike", "150mm cannons bombards all the map."); //8
             equipmentSlot.AddEquipment(9, 50, 8, "Mine Strike", "Mines are falling from the air all over the map."); //9
