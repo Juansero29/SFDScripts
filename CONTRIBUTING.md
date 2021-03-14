@@ -123,7 +123,7 @@ You need to have downloaded:
 
 Once your file is open and you know what you want to do, it is time to start coding!
 
-> The C# API for the game is accesible from the map editor.  Click on "Script" at the top-right corner next to "Common", then press `F1` or click on  `Script API`
+> The C# API for the game is accesible from the map editor.  Click on "Script" at the top-right corner next to "Common", then press `F1` or click on  `Script API`. You can also find a versin online tied to this repo [by clicking here](https://juansero29.github.io/SFDScripts/).
 
 Check again the Code of Conduct for the coding rules to keep them in mind while coding, but also have fun :) This is the only fun part of all this mess ^^
 
