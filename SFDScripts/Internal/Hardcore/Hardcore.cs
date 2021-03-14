@@ -11,6 +11,8 @@ namespace SFDScripts
     {
         public Hardcore() : base(null) { }
 
+c        #region Script To Copy
+
         #region Map Dependant Data
         /// <summary>
         /// The number of map parts in this map. For each map part, an startup process
@@ -6251,6 +6253,8 @@ namespace SFDScripts
         {
             //UserAccessList.Add("Admin", 2);
         }
+
+        #endregion
 
         #endregion
 
