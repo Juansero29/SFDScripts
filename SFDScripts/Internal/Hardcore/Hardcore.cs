@@ -3318,7 +3318,7 @@ namespace SFDScripts
                         ObjectsToRemove.Add(rightBorder);
                         pl.Equipment.Clear();
                         pl.Armor.SetId(0);
-                        pl.Revive(100, true, x, y);
+                        pl.Revive(100, false, true, x, y);
                         player.AddExp(5, 5);
                     }
                 }
@@ -3699,9 +3699,10 @@ namespace SFDScripts
                 pl.SetModifiers(mods);
             }
 
-            public void Revive(float hp = 100, bool withPos = false, float x = 0, float y = 0)
+            public void Revive(float hp = 100, bool bleeding = false, bool withPos = false, float x = 0, float y = 0)
             {
                 Respawn(false);
+                Bleeding = bleeding;
                 IPlayer pl = User.GetPlayer();
                 Vector2 position;
                 if (!withPos) position = pl.GetWorldPosition();
@@ -3721,6 +3722,7 @@ namespace SFDScripts
                 pl.SetTeam(Team);
                 //pl.SetStatusBarsVisible(false);
                 Hp = hp;
+                //bleeding=True??
                 OnPlayerCreated();
             }
             public void AddEquipment(int id, int type)
@@ -4188,7 +4190,7 @@ namespace SFDScripts
                     }
                     else if (Status == 4 && StunTime <= 0)
                     {
-                        Revive(Hp);
+                        Revive(Hp, Bleeding);
                     }
                 }
                 else if (pl == null && Status >= 0)
