@@ -141,7 +141,7 @@ Here's a recap of what is in said post:
 3. From Visual Studio, attach the Superfighters Deluxe process. 
     - Use CTRL + ALT + P or search "Attach to Process..." from the search bar to open the window
     - Then search for the SFD process and validate.
-4. Run your map from the SFD Map Editor
+4. Run your map from the SFD Map Editor using `F5`
 5. A debuggable file will be generated when you execute the map containing the script in the map executed.
     - To set breakpoints in any early code (like OnStartup) you can write `System.Diagnostics.Debugger.Break();` in the code. This will make the code break (stop) at this location.
     - To set breakpoints from Visual Studio, simply click on the left column between the left tabs and the number of the line in code.
