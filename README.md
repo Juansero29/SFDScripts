@@ -38,10 +38,14 @@ I'm currently working on two main projects on SFD:
 
 You can follow these projects in here: https://github.com/Juansero29/SFDScripts/projects
 
+## CONTRIBUTING
 You're free to make comments, create issues and PRs! I'm open to suggestions.
 
-## License
+Check [CONTRIBUTING.MD](https://github.com/Juansero29/SFDScripts/blob/master/CONTRIBUTING.md) for very detailed information on how to start contributing.
+
+
+## LICENSE
 This repository is licensed under the GNU Lesser General Public License v2.1. Primarily used for software libraries, the GNU LGPL requires that derived works be licensed under the same license, but works that only link to it do not fall under this restriction. There are two commonly used versions of the GNU LGPL.
 
-## Trademark Notice. 
+## TRADEMARK NOTICE 
 Superfighters Deluxe® logos, their taglines and the look, feel and trade dress of the Service are the exclusive trademarks, service marks, trade dress and logos of  MythoLogic Interactive®. All other trademarks, service marks, trade dress, and logos used on this repository are the trademarks, service marks, trade dress, and logos of their respective owners.
