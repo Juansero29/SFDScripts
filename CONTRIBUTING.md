@@ -192,5 +192,5 @@ What would be of us, poor developers, if we couldn't get any help at all.
 
 # Thanks!
 
-At last but not least, thank you for wanting to contribute to this project and reading this long file. All my best wished and have fun coding! :)
+At last but not least, thank you for wanting to contribute to this project and reading this long file. All my best wishes and have fun coding! :)
 
