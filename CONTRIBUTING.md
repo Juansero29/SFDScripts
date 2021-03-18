@@ -208,7 +208,7 @@ Soon a video will be uploaded which will have the following content.
 
 1. GitHub Account
 2. Create Issue
-3. Fork Repo
+3. Fork Repo (install git/git lfs)
 4. Clone Repo
 5. Create New Local Branch Solving Issue
 6. Add Maps
