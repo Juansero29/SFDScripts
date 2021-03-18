@@ -213,14 +213,14 @@ Soon a video will be uploaded which will have the following content.
 5. Create New Local Branch Solving Issue
 6. Add Maps
 7. Open Hardcore Template
-8. Explain only part in script concerning map creators
-9. Explain each layer of the maps and its uses.
-10. Explain what needs to be redone for each map.
+8. Understand the only part of script concerning map creators
+9. Understand each layer of the maps and its uses.
+10. Understand what needs to be redone for each map.
 11. Saving map
 12. Testing map
 13. Adding map to the repo
 14. Creating Pull Request
-15. Video / Screenshot of the work done, little description
+15. Video / Screenshot of the work done
 16. Validating PR
 17. Waiting for review
 
