@@ -1,16 +1,19 @@
 # SFDScripts
+
 ## My Superfighters Deluxe Scripts
+
 This is a collection of the scripts I use when hosting, most of the time I take existing maps along with their scripts, then I modify them to "enhace" them: upgrade the performances, refactor them, make them more readable, remove useless code, change the naming of classes and variables, etc...
 
 As for scripts I have made "myself":
--  "MarioPanadero.cs" which is largely inspired on the Battle Of Teams script used by Nets in most of his maps.
+
+- "MarioPanadero.cs" which is largely inspired on the Battle Of Teams script used by Nets in most of his maps.
 - Hardcore script modifications and updates, which are here thanks to @Antonikon
 
 This repo is here solely as a collection of modified scripts. I, in no case, declare the author of all of the code that this repo contains.
 
-## REPO STRUCTURE: 
+## REPO STRUCTURE
 
-```
+```text
 •
 ├── Backup (a backup of a collection of maps a used 3 years ago on the server I hosted)
 │
@@ -36,16 +39,18 @@ I'm currently working on two main projects on SFD:
 1. Making all battle of teams map bot-enabled (available to be played with bots)
 2. Restoring Antonikon's Hardcore server using his open-sourced script and remastering his maps.
 
-You can follow these projects in here: https://github.com/Juansero29/SFDScripts/projects
+You can follow these projects in here: <https://github.com/Juansero29/SFDScripts/projects>
 
 ## CONTRIBUTING
+
 You're free to make comments, create issues and PRs! I'm open to suggestions.
 
 Check [CONTRIBUTING.MD](https://github.com/Juansero29/SFDScripts/blob/master/CONTRIBUTING.md) for very detailed information on how to start contributing.
 
-
 ## LICENSE
+
 This repository is licensed under the GNU Lesser General Public License v2.1. Primarily used for software libraries, the GNU LGPL requires that derived works be licensed under the same license, but works that only link to it do not fall under this restriction. There are two commonly used versions of the GNU LGPL.
 
-## TRADEMARK NOTICE 
+## TRADEMARK NOTICE
+
 Superfighters Deluxe® logos, their taglines and the look, feel and trade dress of the Service are the exclusive trademarks, service marks, trade dress and logos of  MythoLogic Interactive®. All other trademarks, service marks, trade dress, and logos used on this repository are the trademarks, service marks, trade dress, and logos of their respective owners.
