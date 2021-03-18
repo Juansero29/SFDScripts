@@ -202,6 +202,28 @@ What would be of us, poor developers, if we couldn't get any help at all.
 
 * You can also get help from other fellow scripters in the [Mythologic Interactive Discord Server](https://store.steampowered.com/news/app/855860/view/2880577391820768632).
 
+# Contributing Maps
+
+Soon a video will be uploaded which will have the following content.
+
+1. GitHub Account
+2. Create Issue
+3. Fork Repo
+4. Clone Repo
+5. Create New Local Branch Solving Issue
+6. Add Maps
+7. Open Hardcore Template
+8. Explain only part in script concerning map creators
+9. Explain each layer of the maps and its uses.
+10. Explain what needs to be redone for each map.
+11. Saving map
+12. Testing map
+13. Adding map to the repo
+14. Creating Pull Request
+15. Video / Screenshot of the work done, little description
+16. Validating PR
+17. Waiting for review
+
 # Thanks
 
 At last but not least, thank you for wanting to contribute to this project and reading this long file. All my best wishes and have fun coding! :)
