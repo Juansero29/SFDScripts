@@ -2,8 +2,9 @@ var class_s_f_d_game_script_interface_1_1_i_object_player_spawn_trigger =
 [
     [ "AddProfileInfo", "class_s_f_d_game_script_interface_1_1_i_object_player_spawn_trigger.html#a75e7dc680d357343541b9b8be98e6bf9", null ],
     [ "AddSpawnArea", "class_s_f_d_game_script_interface_1_1_i_object_player_spawn_trigger.html#ab5ba6c0ed32126c625957694485ff227", null ],
-    [ "CreatePlayer", "class_s_f_d_game_script_interface_1_1_i_object_player_spawn_trigger.html#a2f163fa2b7dc6db3a0092cef745731f0", null ],
     [ "CreatePlayer", "class_s_f_d_game_script_interface_1_1_i_object_player_spawn_trigger.html#ac0deaf8323bd072ad66aed840b8baab5", null ],
+    [ "CreatePlayer", "class_s_f_d_game_script_interface_1_1_i_object_player_spawn_trigger.html#a2f163fa2b7dc6db3a0092cef745731f0", null ],
+    [ "GetCameraSecondaryFocusMode", "class_s_f_d_game_script_interface_1_1_i_object_player_spawn_trigger.html#a89092b0e06bd57d531dcbcb95007da56", null ],
     [ "GetGuardTargetObject", "class_s_f_d_game_script_interface_1_1_i_object_player_spawn_trigger.html#a234c85a0155d928f011f7ac5ce7e8ab7", null ],
     [ "GetInitialInputEnabled", "class_s_f_d_game_script_interface_1_1_i_object_player_spawn_trigger.html#a081604809483a247d7d2b82b0355e095", null ],
     [ "GetInitialWeaponDrawn", "class_s_f_d_game_script_interface_1_1_i_object_player_spawn_trigger.html#a630a89d884c326be2157a540f5aa11da", null ],
@@ -21,6 +22,7 @@ var class_s_f_d_game_script_interface_1_1_i_object_player_spawn_trigger =
     [ "GetSpawnWeaponItemThrown", "class_s_f_d_game_script_interface_1_1_i_object_player_spawn_trigger.html#a82b0121702143112dfb2156ba7b96e99", null ],
     [ "RemoveProfileInfo", "class_s_f_d_game_script_interface_1_1_i_object_player_spawn_trigger.html#aae987fa8230c8fa2c6f17aafe09deb47", null ],
     [ "RemoveSpawnArea", "class_s_f_d_game_script_interface_1_1_i_object_player_spawn_trigger.html#ad1b75060edb72d1096f3b5071daa40bb", null ],
+    [ "SetCameraSecondaryFocusMode", "class_s_f_d_game_script_interface_1_1_i_object_player_spawn_trigger.html#abe0d236a119d2d5eb558aaec04cbae37", null ],
     [ "SetGuardTargetObject", "class_s_f_d_game_script_interface_1_1_i_object_player_spawn_trigger.html#a0c25fcfbbb4a8f0d18e453a79e933135", null ],
     [ "SetInitialInputEnabled", "class_s_f_d_game_script_interface_1_1_i_object_player_spawn_trigger.html#a9812458befae96811d394f7a5618254b", null ],
     [ "SetInitialWeaponDrawn", "class_s_f_d_game_script_interface_1_1_i_object_player_spawn_trigger.html#ab2ad24b9d250c42d2adb3e959cf4aa00", null ],

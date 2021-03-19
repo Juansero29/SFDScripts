@@ -39,6 +39,7 @@ var class_s_f_d_game_script_interface_1_1_bot_behavior_set =
     [ "OffensiveDiveLevel", "class_s_f_d_game_script_interface_1_1_bot_behavior_set.html#add46147992ad02c66a15203af2592854", null ],
     [ "OffensiveEnrageLevel", "class_s_f_d_game_script_interface_1_1_bot_behavior_set.html#ac0fe719a1fc8efe721cba6b6bceddc90", null ],
     [ "OffensiveSprintLevel", "class_s_f_d_game_script_interface_1_1_bot_behavior_set.html#a206113e3056c2dab2bb6bbe39d0953e3", null ],
+    [ "PowerupUsage", "class_s_f_d_game_script_interface_1_1_bot_behavior_set.html#ac6b7f07789b26e719cf51348b8531b94", null ],
     [ "RangedWeaponAccuracy", "class_s_f_d_game_script_interface_1_1_bot_behavior_set.html#aaeb747f3524a557c1a28f76cf104d9bd", null ],
     [ "RangedWeaponAimShootDelayMax", "class_s_f_d_game_script_interface_1_1_bot_behavior_set.html#a0ec38bfdfeacf6e354f05fe16d3eabd3", null ],
     [ "RangedWeaponAimShootDelayMin", "class_s_f_d_game_script_interface_1_1_bot_behavior_set.html#af83d33252c821247f9172ce1653e52f5", null ],
@@ -59,8 +60,10 @@ var class_s_f_d_game_script_interface_1_1_bot_behavior_set =
     [ "RangedWeaponPrecisionBurstTimeMin", "class_s_f_d_game_script_interface_1_1_bot_behavior_set.html#af1d1edc829e8cf29b6fb4fce70db2094", null ],
     [ "RangedWeaponPrecisionInterpolateTime", "class_s_f_d_game_script_interface_1_1_bot_behavior_set.html#af3501e3f21b314cf0be0c461be31c340", null ],
     [ "RangedWeaponUsage", "class_s_f_d_game_script_interface_1_1_bot_behavior_set.html#adfb2162aa3784ddea3abb48e19ec0014", null ],
+    [ "RocketRideProficiency", "class_s_f_d_game_script_interface_1_1_bot_behavior_set.html#a298c72bec76face122af4bb4fb7e2f57", null ],
     [ "SearchForItems", "class_s_f_d_game_script_interface_1_1_bot_behavior_set.html#a0a47d40ef3a5b0b2012778697aa2d14d", null ],
     [ "SearchItemRange", "class_s_f_d_game_script_interface_1_1_bot_behavior_set.html#a1365ae2d8974b6d1d84bafc92a12b4e1", null ],
     [ "SearchItems", "class_s_f_d_game_script_interface_1_1_bot_behavior_set.html#a126d7d00d4938e9a993d81416666e056", null ],
+    [ "SeekCoverWhileShooting", "class_s_f_d_game_script_interface_1_1_bot_behavior_set.html#a0274e9e668455686472e9220707b745f", null ],
     [ "TeamLineUp", "class_s_f_d_game_script_interface_1_1_bot_behavior_set.html#a383eed1bf0ea5b025e7fec79d76253f8", null ]
 ];

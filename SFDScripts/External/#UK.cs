@@ -12,10 +12,11 @@ namespace SFDScripts
     class UberKick : GameScriptInterface
     {
 
-        /// <summary>
-        /// Placeholder constructor that's not to be included in the ScriptWindow!
-        /// </summary>
+
         public UberKick() : base(null) { }
+
+        #region Script To Copy
+
         public void OnStartup()
         {
             // Game.GetPlayers()[0].Remove();
@@ -82,6 +83,7 @@ namespace SFDScripts
         public void Death(TriggerArgs args)
         {
 
-        }
+        } 
+        #endregion
     }
 }

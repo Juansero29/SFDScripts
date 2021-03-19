@@ -12,11 +12,10 @@ namespace SFDScripts
     class Fly : GameScriptInterface
     {
 
-        /// <summary>
-        /// Placeholder constructor that's not to be included in the ScriptWindow!
-        /// </summary>
         public Fly() : base(null) { }
-        // for Juansero29 ;) //
+
+        #region Script To Copy
+
         float force = 0.26f; // 0.26f = Zero Gravity
         float[] demforce = new float[] { 225, 175, 125, }; // Thrust percentage
 
@@ -186,6 +185,7 @@ namespace SFDScripts
                     Game.PlayEffect(effct, ply.GetWorldPosition() + new Vector2(0, -4));
                 }
             }
-        }
+        } 
+        #endregion
     }
 }
