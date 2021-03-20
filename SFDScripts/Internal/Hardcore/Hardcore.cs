@@ -6239,7 +6239,7 @@ namespace SFDScripts
                     {
                         if (TracePath(position, PlayerList[i].Position, PlayerTeam.Independent, true) <= 2)
                         {
-                            PlayerList[i].StunTime += duration;
+                            PlayerList[i].StunTime += (int)(duration * (1 - dist / range));
                         }
                     }
                 }
