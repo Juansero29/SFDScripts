@@ -43,13 +43,13 @@ Some basic code rules:
   * Regions can be collapsed, and searcheable, whick makes them very useful in single file scripts.
   * Declare them like this:
 
-        ```csharp
-        #region Descriptive Name Of What This Region Contains 
+  ```csharp
+  #region Descriptive Name Of What This Region Contains 
 
-        [... code ...]
+  [... code ...]
 
-        #endregion
-        ```
+  #endregion
+   ```
 
 ## General Information
 
@@ -204,25 +204,42 @@ What would be of us, poor developers, if we couldn't get any help at all.
 
 # Contributing Maps
 
-Soon a video will be uploaded which will have the following content.
+Hello map contributors! [This video](https://www.youtube.com/watch?v=tJksVsLieJw) really help you understand how to contribute maps to Hardcore server in a painless way. The video is lenghty, but is well divided in chapters, so you can skim into any parts that specially interest you.
+These are the sections explained in this video:
 
+Chapters:
+
+1. Getting Started
 1. GitHub Account
-2. Create Issue
-3. Fork Repo (install git/git lfs)
-4. Clone Repo
-5. Create New Local Branch Solving Issue
-6. Add Maps
-7. Open Hardcore Template
-8. Understand the only part of script concerning map creators
-9. Understand each layer of the maps and its uses.
-10. Understand what needs to be redone for each map.
-11. Saving map
-12. Testing map
-13. Adding map to the repo
-14. Creating Pull Request
-15. Video / Screenshot of the work done
-16. Validating PR
-17. Waiting for review
+1. Fork Repo (install git/git lfs)
+1. Clone Repo
+1. Create Issue
+1. Create New Local Branch Linked To The Issue
+1. Open Hardcore Template
+1. Understand the only part of script concerning map creators
+1. Understand each layer of the maps and its uses.
+1. Player Skins
+1. Drone Zones
+1. AirStrike Markers
+1. Menus Text
+1. Player Start Point
+1. Menu Camera Start Point
+1. Maps Camera Position Markers
+1. Player Spawn Positions
+1. Capture Points
+1. Going through each available variable in the Map Dependant Data part
+1. Number Of Map Parts
+1. Rounds Per Map Part
+1. Current Map Part Index
+1. World Top
+1. Drone Area Begging / Drone Area Size
+1. Camera Width / Camera Height
+1. Testing map
+1. Adding map to the repo
+1. Pushing Changes  (git add . / git commit -m "Message" / git push)
+1. Creating Pull Request
+1. Validating PR (don't forget to put Solves or Closes issue  (number of the issue) in the description)
+1. Waiting for review
 
 # Thanks
 
