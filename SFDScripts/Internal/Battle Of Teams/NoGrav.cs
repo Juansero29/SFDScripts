@@ -80,7 +80,7 @@ namespace SFDScripts
             timerTrigger.Trigger();
         }
 
-        WeaponItem[] SpaceWeps ={
+        readonly WeaponItem[] SpaceWeps ={
             WeaponItem.ASSAULT,
             WeaponItem.SUB_MACHINEGUN,
             WeaponItem.GRENADES,
@@ -95,7 +95,7 @@ namespace SFDScripts
             WeaponItem.BAZOOKA,
             WeaponItem.GRENADE_LAUNCHER
         };
-        Random rnd = new Random();
+        readonly Random rnd = new Random();
         public void OnStartup()
         {
             CreateTimer(100, 0, "Fast", "Fast");

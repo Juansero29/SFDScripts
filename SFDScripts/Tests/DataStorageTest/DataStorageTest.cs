@@ -14,7 +14,6 @@ namespace SFDScripts.Internal
         #region Script To Copy
 
         #region Local Storage Keys
-        private const string MY_SCRIPT_STORAGE_ID = "DSTST";
         private const string SHOTS_FIRED_KEY = "SHOTSFIRED";
         #endregion
 

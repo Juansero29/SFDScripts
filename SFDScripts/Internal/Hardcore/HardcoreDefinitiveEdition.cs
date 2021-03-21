@@ -7,7 +7,7 @@ using System.IO.IsolatedStorage;
 
 namespace SFDScripts
 {
-    public class HardcoreDefinitiveEdition : Hardcore
+    public class HardcoreDefinitiveEdition
     {
         #region Map Dependant Data
         /// <summary>

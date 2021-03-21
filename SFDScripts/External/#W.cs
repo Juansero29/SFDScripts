@@ -28,19 +28,19 @@ namespace SFDScripts
         //==================================================================//
         //=====================< #WIZARDS - settings >======================//
         //============================<general>=============================//
-        private bool UNLIMITED_MANA = false;                                // set to true to get unlimited mana (unstable now)
-        private bool MANA_REGEN = true;                                     // set to true to make mana regenerate with time
-        private float MANA_MAX = (float)500;                                // change "peak" mana amount to regenerate to
-        private float MANA_REGEN_MULTIPLIER = (float)3.5;                   // change the amount of regenerated mana
-        private bool SPELL_COOLDOWN_ACTIVATED = false;                      // set to true to enable spells cooldown
-        private bool MANA_COOLDOWN_ACTIVATED = true;                        // set to true to enable mana regeneration cooldown after spell use
+        private readonly bool UNLIMITED_MANA = false;                                // set to true to get unlimited mana (unstable now)
+        private readonly bool MANA_REGEN = true;                                     // set to true to make mana regenerate with time
+        private readonly float MANA_MAX = (float)500;                                // change "peak" mana amount to regenerate to
+        private readonly float MANA_REGEN_MULTIPLIER = (float)3.5;                   // change the amount of regenerated mana
+        private readonly bool SPELL_COOLDOWN_ACTIVATED = false;                      // set to true to enable spells cooldown
+        private readonly bool MANA_COOLDOWN_ACTIVATED = true;                        // set to true to enable mana regeneration cooldown after spell use
                                                                             //private bool TIMELIMIT_ACTIVATED = false;							// set to true to enable time limit for last 2 players
                                                                             //=========================<time limits>============================//
         private const bool TIME_LIMIT_ACTIVATED = false;                        // set to "true" to remove (or explode) host player at start
         private const int TIME_LIMIT_SECONDS = 90;                          // choose the amount of time given to players to finish the round
         private const string TIME_LIMIT_MODE = "auto";                      // set to "main": start timer at beginning; "auto": when 2 teams or 2 players left
                                                                             //===========================<utilites>=============================//
-        private bool HOSTING_ACTIVATED = false;                             // set to true to kill host at the beginning of each round.
+        private readonly bool HOSTING_ACTIVATED = false;                             // set to true to kill host at the beginning of each round.
                                                                             //=========================<commentator>============================//
                                                                             //private bool COMMENTATOR_ACTIVATED = false;						// work in progress here
                                                                             //==================================================================//
@@ -58,7 +58,7 @@ namespace SFDScripts
             // we'll add something else later
             public string Version = "1.1a";
         }
-        private ModData modData = new ModData();
+        private readonly ModData modData = new ModData();
 
         // reserved for commentator
         /*private string [] ONDEATH_TEXT = new string []{
@@ -198,25 +198,24 @@ namespace SFDScripts
             }
         }
 
-        Random rand = new Random();
+        readonly Random rand = new Random();
 
-        private List<PlayerData> players = new List<PlayerData>();
-        private List<ProjData> projs = new List<ProjData>();
-        private List<SpellsData_MindControl> controlledPlayers = new List<SpellsData_MindControl>();
-        private List<SpellsData_Teleport> pendingTeleports = new List<SpellsData_Teleport>();
+        private readonly List<PlayerData> players = new List<PlayerData>();
+        private readonly List<ProjData> projs = new List<ProjData>();
+        private readonly List<SpellsData_MindControl> controlledPlayers = new List<SpellsData_MindControl>();
+        private readonly List<SpellsData_Teleport> pendingTeleports = new List<SpellsData_Teleport>();
 
         // time limit vars
         private float m_startTime = 0;
         private int m_lastElapsedSeconds = 0;
         private bool m_twoOpponentsRemaining = false;
         private bool WAS_ACTIVATED;
-
-        string[] restrictedMaps = new string[]{
+        readonly string[] restrictedMaps = new string[]{
 	// these maps are hard-scripted, though their MapType is Versus
 	"#Abadoned Subway (BG)",
     "Brutal Games - Abadoned Subway"
 };
-        string[] restrictedWeapons = new string[]{
+        readonly string[] restrictedWeapons = new string[]{
 	// clear weapon drops and replace them with custom drops of items in "replacingWeapons"
 	"SUPPLYCRATE00",
 	// the rest is for custom maps of mapmakers who somewhy use 
@@ -246,15 +245,16 @@ namespace SFDScripts
     "WPNGRENADESTHROWN",
     "WPNMOLOTOVSTHROWN"
 };
+
         // additional array for weapons that can be dropped so players could not "generate pickups"
-        string[] restrictedWeapons2 = new string[]{
+        readonly string[] restrictedWeapons2 = new string[]{
     "WPNHAMMER",
     "WPNSUBMACHINEGUN",
     "WPNUZI",
     "WPNSMG",
     "WPNGRENADES"
 };
-        string[] replacingWeapons = new string[]{
+        readonly string[] replacingWeapons = new string[]{
     "ITEMSLOMO5",
     "ITEMSLOMO10",
     "ITEMPILLS", "ITEMPILLS", "ITEMPILLS", // just to make them spawn more often (PILLSPILLSPILLS)
@@ -726,7 +726,6 @@ namespace SFDScripts
             {
                 Dictionary<PlayerTeam, int> teams = new Dictionary<PlayerTeam, int>();
                 PlayerTeam playerATeam = PlayerTeam.Independent;
-                PlayerTeam playerBTeam = PlayerTeam.Independent;
                 int opponents = 0;
 
                 foreach (IPlayer ply in Game.GetPlayers())
@@ -741,7 +740,9 @@ namespace SFDScripts
                         switch (opponents)
                         {
                             case 1: playerATeam = ply.GetTeam(); break;
-                            case 2: playerBTeam = ply.GetTeam(); break;
+                            case 2:
+                                PlayerTeam playerBTeam = ply.GetTeam();
+                                break;
                         }
                     }
                 }
@@ -801,11 +802,13 @@ namespace SFDScripts
                         new Vector2(ply.FacingDirection * 10, 3),
                         (float)rand.Next(-30, 30));
                         Game.PlayEffect("Electric", pos);
-                        ProjData projData = new ProjData(proj, Game.TotalElapsedGameTime + 1500f);
-                        projData.Explosive = true;
-                        projData.ExplosionType = "basic";
-                        projData.SmokingAmount = 2;
-                        projData.SmokingRadius = 2;
+                        ProjData projData = new ProjData(proj, Game.TotalElapsedGameTime + 1500f)
+                        {
+                            Explosive = true,
+                            ExplosionType = "basic",
+                            SmokingAmount = 2,
+                            SmokingRadius = 2
+                        };
                         projs.Add(projData);
                     }
                     break;
@@ -819,9 +822,11 @@ namespace SFDScripts
                         new Vector2(ply.FacingDirection * 10, 3),
                         (float)rand.Next(-30, 30));
                         Game.PlayEffect("Electric", pos);
-                        ProjData projData = new ProjData(proj, Game.TotalElapsedGameTime + 1500f);
-                        projData.Explosive = true;
-                        projData.ExplosionType = "fire_big";
+                        ProjData projData = new ProjData(proj, Game.TotalElapsedGameTime + 1500f)
+                        {
+                            Explosive = true,
+                            ExplosionType = "fire_big"
+                        };
                         projs.Add(projData);
                     }
                     break;
@@ -835,9 +840,11 @@ namespace SFDScripts
                         new Vector2(ply.FacingDirection * 5, 3),
                         (float)rand.Next(-30, 30));
                         Game.PlayEffect("Electric", pos);
-                        ProjData projData = new ProjData(proj, Game.TotalElapsedGameTime + 1000f);
-                        projData.Explosive = true;
-                        projData.ExplosionType = "cluster";
+                        ProjData projData = new ProjData(proj, Game.TotalElapsedGameTime + 1000f)
+                        {
+                            Explosive = true,
+                            ExplosionType = "cluster"
+                        };
                         projs.Add(projData);
                     }
                     break;
@@ -896,44 +903,58 @@ namespace SFDScripts
                         Vector2 pos = ply.GetWorldPosition() + new Vector2(ply.FacingDirection * 30, 3);
                         {
                             IObject piece = Game.CreateObject("StoneWeak00C", pos, 0f);
-                            ProjData proj = new ProjData(piece, Game.TotalElapsedGameTime + lifetime);
-                            proj.UnFreezeTime = Game.TotalElapsedGameTime + delay;
+                            ProjData proj = new ProjData(piece, Game.TotalElapsedGameTime + lifetime)
+                            {
+                                UnFreezeTime = Game.TotalElapsedGameTime + delay
+                            };
                             projs.Add(proj);
                         }
                         {
                             IObject piece = Game.CreateObject("StoneWeak00C", pos + new Vector2(8, 24), 0f);
-                            ProjData proj = new ProjData(piece, Game.TotalElapsedGameTime + lifetime);
-                            proj.UnFreezeTime = Game.TotalElapsedGameTime + delay;
+                            ProjData proj = new ProjData(piece, Game.TotalElapsedGameTime + lifetime)
+                            {
+                                UnFreezeTime = Game.TotalElapsedGameTime + delay
+                            };
                             projs.Add(proj);
                         }
                         {
                             IObject piece = Game.CreateObject("StoneWeak00B", pos + new Vector2(12, 0), -1.57f);
-                            ProjData proj = new ProjData(piece, Game.TotalElapsedGameTime + lifetime);
-                            proj.UnFreezeTime = Game.TotalElapsedGameTime + delay;
+                            ProjData proj = new ProjData(piece, Game.TotalElapsedGameTime + lifetime)
+                            {
+                                UnFreezeTime = Game.TotalElapsedGameTime + delay
+                            };
                             projs.Add(proj);
                         }
                         {
                             IObject piece = Game.CreateObject("StoneWeak00B", pos + new Vector2(8, 12), 0f);
-                            ProjData proj = new ProjData(piece, Game.TotalElapsedGameTime + lifetime);
-                            proj.UnFreezeTime = Game.TotalElapsedGameTime + delay;
+                            ProjData proj = new ProjData(piece, Game.TotalElapsedGameTime + lifetime)
+                            {
+                                UnFreezeTime = Game.TotalElapsedGameTime + delay
+                            };
                             projs.Add(proj);
                         }
                         {
                             IObject piece = Game.CreateObject("StoneWeak00B", pos + new Vector2(-4, 16), 1.57f);
-                            ProjData proj = new ProjData(piece, Game.TotalElapsedGameTime + lifetime);
-                            proj.UnFreezeTime = Game.TotalElapsedGameTime + delay;
+                            ProjData proj = new ProjData(piece, Game.TotalElapsedGameTime + lifetime)
+                            {
+                                UnFreezeTime = Game.TotalElapsedGameTime + delay
+                            };
                             projs.Add(proj);
                         }
                         {
                             IObject piece = Game.CreateObject("StoneWeak00B", pos + new Vector2(-4, 32), 1.57f);
-                            ProjData proj = new ProjData(piece, Game.TotalElapsedGameTime + lifetime);
-                            proj.UnFreezeTime = Game.TotalElapsedGameTime + delay;
+                            ProjData proj = new ProjData(piece, Game.TotalElapsedGameTime + lifetime)
+                            {
+                                UnFreezeTime = Game.TotalElapsedGameTime + delay
+                            };
                             projs.Add(proj);
                         }
                         {
                             IObject piece = Game.CreateObject("StoneWeak00B", pos + new Vector2(8, 36), 0f);
-                            ProjData proj = new ProjData(piece, Game.TotalElapsedGameTime + lifetime);
-                            proj.UnFreezeTime = Game.TotalElapsedGameTime + delay;
+                            ProjData proj = new ProjData(piece, Game.TotalElapsedGameTime + lifetime)
+                            {
+                                UnFreezeTime = Game.TotalElapsedGameTime + delay
+                            };
                             projs.Add(proj);
                         }
                     }
@@ -1014,7 +1035,7 @@ namespace SFDScripts
                     break;
                 case "Teleport":
                     {
-                        Vector2 pos = Vector2.Zero;
+                        Vector2 pos;
                         if (ply.IsWalking && ply.IsJumpAttacking) pos = ply.GetWorldPosition() + new Vector2(0f, 50f);
                         else if (ply.IsWalking) pos = ply.GetWorldPosition() + new Vector2(0f, -28f);
                         else pos = ply.GetWorldPosition() + new Vector2(ply.FacingDirection * 70f, 10f);
@@ -1090,8 +1111,10 @@ namespace SFDScripts
                     for (int i = 0; i < 4; i++)
                     {
                         IObject obj = Game.CreateObject("InvisiblePlatform", ply.GetWorldPosition() + new Vector2(ply.FacingDirection * (8f * i - 16f), -10f), 0f);
-                        ProjData proj = new ProjData(obj, Game.TotalElapsedGameTime + 7000f);
-                        proj.SmokingAmount = 4;
+                        ProjData proj = new ProjData(obj, Game.TotalElapsedGameTime + 7000f)
+                        {
+                            SmokingAmount = 4
+                        };
                         projs.Add(proj);
                     }
                     break;
@@ -1102,10 +1125,12 @@ namespace SFDScripts
                         0f,
                         new Vector2(ply.FacingDirection * 5f, 3f),
                         3f);
-                    ProjData projCan = new ProjData(objCan, Game.TotalElapsedGameTime + 1500f);
-                    projCan.Explosive = true;
-                    projCan.ExplosionType = "poison_gaz";
-                    projCan.SmokingAmount = 1;
+                    ProjData projCan = new ProjData(objCan, Game.TotalElapsedGameTime + 1500f)
+                    {
+                        Explosive = true,
+                        ExplosionType = "poison_gaz",
+                        SmokingAmount = 1
+                    };
                     projs.Add(projCan);
                     break;
                 /*case "BALLOONS!":
@@ -1172,11 +1197,13 @@ namespace SFDScripts
                                 0f,
                                 vel,
                                 (float)rand.Next(-30, 30));
-                            ProjData projData = new ProjData(obj, Game.TotalElapsedGameTime + (float)(rand.Next(10, 20)) * 100f);
-                            projData.Explosive = true;
-                            projData.ExplosionType = "basic";
-                            projData.SmokingAmount = 2;
-                            projData.SmokingRadius = 2;
+                            ProjData projData = new ProjData(obj, Game.TotalElapsedGameTime + (float)(rand.Next(10, 20)) * 100f)
+                            {
+                                Explosive = true,
+                                ExplosionType = "basic",
+                                SmokingAmount = 2,
+                                SmokingRadius = 2
+                            };
                             projs.Add(projData);
                             Game.PlaySound("Break", pos, 50f);
                         }
@@ -1246,7 +1273,7 @@ namespace SFDScripts
         // commented is old player pushing system
         public void SpellTrigger_FusRoDah_Right(TriggerArgs args)
         {
-            if (args.Sender is IPlayer ply)
+            if (args.Sender is IPlayer)
             {
                 // side
 
@@ -1261,6 +1288,7 @@ namespace SFDScripts
                 projs.Add(new ProjData(obj, Game.TotalElapsedGameTime + 50f));*/
 
                 //ply.SetWorldPosition(ply.GetWorldPosition() + new Vector2(0, 10));
+                var ply = args.Sender as IPlayer;
                 ply.SetLinearVelocity(new Vector2(15f, 3f));
 
                 Game.PlayEffect("TR_D", ply.GetWorldPosition() + new Vector2(rand.Next(4, 16), rand.Next(4, 16)));
@@ -1631,46 +1659,51 @@ namespace SFDScripts
         private void GiveBasicSpells(PlayerData data)
         {
             {   // light destruction spellbook
-                List<PlayerData.BookData.SpellData> temp = new List<PlayerData.BookData.SpellData>();
+                List<PlayerData.BookData.SpellData> temp = new List<PlayerData.BookData.SpellData>
+                {
 
-                //temp.Add(new PlayerData.BookData.SpellData("Tarot Card", 20f, 200f));
-                temp.Add(new PlayerData.BookData.SpellData("FirePunch", 40f, 1000f));
-                temp.Add(new PlayerData.BookData.SpellData("FireBall", 30f, 1000f));
-                temp.Add(new PlayerData.BookData.SpellData("ANVIL", 40f, 5000f));
-                temp.Add(new PlayerData.BookData.SpellData("Paper", 40f, 500f));
+                    //temp.Add(new PlayerData.BookData.SpellData("Tarot Card", 20f, 200f));
+                    new PlayerData.BookData.SpellData("FirePunch", 40f, 1000f),
+                    new PlayerData.BookData.SpellData("FireBall", 30f, 1000f),
+                    new PlayerData.BookData.SpellData("ANVIL", 40f, 5000f),
+                    new PlayerData.BookData.SpellData("Paper", 40f, 500f)
+                };
 
                 data.Books.Add(new PlayerData.BookData("Light destruction", temp));
             }
             {   // heavy destruction spellbook
-                List<PlayerData.BookData.SpellData> temp = new List<PlayerData.BookData.SpellData>();
-
-                temp.Add(new PlayerData.BookData.SpellData("Bottle", 65f, 500f));
-                temp.Add(new PlayerData.BookData.SpellData("Balloon", 100f, 500f));
-                temp.Add(new PlayerData.BookData.SpellData("Crate of doom", 60f, 10000f));
-                temp.Add(new PlayerData.BookData.SpellData("Fireworks", 125f, 0f));
-                temp.Add(new PlayerData.BookData.SpellData("Skunk", 50f, 1000f));
+                List<PlayerData.BookData.SpellData> temp = new List<PlayerData.BookData.SpellData>
+                {
+                    new PlayerData.BookData.SpellData("Bottle", 65f, 500f),
+                    new PlayerData.BookData.SpellData("Balloon", 100f, 500f),
+                    new PlayerData.BookData.SpellData("Crate of doom", 60f, 10000f),
+                    new PlayerData.BookData.SpellData("Fireworks", 125f, 0f),
+                    new PlayerData.BookData.SpellData("Skunk", 50f, 1000f)
+                };
 
                 data.Books.Add(new PlayerData.BookData("Heavy destruction", temp));
             }
             {   // protection spellbook
-                List<PlayerData.BookData.SpellData> temp = new List<PlayerData.BookData.SpellData>();
-
-                temp.Add(new PlayerData.BookData.SpellData("Heal", 25f, 500f));
-                temp.Add(new PlayerData.BookData.SpellData("Cloud", 35f, 500f));
-                temp.Add(new PlayerData.BookData.SpellData("Shield", 75f, 15000f));
-                temp.Add(new PlayerData.BookData.SpellData("Revive", 100f, 20000f));
+                List<PlayerData.BookData.SpellData> temp = new List<PlayerData.BookData.SpellData>
+                {
+                    new PlayerData.BookData.SpellData("Heal", 25f, 500f),
+                    new PlayerData.BookData.SpellData("Cloud", 35f, 500f),
+                    new PlayerData.BookData.SpellData("Shield", 75f, 15000f),
+                    new PlayerData.BookData.SpellData("Revive", 100f, 20000f)
+                };
 
                 data.Books.Add(new PlayerData.BookData("Protection", temp));
             }
             {   // alteration spellbook
-                List<PlayerData.BookData.SpellData> temp = new List<PlayerData.BookData.SpellData>();
-
-                temp.Add(new PlayerData.BookData.SpellData("FUS", 70f, 15000f));
-                temp.Add(new PlayerData.BookData.SpellData("SuperJump", 30f, 1000f));
-                temp.Add(new PlayerData.BookData.SpellData("To The Moon!", 40f, 8000f));
-                temp.Add(new PlayerData.BookData.SpellData("Mind Lock", 100f, 20000f));
-                temp.Add(new PlayerData.BookData.SpellData("Mind Control", 150f, 40000f));
-                temp.Add(new PlayerData.BookData.SpellData("Teleport", 60f, 1000f));
+                List<PlayerData.BookData.SpellData> temp = new List<PlayerData.BookData.SpellData>
+                {
+                    new PlayerData.BookData.SpellData("FUS", 70f, 15000f),
+                    new PlayerData.BookData.SpellData("SuperJump", 30f, 1000f),
+                    new PlayerData.BookData.SpellData("To The Moon!", 40f, 8000f),
+                    new PlayerData.BookData.SpellData("Mind Lock", 100f, 20000f),
+                    new PlayerData.BookData.SpellData("Mind Control", 150f, 40000f),
+                    new PlayerData.BookData.SpellData("Teleport", 60f, 1000f)
+                };
 
                 data.Books.Add(new PlayerData.BookData("Alteration", temp));
             }

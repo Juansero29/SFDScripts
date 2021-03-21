@@ -128,7 +128,7 @@ namespace SFDScripts
         /// <summary>
         /// The list of all the players marked as marios in this game
         /// </summary>
-        private List<IPlayer> _Marios = new List<IPlayer>();
+        private readonly List<IPlayer> _Marios = new List<IPlayer>();
 
         /// <summary>
         /// The number of kills the red team has made
@@ -168,12 +168,7 @@ namespace SFDScripts
         /// <summary>
         /// The list of dead players in the game
         /// </summary>
-        private List<DeadPlayer> _DeadPlayers = new List<DeadPlayer>();
-
-        /// <summary>
-        /// The number of dead players in the game
-        /// </summary>
-        private int _DeadPlayersCount = 0;
+        private readonly List<DeadPlayer> _DeadPlayers = new List<DeadPlayer>();
 
         /// <summary>
         /// The number of users connected to the game
@@ -291,8 +286,6 @@ namespace SFDScripts
             {
                 return;
             }
-
-            _DeadPlayersCount++;
 
             if (deadPlayer.GetTeam() == PlayerTeam.Team1)
             {

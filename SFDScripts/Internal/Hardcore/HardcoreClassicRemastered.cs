@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SFDScripts
 {
-    class HardcoreClassicRemastered : Hardcore
+    class HardcoreClassicRemastered
     {
         #region Map Dependant Data
         /// <summary>

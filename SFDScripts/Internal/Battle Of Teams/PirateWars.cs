@@ -13,7 +13,7 @@ namespace SFDScripts.Internal
         public PirateWars() : base(null) { }
 
         #region Script To Copy
-        private string[] _Classes = new string[] { "s", "d", "f", "g", "h" };
+        private readonly string[] _Classes = new string[] { "s", "d", "f", "g", "h" };
         private Random rnd;
         int TimeCDT = 5 * 60;
         bool TextF = false;
@@ -133,7 +133,7 @@ namespace SFDScripts.Internal
         IObject wee;
         bool didit = false;
 
-        public void crateOpen(TriggerArgs args)
+        public void CrateOpen(TriggerArgs args)
         {
             if (wee.GetHealth() == 0 && didit == false)
             {
@@ -163,7 +163,7 @@ namespace SFDScripts.Internal
         }
 
 
-        public void refil(TriggerArgs args)
+        public void Refil(TriggerArgs args)
         {
             IPlayer helped = (IPlayer)args.Sender;
             helped.GiveWeaponItem(WeaponItem.PILLS);
@@ -192,13 +192,13 @@ namespace SFDScripts.Internal
 
                     case "i":
                         sender = (IPlayer)args.Sender;
-                        removeWeapons(sender);
+                        RemoveWeapons(sender);
                         sender.GiveWeaponItem(WeaponItem.CARBINE);
                         sender.GiveWeaponItem(WeaponItem.GRENADES);
                         sender.GiveWeaponItem(WeaponItem.BAT);
                         sender.GiveWeaponItem(WeaponItem.SLOWMO_5);
-                        if (sender.GetTeam() == PlayerTeam.Team1) { getAway(VBlueRnd, sender); }
-                        else { getAway(VRedRnd, sender); }
+                        if (sender.GetTeam() == PlayerTeam.Team1) { GetAway(VBlueRnd, sender); }
+                        else { GetAway(VRedRnd, sender); }
 
                         break;
 
@@ -207,7 +207,7 @@ namespace SFDScripts.Internal
 
                     case "a":
                         sender = (IPlayer)args.Sender;
-                        removeWeapons(sender);
+                        RemoveWeapons(sender);
                         sender.GiveWeaponItem(WeaponItem.CARBINE);
                         sender.GiveWeaponItem(WeaponItem.UZI);
                         sender.GiveWeaponItem(WeaponItem.ASSAULT);
@@ -215,66 +215,66 @@ namespace SFDScripts.Internal
                         sender.GiveWeaponItem(WeaponItem.ASSAULT);
                         sender.GiveWeaponItem(WeaponItem.UZI);
                         sender.GiveWeaponItem(WeaponItem.SLOWMO_5);
-                        if (sender.GetTeam() == PlayerTeam.Team1) { getAway(VBlueRnd, sender); }
-                        else { getAway(VRedRnd, sender); }
+                        if (sender.GetTeam() == PlayerTeam.Team1) { GetAway(VBlueRnd, sender); }
+                        else { GetAway(VRedRnd, sender); }
 
                         break;
 
 
                     case "s":
                         sender = (IPlayer)args.Sender;
-                        removeWeapons(sender);
+                        RemoveWeapons(sender);
                         sender.GiveWeaponItem(WeaponItem.MACHETE);
                         sender.GiveWeaponItem(WeaponItem.MAGNUM);
-                        if (sender.GetTeam() == PlayerTeam.Team1) { getAway(VBlueRnd, sender); }
-                        else { getAway(VRedRnd, sender); }
+                        if (sender.GetTeam() == PlayerTeam.Team1) { GetAway(VBlueRnd, sender); }
+                        else { GetAway(VRedRnd, sender); }
 
                         break;
 
 
                     case "d":
                         sender = (IPlayer)args.Sender;
-                        removeWeapons(sender);
+                        RemoveWeapons(sender);
                         sender.GiveWeaponItem(WeaponItem.CARBINE);
                         sender.GiveWeaponItem(WeaponItem.BAT);
                         sender.GiveWeaponItem(WeaponItem.REVOLVER);
-                        if (sender.GetTeam() == PlayerTeam.Team1) { getAway(VBlueRnd, sender); }
-                        else { getAway(VRedRnd, sender); }
+                        if (sender.GetTeam() == PlayerTeam.Team1) { GetAway(VBlueRnd, sender); }
+                        else { GetAway(VRedRnd, sender); }
 
                         break;
 
 
                     case "f":
                         sender = (IPlayer)args.Sender;
-                        removeWeapons(sender);
+                        RemoveWeapons(sender);
                         sender.GiveWeaponItem(WeaponItem.SNIPER);
                         sender.GiveWeaponItem(WeaponItem.PISTOL);
-                        if (sender.GetTeam() == PlayerTeam.Team1) { getAway(VBlueRnd, sender); }
-                        else { getAway(VRedRnd, sender); }
+                        if (sender.GetTeam() == PlayerTeam.Team1) { GetAway(VBlueRnd, sender); }
+                        else { GetAway(VRedRnd, sender); }
 
                         break;
 
 
                     case "g":
                         sender = (IPlayer)args.Sender;
-                        removeWeapons(sender);
+                        RemoveWeapons(sender);
                         sender.GiveWeaponItem(WeaponItem.PIPE);
                         sender.GiveWeaponItem(WeaponItem.SHOTGUN);
                         sender.GiveWeaponItem(WeaponItem.REVOLVER);
-                        if (sender.GetTeam() == PlayerTeam.Team1) { getAway(VBlueRnd, sender); }
-                        else { getAway(VRedRnd, sender); }
+                        if (sender.GetTeam() == PlayerTeam.Team1) { GetAway(VBlueRnd, sender); }
+                        else { GetAway(VRedRnd, sender); }
 
                         break;
 
 
                     case "h":
                         sender = (IPlayer)args.Sender;
-                        removeWeapons(sender);
+                        RemoveWeapons(sender);
                         sender.GiveWeaponItem(WeaponItem.AXE);
                         sender.GiveWeaponItem(WeaponItem.SUB_MACHINEGUN);
                         sender.GiveWeaponItem(WeaponItem.PISTOL);
-                        if (sender.GetTeam() == PlayerTeam.Team1) { getAway(VBlueRnd, sender); }
-                        else { getAway(VRedRnd, sender); }
+                        if (sender.GetTeam() == PlayerTeam.Team1) { GetAway(VBlueRnd, sender); }
+                        else { GetAway(VRedRnd, sender); }
 
                         break;
 
@@ -287,7 +287,7 @@ namespace SFDScripts.Internal
         }
 
 
-        public void getAway(String id, IPlayer movingPlayer)
+        public void GetAway(String id, IPlayer movingPlayer)
         {
             Game.CreateDialogue(movingPlayer.Name + " is being teleported to " + id, movingPlayer);
             if (movingPlayer == null || id == null) return;
@@ -296,7 +296,7 @@ namespace SFDScripts.Internal
             movingPlayer.SetWorldPosition(wee);
         }
 
-        private IPlayer Staffplayer = null;
+        private readonly IPlayer Staffplayer = null;
         int bluTeam = 0;
         int redTeam = 0;
 
@@ -318,7 +318,7 @@ namespace SFDScripts.Internal
                             player.SetTeam(PlayerTeam.Team2);
                             redTeam++;
                             if (player.IsBot) break;
-                            getAway("Red", player);
+                            GetAway("Red", player);
                         }
                         else
                         {
@@ -332,7 +332,7 @@ namespace SFDScripts.Internal
                             player.SetTeam(PlayerTeam.Team1);
                             bluTeam++;
                             if (player.IsBot) break;
-                            getAway("Blue", player);
+                            GetAway("Blue", player);
                         }
                         else
                         {
@@ -389,7 +389,7 @@ namespace SFDScripts.Internal
             }
         }
 
-        public void removeWeapons(IPlayer pleyrr)
+        public void RemoveWeapons(IPlayer pleyrr)
         {
             pleyrr.RemoveWeaponItemType(WeaponItemType.Rifle);
             pleyrr.RemoveWeaponItemType(WeaponItemType.Handgun);
@@ -441,8 +441,7 @@ namespace SFDScripts.Internal
             }
         }
 
-        private List<DeadPlayer> m_deadPlayers = new List<DeadPlayer>();
-        private int deathNum = 0;
+        private readonly List<DeadPlayer> m_deadPlayers = new List<DeadPlayer>();
         private int usersConnectedTickDelay = 15;
 
         // called each 200ms, makes a game tick
@@ -468,7 +467,6 @@ namespace SFDScripts.Internal
             // refresh death counter on the map
             if (killedPlayer != null && args.Removed == false)
             {
-                deathNum++;
                 if (killedPlayer.GetTeam() == PlayerTeam.Team1)
                 {
                     vRedKills++;
@@ -667,12 +665,10 @@ namespace SFDScripts.Internal
         public void Fly(TriggerArgs args)
         {
             buttonPressCount++;
-
-            Vector2 worldPosition = Vector2.Zero;
             Vector2 flying = Game.GetSingleObjectByCustomId("fly").GetLinearVelocity();
             if (Staffplayer != null)
             {
-                worldPosition = Staffplayer.GetWorldPosition() + new Vector2(0f, -8.15f);
+                Vector2 worldPosition = Staffplayer.GetWorldPosition() + new Vector2(0f, -8.15f);
                 if (Staffplayer != null && buttonPressCount <= 10 && !(Staffplayer.IsCrouching) && (Staffplayer.IsInMidAir))
                 {
                     worldPosition = Staffplayer.GetWorldPosition() + new Vector2(0f, -8.15f);

@@ -355,8 +355,8 @@ namespace SFDScripts
                     if (SmokeCount > 0)
                     {
                         SmokeCount--;
-                        SpawnSmokeCircle(0, 1);
-                        SpawnSmokeCircle(20, 4);
+                        SpawnSmokeCircle(0);
+                        SpawnSmokeCircle(20);
                         FastReloading = 2;
                         SmokePlayers(30);
                     }
@@ -377,10 +377,9 @@ namespace SFDScripts
             {
                 return ReadyForRemove;
             }
-            public void SpawnSmokeCircle(float radius, int nodeCount)
+            public void SpawnSmokeCircle(float radius)
             {
                 float angle = 0;
-                float step = (float)Math.PI * 2 / nodeCount;
                 while (angle < Math.PI * 2)
                 {
                     float y = (float)Math.Sin(angle) * radius;
@@ -414,13 +413,12 @@ namespace SFDScripts
             IObject[] list = GlobalGame.GetObjectsByName(name);
             IObject obj = null;
             float dist = 20;
-            bool have = false;
             for (int i = 0; i < list.Length; i++)
             {
                 float currentDist = (list[i].GetWorldPosition() - pos).Length();
                 if (currentDist < dist)
                 {
-                    have = false;
+                    bool have = false;
                     for (int j = 0; j < ThrownTrackingList.Count; j++)
                     {
                         if (ThrownTrackingList[j].Object == list[i])
@@ -544,18 +542,15 @@ namespace SFDScripts
         public static TWeapon PlayerDropWeaponUpdate(Vector2 pos, WeaponItem id)
         {
             float dist = 16;
-            IPlayer pl = null;
             TPlayer player = null;
-            bool hasWeapon = false;
             TWeapon weapon = null;
-            float currentDist = 0;
             for (int i = 0; i < PlayerList.Count; i++)
             {
-                currentDist = (pos - PlayerList[i].Position).Length();
+                float currentDist = (pos - PlayerList[i].Position).Length();
                 if (currentDist <= dist)
                 {
-                    hasWeapon = false;
-                    pl = PlayerList[i].User.GetPlayer();
+                    bool hasWeapon = false;
+                    IPlayer pl = PlayerList[i].User.GetPlayer();
                     if (PlayerList[i].PrimaryWeapon != null && PlayerList[i].PrimaryWeapon.Weapon == id && (pl != null && pl.CurrentPrimaryWeapon.WeaponItem == WeaponItem.NONE) || pl == null) hasWeapon = true;
                     else if (PlayerList[i].SecondaryWeapon != null && PlayerList[i].SecondaryWeapon.Weapon == id && (pl != null && pl.CurrentSecondaryWeapon.WeaponItem == WeaponItem.NONE) || pl == null) hasWeapon = true;
                     else if (PlayerList[i].ThrownWeapon != null && PlayerList[i].ThrownWeapon.Weapon == id && (pl != null && pl.CurrentThrownItem.WeaponItem == WeaponItem.NONE) || pl == null) hasWeapon = true;
@@ -589,11 +584,10 @@ namespace SFDScripts
         {
             float dist = 16;
             TWeapon weapon = null;
-            float currentDist = 0;
             for (int i = 0; i < WeaponTrackingList.Count; i++)
             {
                 if (!WeaponTrackingList[i].Object.RemovalInitiated) continue;
-                currentDist = (pos - WeaponTrackingList[i].Position).Length();
+                float currentDist = (pos - WeaponTrackingList[i].Position).Length();
                 if (WeaponTrackingList[i].Weapon == id && currentDist <= dist)
                 {
                     weapon = WeaponTrackingList[i];
@@ -608,12 +602,10 @@ namespace SFDScripts
             string[] argArray = new string[WeaponItemNames.Count];
             WeaponItemNames.Values.CopyTo(argArray, 0);
             IObject[] list = GlobalGame.GetObjectsByName(argArray);
-            IObject obj = null;
-            bool found = false; ;
             for (int i = 0; i < list.Length; i++)
             {
-                obj = list[i];
-                found = false;
+                IObject obj = list[i];
+                bool found = false;
                 for (int j = 0; j < WeaponTrackingList.Count; j++)
                 {
                     if (WeaponTrackingList[j].Object == obj)
@@ -678,11 +670,11 @@ namespace SFDScripts
 
         public class TEffect
         {
-            string Id = "";
+            readonly string Id = "";
             int CurrentTime = 0;
-            int Time = 0;
+            readonly int Time = 0;
             int Count = 0;
-            IObject Object;
+            readonly IObject Object;
             public TEffect(IObject obj, string id, int time, int count)
             {
                 Id = id;
@@ -1918,15 +1910,17 @@ namespace SFDScripts
                     OtherObjects.Add(gun01);
                     OtherObjects.Add(gun10);
                     OtherObjects.Add(gun11);
-                    TTurretWeapon weapon = new TTurretWeapon();
-                    weapon.BulletType = (int)ProjectileItem.UZI;
-                    weapon.Sound = "AssaultRifle";
-                    weapon.ReloadingTime = 7;
-                    weapon.Ammo = 150;
-                    weapon.Scatter = 2;
-                    weapon.SuppressiveFire = true;
-                    weapon.MaxFireDelay = 30;
-                    weapon.MaxBulletCount = 3;
+                    TTurretWeapon weapon = new TTurretWeapon
+                    {
+                        BulletType = (int)ProjectileItem.UZI,
+                        Sound = "AssaultRifle",
+                        ReloadingTime = 7,
+                        Ammo = 150,
+                        Scatter = 2,
+                        SuppressiveFire = true,
+                        MaxFireDelay = 30,
+                        MaxBulletCount = 3
+                    };
                     WeaponList.Add(weapon);
                 }
                 if (id == 3)
@@ -1947,12 +1941,14 @@ namespace SFDScripts
                     OtherObjects.Add(gun1);
                     OtherObjects.Add(gun2);
                     OtherObjects.Add(gun3);
-                    TTurretWeapon weapon = new TTurretWeapon();
-                    weapon.BulletType = (int)ProjectileItem.SNIPER;
-                    weapon.Sound = "Sniper";
-                    weapon.ReloadingTime = 150;
-                    weapon.Ammo = 10;
-                    weapon.Scatter = 0;
+                    TTurretWeapon weapon = new TTurretWeapon
+                    {
+                        BulletType = (int)ProjectileItem.SNIPER,
+                        Sound = "Sniper",
+                        ReloadingTime = 150,
+                        Ammo = 10,
+                        Scatter = 0
+                    };
                     WeaponList.Add(weapon);
                 }
                 if (id == 5)
@@ -1977,39 +1973,45 @@ namespace SFDScripts
                     OtherObjects.Add(gun2);
                     OtherObjects.Add(gun3);
                     OtherObjects.Add(gun4);
-                    TTurretWeapon weapon = new TTurretWeapon();
-                    weapon.Distance = 150;
-                    weapon.BulletType = -1;
-                    weapon.Sound = "Flamethrower";
-                    weapon.ReloadingTime = 3;
-                    weapon.Ammo = 300;
-                    weapon.SuppressiveFire = true;
-                    weapon.Scatter = 10;
-                    weapon.TurretTarget = false;
+                    TTurretWeapon weapon = new TTurretWeapon
+                    {
+                        Distance = 150,
+                        BulletType = -1,
+                        Sound = "Flamethrower",
+                        ReloadingTime = 3,
+                        Ammo = 300,
+                        SuppressiveFire = true,
+                        Scatter = 10,
+                        TurretTarget = false
+                    };
                     WeaponList.Add(weapon);
                 }
                 if (Id == 6)
-                { //2>;=0 <>;=89 
-                    TTurretWeapon weapon = new TTurretWeapon();
-                    weapon.Distance = 50;
-                    weapon.BulletType = -2;
-                    weapon.Sound = "Splash";
-                    weapon.ReloadingTime = 150;
-                    weapon.SuppressiveFire = true;
-                    weapon.Ammo = 25;
-                    weapon.TurretTarget = false;
+                { 
+                    TTurretWeapon weapon = new TTurretWeapon
+                    {
+                        Distance = 50,
+                        BulletType = -2,
+                        Sound = "Splash",
+                        ReloadingTime = 150,
+                        SuppressiveFire = true,
+                        Ammo = 25,
+                        TurretTarget = false
+                    };
                     WeaponList.Add(weapon);
                 }
                 if (Id == 7)
                 {
-                    TTurretWeapon weapon = new TTurretWeapon();
-                    weapon.Distance = 60;
-                    weapon.BulletType = -3;
-                    weapon.Sound = "MeleeSwing";
-                    weapon.ReloadingTime = 50;
-                    weapon.SuppressiveFire = true;
-                    weapon.Ammo = 15;
-                    weapon.TurretTarget = false;
+                    TTurretWeapon weapon = new TTurretWeapon
+                    {
+                        Distance = 60,
+                        BulletType = -3,
+                        Sound = "MeleeSwing",
+                        ReloadingTime = 50,
+                        SuppressiveFire = true,
+                        Ammo = 15,
+                        TurretTarget = false
+                    };
                     WeaponList.Add(weapon);
                 }
                 TextName = (IObjectText)GlobalGame.CreateObject("Text", position);
@@ -2213,7 +2215,7 @@ namespace SFDScripts
                             // if there's more than 2 object between drone and player, don't shoot
                             // and choose another target
                             ChangingRoute = true;
-                            var ply = Target as IPlayer;
+                            IPlayer ply = Target as IPlayer;
                             if (ply == null) continue;
                             var originalTarget = Target;
                             var possibleTargets = PlayerList.Where(pl => pl.Team != Team && !pl.Name.Equals(ply.Name));
@@ -2426,13 +2428,8 @@ namespace SFDScripts
 
             private void ForceImpulse(Vector2 position, int damage, int range)
             {
-                Vector2 plyPos = MainMotor.GetWorldPosition();
-
-
                 for (int i = 0; i < PlayerList.Count; i++)
                 {
-                    float mass = 1f;
-
                     var player = PlayerList[i];
                     if (player.User.GetPlayer() == null) continue;
                     if (player.User.GetTeam() == Team) continue;
@@ -2440,7 +2437,7 @@ namespace SFDScripts
                     if (dist <= range)
                     {
                         Vector2 vel = player.User.GetPlayer().GetLinearVelocity() * 10 + new Vector2(MainMotor.GetFaceDirection() * 10, 10);
-                        mass = 1f;
+                        float mass = 1f;
                         player.User.GetPlayer().SetLinearVelocity(vel / mass);
                         PlayerList[i].Hp -= damage;
                         CreateEffect(PlayerList[i].User.GetPlayer(), "STM", 10, 10);
@@ -2457,7 +2454,7 @@ namespace SFDScripts
                 tracePoint.X += (float)Math.Cos(angle) * 20;
                 tracePoint.Y += (float)Math.Sin(angle) * 20;
                 PlayerTeam team = Team;
-                if (IsHacking(Team)) team = team = PlayerTeam.Independent;
+                if (IsHacking(Team)) team = PlayerTeam.Independent;
                 Vector2 targetPos = obj.GetWorldPosition();
                 if (IsPlayer(obj.Name)) targetPos = GetPlayerCenter((IPlayer)obj);
                 return TracePath(tracePoint, targetPos, team);
@@ -3118,7 +3115,7 @@ namespace SFDScripts
                     pos.Y += GlobalRandom.Next(-offset, offset);
                 }
             }
-            public Vector2 GetRandomAirEnemy(TPlayer player, PlayerTeam friendTeam, int id, ref int angle)
+            public Vector2 GetRandomAirEnemy(PlayerTeam friendTeam, int id, ref int angle)
             {
                 angle = 0;
                 List<int> indexList = new List<int>();
@@ -3172,7 +3169,7 @@ namespace SFDScripts
                     team = GetEnemyTeam(player.Team);
                     GlobalGame.RunCommand("MSG PINPOINT STRIKE HAS BEEN HACKED");
                 }
-                Vector2 target = GetRandomAirEnemy(player, team, 1, ref angle);
+                Vector2 target = GetRandomAirEnemy(team, 1, ref angle);
                 if (target.X == 0 && target.Y == 0)
                 {
                     if (IsHacking(player.Team)) target = GetRandomWorldPoint();
@@ -3198,7 +3195,7 @@ namespace SFDScripts
                     team = GetEnemyTeam(player.Team);
                     GlobalGame.RunCommand("MSG AIRSTRIKE HAS BEEN HACKED");
                 }
-                Vector2 target = GetRandomAirEnemy(player, team, 2, ref angle);
+                Vector2 target = GetRandomAirEnemy(team, 2, ref angle);
                 if (target.X == 0 && target.Y == 0)
                 {
                     if (IsHacking(player.Team)) target = GetRandomWorldPoint();
@@ -3272,7 +3269,6 @@ namespace SFDScripts
             }
             public bool CheckAirPlayer(TPlayer player, int id)
             {
-                List<int> indexList = new List<int>();
                 for (int i = 0; i < AirPlayerList.Count; i++)
                 {
                     if (AirPlayerList[i].Player != null && (player.Team != AirPlayerList[i].Player.GetTeam() || player.Team == PlayerTeam.Independent) && !AirPlayerList[i].Player.IsDead)
@@ -3369,7 +3365,6 @@ namespace SFDScripts
                 }
                 IPlayer pl = player.User.GetPlayer();
                 if (pl == null) return;
-                Vector2 pos = pl.GetWorldPosition();
                 bool velChange = false;
                 Vector2 vel = pl.GetLinearVelocity();
                 if (pl.IsWalking && !pl.IsDiving && !pl.IsClimbing && !pl.IsManualAiming && Reloading == 0 && CurrentAmmo >= 2)
@@ -4887,7 +4882,7 @@ namespace SFDScripts
 
         }
 
-        private List<string> PossibleUnknownObjects = new List<string>() { "Barrel00", "BarrelExplosive", "PropaneTank", "Crate00" };
+        private readonly List<string> PossibleUnknownObjects = new List<string>() { "Barrel00", "BarrelExplosive", "PropaneTank", "Crate00" };
 
         private void RespawnUnknownObjects()
         {
@@ -5280,7 +5275,7 @@ namespace SFDScripts
         public static void LoadData()
         {
             Mutex.WaitOne();   // Wait until it is safe to enter. 
-            string data = "";
+            string data;
             bool status = GlobalGame.GetSharedStorage("HARDCORE").TryGetItemString("SaveData", out data);
             if (!status) data = "";
             // data = data.Replace("BEGIN" + "DATA", "").Replace("ENDDATA", "");
@@ -5379,10 +5374,9 @@ namespace SFDScripts
                 return;
             }
             var positionToSpawn = spawn.GetWorldPosition();
-            IPlayer p = null;
-
             foreach (var user in Game.GetActiveUsers())
             {
+                IPlayer p;
                 if (user.GetPlayer() == null)
                 {
                     p = Game.CreatePlayer(positionToSpawn);
@@ -5475,8 +5469,10 @@ namespace SFDScripts
             TPlayer player = GetPlayer(pl);
             if (player == null) return;
             string[] typeList = data.Split(';');
-            TPlayerStrikeInfo plInfo = new TPlayerStrikeInfo();
-            plInfo.Player = pl;
+            TPlayerStrikeInfo plInfo = new TPlayerStrikeInfo
+            {
+                Player = pl
+            };
             for (int i = 0; i < typeList.Length; i++)
             {
                 string[] strikeInfo = typeList[i].Split(':');
@@ -5484,9 +5480,11 @@ namespace SFDScripts
                 if (CanStrikeJamming(id) && player.Armor.Jammer) continue;
                 int angle = 0;
                 if (strikeInfo.Length > 1) angle = Convert.ToInt32(strikeInfo[1]);
-                TStrikeInfo info = new TStrikeInfo();
-                info.Id = id;
-                info.Angle = angle;
+                TStrikeInfo info = new TStrikeInfo
+                {
+                    Id = id,
+                    Angle = angle
+                };
                 plInfo.StrikeList.Add(info);
             }
             if (plInfo.StrikeList.Count > 0) AirPlayerList.Add(plInfo);
@@ -5699,14 +5697,13 @@ namespace SFDScripts
             int itCount = (int)Math.Ceiling(diff.X / offsetX);
             Vector2 currentPos = fromPos;
             int vision = 0;
-            string name = "";
             for (int i = 0; i < itCount; i++)
             {
                 Area area = new Area(currentPos.Y + width / 2.0f, currentPos.X - width / 2.0f, currentPos.Y - width / 2.0f, currentPos.X + width / 2.0f);
                 IObject[] objList = GlobalGame.GetObjectsByArea(area);
                 for (int j = 0; j < objList.Length; j++)
                 {
-                    name = objList[j].Name;
+                    string name = objList[j].Name;
                     if (name.StartsWith("Bg") || name.StartsWith("FarBg")) continue;
                     if (IsPlayer(name))
                     {
@@ -5729,11 +5726,10 @@ namespace SFDScripts
 
         public static bool CheckAreaToCollision(Area area)
         {
-            string name = "";
             IObject[] objList = GlobalGame.GetObjectsByArea(area);
             for (int j = 0; j < objList.Length; j++)
             {
-                name = objList[j].Name;
+                string name = objList[j].Name;
                 if (name.StartsWith("Bg") || name.StartsWith("FarBg")) continue;
                 if (VisionObjects.ContainsKey(name)) return true;
             }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SFDScripts
 {
-    class HardcoreSmallHill : Hardcore
+    class HardcoreSmallHill
     {
         #region Map Dependant Data
         /// <summary>

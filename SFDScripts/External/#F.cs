@@ -16,11 +16,11 @@ namespace SFDScripts
 
         #region Script To Copy
 
-        float force = 0.26f; // 0.26f = Zero Gravity
-        float[] demforce = new float[] { 225, 175, 125, }; // Thrust percentage
+        readonly float force = 0.26f; // 0.26f = Zero Gravity
+        readonly float[] demforce = new float[] { 225, 175, 125, }; // Thrust percentage
 
-        bool WorkOutsideBorders = false;
-        bool Change_With_Activate_Button = false;
+        readonly bool WorkOutsideBorders = false;
+        readonly bool Change_With_Activate_Button = false;
 
         IObject concrete = null;
         Dictionary<IPlayer, IObjectPullJoint> book;

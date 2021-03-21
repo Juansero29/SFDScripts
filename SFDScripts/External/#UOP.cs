@@ -19,40 +19,25 @@ namespace SFDScripts
 
         #region Script To Copy
 
-        bool DestroyEveryThing = false;
-
-        bool AffectStaticles = false;
-
-        float AddedKickForce = 8f;
-
-        float AddedKickDamage = 10f;
-
-        float AddedKickDamage_Players = 7.5f;
-
-        float AddedKickForce_Players = 5f;
-
-        bool StrongerPunch = false;
-
-        float AddedPunchForce = 8f;
-
-        float AddedPunchDamage = 20f;
-
-        float AddedPunchDamage_Players = 15f;
-
-
-        string[] MeleeDamageObjects = new string[] { "Crate00", "FileCab00", "Barrel00", "Desk00", "StoneWeak00C", "Crate02", "Crate01", "WoodBarrel01", "ReinforcedGlass00A", };
-        string[] PrevilagePlayers = new string[] { "django", "nerdist", "(gs)hunor" };
+        readonly bool DestroyEveryThing = false;
+        readonly bool AffectStaticles = false;
+        readonly float AddedKickForce = 8f;
+        readonly float AddedKickDamage = 10f;
+        readonly float AddedKickDamage_Players = 7.5f;
+        readonly float AddedKickForce_Players = 5f;
+        readonly bool StrongerPunch = false;
+        readonly float AddedPunchForce = 8f;
+        readonly float AddedPunchDamage = 20f;
+        readonly float AddedPunchDamage_Players = 15f;
+        readonly string[] MeleeDamageObjects = new string[] { "Crate00", "FileCab00", "Barrel00", "Desk00", "StoneWeak00C", "Crate02", "Crate01", "WoodBarrel01", "ReinforcedGlass00A", };
+        readonly string[] PrevilagePlayers = new string[] { "django", "nerdist", "(gs)hunor" };
 
         Area kickarea = new Area(new Vector2(-4, -2), new Vector2(4, 4));
         Area puncharea = new Area(new Vector2(-4, 6), new Vector2(4, 12));
-
-
-        List<IObject> NoMeleeObject = new List<IObject>();
-
-        Dictionary<IPlayer, float> KickBook = new Dictionary<IPlayer, float>();
-        Dictionary<IPlayer, float> KickPlyBook = new Dictionary<IPlayer, float>();
-
-        Dictionary<IPlayer, float> PunchBook = new Dictionary<IPlayer, float>();
+        readonly List<IObject> NoMeleeObject = new List<IObject>();
+        readonly Dictionary<IPlayer, float> KickBook = new Dictionary<IPlayer, float>();
+        readonly Dictionary<IPlayer, float> KickPlyBook = new Dictionary<IPlayer, float>();
+        readonly Dictionary<IPlayer, float> PunchBook = new Dictionary<IPlayer, float>();
 
 
         public void OnStartup()

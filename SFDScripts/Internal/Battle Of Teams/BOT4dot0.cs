@@ -13,12 +13,12 @@ namespace SFDScripts.Internal
 
         #region Script To Copy
 
-        List<PlayerData> Players = new List<PlayerData>(8);
+        readonly List<PlayerData> Players = new List<PlayerData>(8);
 
         private const int Time_Limit = 3 * 60;
 
         bool EditingMode = false;
-        Random Rnd = new Random();
+        readonly Random Rnd = new Random();
 
         int Equilibrium = 0;
         int BlueDeaths = 0;
@@ -195,7 +195,7 @@ namespace SFDScripts.Internal
                 {
                     case "ASSAULT":
                         sender = (IPlayer)args.Sender;
-                        removeWeapons(sender);
+                        RemoveWeapons(sender);
                         weapons.Add(3, WeaponItem.ASSAULT);
                         weapons.Add(2, WeaponItem.UZI);
                         break;
@@ -203,7 +203,7 @@ namespace SFDScripts.Internal
 
                     case "MEXICAN":
                         sender = (IPlayer)args.Sender;
-                        removeWeapons(sender);
+                        RemoveWeapons(sender);
                         weapons.Add(1, WeaponItem.MACHETE);
                         weapons.Add(2, WeaponItem.MAGNUM);
                         weapons.Add(5, WeaponItem.SLOWMO_5);
@@ -212,7 +212,7 @@ namespace SFDScripts.Internal
 
                     case "RUNNER":
                         sender = (IPlayer)args.Sender;
-                        removeWeapons(sender);
+                        RemoveWeapons(sender);
                         weapons.Add(1, WeaponItem.KATANA);
                         weapons.Add(3, WeaponItem.SAWED_OFF);
                         weapons.Add(2, WeaponItem.REVOLVER);
@@ -222,7 +222,7 @@ namespace SFDScripts.Internal
 
                     case "MARKSMAN":
                         sender = (IPlayer)args.Sender;
-                        removeWeapons(sender);
+                        RemoveWeapons(sender);
                         weapons.Add(3, WeaponItem.SNIPER);
                         weapons.Add(2, WeaponItem.PISTOL);
                         weapons.Add(5, WeaponItem.SLOWMO_10);
@@ -231,7 +231,7 @@ namespace SFDScripts.Internal
 
                     case "TECHNICIAN":
                         sender = (IPlayer)args.Sender;
-                        removeWeapons(sender);
+                        RemoveWeapons(sender);
                         weapons.Add(1, WeaponItem.PIPE);
                         weapons.Add(3, WeaponItem.SHOTGUN);
                         weapons.Add(5, WeaponItem.SLOWMO_10);
@@ -240,7 +240,7 @@ namespace SFDScripts.Internal
 
                     case "REVOLUTIONIST":
                         sender = (IPlayer)args.Sender;
-                        removeWeapons(sender);
+                        RemoveWeapons(sender);
                         weapons.Add(1, WeaponItem.AXE);
                         weapons.Add(3, WeaponItem.SUB_MACHINEGUN);
                         weapons.Add(2, WeaponItem.PISTOL);
@@ -564,7 +564,7 @@ namespace SFDScripts.Internal
             ((IObjectText)Game.GetSingleObjectByCustomId(caller.CustomId.Substring(0, 7))).SetText(text);
         }
 
-        Dictionary<WeaponItem, short> Prices = new Dictionary<WeaponItem, short>();
+        readonly Dictionary<WeaponItem, short> Prices = new Dictionary<WeaponItem, short>();
         private void PriceSetup()
         {
             Prices.Add(WeaponItem.BAT, 4);
@@ -752,7 +752,7 @@ namespace SFDScripts.Internal
             IPlayer sender = (IPlayer)args.Sender;
             int ind = GetPlayerDataIndex(sender);
             Players[ind].Points = 20;
-            removeWeapons(sender);
+            RemoveWeapons(sender);
             ResetWeapons(ind);
         }
 
@@ -792,7 +792,7 @@ namespace SFDScripts.Internal
             RefreshPlacar();
         }
 
-        List<PlayerData> PlayersToRevive = new List<PlayerData>();
+        readonly List<PlayerData> PlayersToRevive = new List<PlayerData>();
         public void ReviveTimer(TriggerArgs args)
         {
             int ind = PlayersToRevive[0].Index;
@@ -875,7 +875,7 @@ namespace SFDScripts.Internal
             }
         }
 
-        List<Teleporting> ToTeleport = new List<Teleporting>();
+        readonly List<Teleporting> ToTeleport = new List<Teleporting>();
         public void Teleport(TriggerArgs args)
         {
             if (args.Caller != null)
@@ -907,7 +907,7 @@ namespace SFDScripts.Internal
             int ind = GetPlayerDataIndex(sender);
             if (Players.Count - 1 >= Convert.ToInt32(caller.CustomId.Substring(12)))
             {
-                removeWeapons(sender);
+                RemoveWeapons(sender);
                 ResetWeapons(ind);
                 Players[ind].Points = 20;
                 Dictionary<short, WeaponItem> wpns = PlayerClass(Players[Convert.ToInt32(caller.CustomId.Substring(12))].Player);
@@ -935,7 +935,7 @@ namespace SFDScripts.Internal
             CreateTimer(60000, 1, "DespawnTimer", "");
         }
 
-        List<IObjectTrigger> ToDespawn = new List<IObjectTrigger>(10);
+        readonly List<IObjectTrigger> ToDespawn = new List<IObjectTrigger>(10);
         public void DespawnTimer(TriggerArgs args)
         {
             ToDespawn[0].SetEnabled(true);
@@ -1111,7 +1111,7 @@ namespace SFDScripts.Internal
             ((IObjectText)Game.GetSingleObjectByCustomId(caller.CustomId.Substring(0, 7))).SetText("");
         }
 
-        public void removeWeapons(IPlayer ply)
+        public void RemoveWeapons(IPlayer ply)
         {
             ply.RemoveWeaponItemType(WeaponItemType.Rifle);
             ply.RemoveWeaponItemType(WeaponItemType.Handgun);

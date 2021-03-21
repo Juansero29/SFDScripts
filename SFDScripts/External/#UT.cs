@@ -22,102 +22,93 @@ namespace SFDScripts
         /// <summary>
         /// This number controls the speed of the objects that are launched.
         /// </summary>
-        float ThrowSpeedMultiply = 1.45f;
+        readonly float ThrowSpeedMultiply = 1.45f;
 
 
         /// <summary>
         /// if this is true, grenades and mines will not impact with any player unless they are hit from a short distance.
         /// </summary>
-        bool DisableThrownWeaponsCollision = false;
+        readonly bool DisableThrownWeaponsCollision = false;
 
 
         /// <summary>
         /// If false, thrown weapons such as grenades, molotovs and  mines will not be accelerated through script.
         /// </summary>
-        bool AccelerateThrownWeapons = false;
+        readonly bool AccelerateThrownWeapons = false;
 
 
         /// <summary>
         /// Set any flammable thrown missile (chairs, cuesticks, Suitcase...) to burn in mid air .
         /// </summary>
-        bool SetMissileOnFire = false;
+        readonly bool SetMissileOnFire = false;
 
         /// <summary>
         /// Melee weapons are ten times heavier when thrown.
         /// </summary>
-        bool IncreaseMeleeWeaponMass = false;
+        readonly bool IncreaseMeleeWeaponMass = false;
 
         /// <summary>
         /// Gives each player a certain weapon every 15 seconds. (knife if the default weapon)
         /// </summary>
-        bool GiveWeaponDefault = true;
+        readonly bool GiveWeaponDefault = true;
 
         /// <summary>
         /// Contains the enum for the default weapon given to players if <see cref="GiveWeaponDefault"/> is set to true. Users can change this to any weapon they wish.
         /// </summary>
         public WeaponItem DefaultWeapon = WeaponItem.KNIFE;        ///***  YOU CAN FIND A LIST OF WEAPONS BELOW ***///
 
-        /// <summary>
-        /// Missiles will not collide, won't do any damage and will be decelerated (if thrown). This might not work for close distances.
-        /// </summary>
-        bool DisableThrowning = false;
+
+
+                                                                   /// <summary>
+                                                                   /// Missiles will not collide, won't do any damage and will be decelerated (if thrown). This might not work for close distances.
+                                                                   /// </summary>
+        readonly bool DisableThrowning = false;
 
 
         /// <summary>
         /// Creates a fire circle when the missile is slowed down or no longer a missile. Then it destroys the missile.
         /// </summary>
-        bool CreateFireCircleOnImpact = false;
+        readonly bool CreateFireCircleOnImpact = false;
 
 
         /// <summary>
         /// Creates an explosion when the missile is slowed down or when it is not longer a missile. Then it destroyes the missile.
         /// </summary>
-        bool CreateExplosionOnImpact = false;
+        readonly bool CreateExplosionOnImpact = false;
 
         /// <summary>
         /// Creates a random impact.
         /// </summary>
-        bool CreateRandomImpact = false;
-
-        int RandomProb = 1;
-        string effect = "S_P";
-
-        string[] ThrownWeapons = new string[] { "WpnGrenadesThrown", "WpnMolotovsThrown", "WpnMineThrown" };
-
-        WeaponItem[] ThrownWeaponsClass = new WeaponItem[]
+        readonly bool CreateRandomImpact = false;
+        readonly int RandomProb = 1;
+        readonly string effect = "S_P";
+        readonly string[] ThrownWeapons = new string[] { "WpnGrenadesThrown", "WpnMolotovsThrown", "WpnMineThrown" };
+        readonly WeaponItem[] ThrownWeaponsClass = new WeaponItem[]
         {
             WeaponItem.GRENADES, WeaponItem.MOLOTOVS, WeaponItem.MINES,
         };
-
-
-        WeaponItem[] RifleWeaponsClass = new WeaponItem[]
+        readonly WeaponItem[] RifleWeaponsClass = new WeaponItem[]
         {
             WeaponItem.SHOTGUN,WeaponItem.TOMMYGUN,WeaponItem.M60,WeaponItem.SNIPER,
             WeaponItem.SAWED_OFF,WeaponItem.BAZOOKA,WeaponItem.ASSAULT,WeaponItem.FLAMETHROWER,
             WeaponItem.GRENADE_LAUNCHER,WeaponItem.SMG,WeaponItem.SUB_MACHINEGUN,
         };
-
-        WeaponItem[] HandWeaponsClass = new WeaponItem[]
+        readonly WeaponItem[] HandWeaponsClass = new WeaponItem[]
         {
             WeaponItem.PISTOL,WeaponItem.MAGNUM,WeaponItem.UZI,WeaponItem.FLAREGUN,
             WeaponItem.REVOLVER,WeaponItem.SILENCEDPISTOL,WeaponItem.SILENCEDUZI,
         };
-
-
-        WeaponItem[] MeleeWeaponsClass = new WeaponItem[]
+        readonly WeaponItem[] MeleeWeaponsClass = new WeaponItem[]
         {
             WeaponItem.KATANA,WeaponItem.PIPE,WeaponItem.MACHETE,WeaponItem.BAT,WeaponItem.AXE,
             WeaponItem.HAMMER,WeaponItem.BATON,WeaponItem.KNIFE,WeaponItem.CHAIN,
         };
-
-
-        WeaponItem[] MakeShiftWeaponsClass = new WeaponItem[]
+        readonly WeaponItem[] MakeShiftWeaponsClass = new WeaponItem[]
         {
             WeaponItem.CHAIR,WeaponItem.CHAIR_LEG,WeaponItem.BOTTLE,WeaponItem.BROKEN_BOTTLE,WeaponItem.CUESTICK,
             WeaponItem.CUESTICK_SHAFT,WeaponItem.SUITCASE,WeaponItem.PILLOW,WeaponItem.FLAGPOLE,WeaponItem.TEAPOT,
         };
-
-        Random Rnd = new Random();
+        readonly Random Rnd = new Random();
 
         /// <summary>
         /// This method is executed when map starts

@@ -7,6 +7,7 @@
     <ProjectGuid>{E9179D05-5E82-445E-8EFE-2DF9373D1B40}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>SFDScripts</RootNamespace>
+    <LangVersion>5.0</LangVersion>
     <AssemblyName>SFDScripts</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
