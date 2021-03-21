@@ -19,6 +19,7 @@ Reading and following these guidelines will help everyone make the contribution 
   * [Debugging](#debugging)
   * [Testing](#testing)
 * [Other Useful Links & Info](#other-useful-links-&-info)
+* [Contributing Maps](#contributing-maps)
 * [Getting Help](#getting-help)
 
 ## Code of Conduct
@@ -204,7 +205,7 @@ What would be of us, poor developers, if we couldn't get any help at all.
 
 # Contributing Maps
 
-Hello map contributors! [This video](https://www.youtube.com/watch?v=tJksVsLieJw) really help you understand how to contribute maps to Hardcore server in a painless way. The video is lenghty, but is well divided in chapters, so you can skim into any parts that specially interest you.
+Hello map contributors! [This video](https://www.youtube.com/watch?v=tJksVsLieJw) will really help you understand how to contribute maps to Hardcore server in a painless way. The video is lenghty, but is well divided in chapters, so you can skim into any parts that specially interest you.
 These are the sections explained in this video:
 
 Chapters:
