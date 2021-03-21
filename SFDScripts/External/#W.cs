@@ -610,7 +610,7 @@ namespace SFDScripts
                 data.LastHealth = ply.GetHealth();
 
                 // mana regeneration
-                if (Game.TotalElapsedGameTime >= data.LastUseTime + 2000f)
+                if (Game.TotalElapsedGameTime >= data.LastUseTime + 2000f && MANA_REGEN)
                 {
                     if (data.Mana <= (MANA_MAX - MANA_REGEN_MULTIPLIER)) data.Mana += MANA_REGEN_MULTIPLIER;
                     else if (data.Mana < MANA_MAX) data.Mana = MANA_MAX;
@@ -1246,10 +1246,8 @@ namespace SFDScripts
         // commented is old player pushing system
         public void SpellTrigger_FusRoDah_Right(TriggerArgs args)
         {
-            if (args.Sender is IPlayer)
+            if (args.Sender is IPlayer ply)
             {
-                IPlayer ply = (IPlayer)args.Sender;
-
                 // side
 
                 /* ply.SetWorldPosition(ply.GetWorldPosition() + new Vector2(0, 10));
@@ -1269,7 +1267,7 @@ namespace SFDScripts
             }
             else if (args.Sender is IObject)
             {
-                IObject obj = (IObject)args.Sender;
+                var obj = (IObject)args.Sender;
                 obj.SetLinearVelocity(new Vector2(15f, 2f));
                 for (int i = 0; i < 8; i++)
                     Game.PlayEffect("TR_D", obj.GetWorldPosition() + new Vector2(rand.Next(4, 16), rand.Next(-6, 6)));

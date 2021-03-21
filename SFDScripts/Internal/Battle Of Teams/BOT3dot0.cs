@@ -102,10 +102,7 @@ namespace SFDScripts.Internal
 			Game.HidePopupMessage();
 		}
 
-		int vRedKills = 0;
-
-		int vBluKills = 0;
-
+	
 		double blueFDamage;
 
 		double redFDamage;
@@ -140,21 +137,10 @@ namespace SFDScripts.Internal
 		}
 
 
-
-		//--//
-
-		private IObjectTrigger trig2 = null;
-		private IObjectTrigger trig3 = null;
-		private IObjectTrigger trig4 = null;
-		private IPlayer ply = null;
-		private IPlayer plyExit = null;
-		private bool allowOpen = false;
-
 		public void CheckEnter(TriggerArgs args)
 		{
 			if ((args.Sender != null) && (args.Sender is IPlayer))
 			{
-				allowOpen = true;
 			}
 		}
 
@@ -658,7 +644,6 @@ namespace SFDScripts.Internal
 
 
 		Dictionary<IPlayer, PlayerTeam> players = new Dictionary<IPlayer, PlayerTeam>();
-		int Nn;
 		float blueDamage;
 		float redDamage;
 		float blastDamage;

@@ -100,7 +100,7 @@ namespace SFDScripts
         /// <summary>
         /// A semaphore used for saved data file access
         /// </summary>
-        private static System.Threading.Mutex Mutex = new System.Threading.Mutex();
+        private static readonly System.Threading.Mutex Mutex = new System.Threading.Mutex();
 
         public static Dictionary<string, int> UserAccessList = new Dictionary<string, int>();
 
@@ -638,12 +638,11 @@ namespace SFDScripts
             if (WeaponTrackingList.Count == 0) return null;
             float dist = 16;
             TWeapon weapon = null;
-            float currentDist = 0;
             int index = 0;
             for (int i = 0; i < WeaponTrackingList.Count; i++)
             {
                 if (!WeaponTrackingList[i].Object.RemovalInitiated) continue;
-                currentDist = (pos - WeaponTrackingList[i].Position).Length();
+                float currentDist = (pos - WeaponTrackingList[i].Position).Length();
                 if (WeaponTrackingList[i].Weapon == id && currentDist <= dist)
                 {
                     weapon = WeaponTrackingList[i];
@@ -1880,10 +1879,12 @@ namespace SFDScripts
                     bodyJoint.AddTargetObject(gun2);
                     OtherObjects.Add(gun1);
                     OtherObjects.Add(gun2);
-                    TTurretWeapon weapon = new TTurretWeapon();
-                    weapon.BulletType = (int)ProjectileItem.BAZOOKA;
-                    weapon.Sound = "Bazooka";
-                    weapon.ReloadingTime = 200;
+                    TTurretWeapon weapon = new TTurretWeapon
+                    {
+                        BulletType = (int)ProjectileItem.BAZOOKA,
+                        Sound = "Bazooka",
+                        ReloadingTime = 200
+                    };
                     if (id == 2) weapon.Ammo = 4;
                     else
                     {

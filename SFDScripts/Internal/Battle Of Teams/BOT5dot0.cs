@@ -79,18 +79,11 @@ namespace SFDScripts
 
         //--//
 
-        private IObjectTrigger trig2 = null;
-        private IObjectTrigger trig3 = null;
-        private IObjectTrigger trig4 = null;
-        private IPlayer ply = null;
-        private IPlayer plyExit = null;
-        private bool allowOpen = false;
 
         public void CheckEnter(TriggerArgs args)
         {
             if ((args.Sender != null) && (args.Sender is IPlayer))
             {
-                allowOpen = true;
             }
         }
 
@@ -528,7 +521,6 @@ namespace SFDScripts
         }
 
         Vector2 spawnPos;
-        IPlayer newPlayer;
         private void SpawnUser(IUser user, PlayerTeam team)
         {
             if (CheckUserStillActive(user) && !user.IsSpectator)

@@ -24,16 +24,10 @@ namespace SFDScripts.Internal
 
         #region Private Fields
 
-
         /// <summary>
         /// This script's storage, gives access to persistance
         /// </summary>
         IScriptStorage mScriptStorage;
-
-        /// <summary>
-        /// The stone block in the map
-        /// </summary>
-        readonly IObject mStoneBlock;
 
         /// <summary>
         /// The caller player
@@ -50,10 +44,7 @@ namespace SFDScripts.Internal
         /// </summary>
         int mCurrentSessionShotsFiredCount = 0;
 
-        /// <summary>
-        /// The caller object
-        /// </summary>
-        readonly IObject mCallerObject;
+
 
         /// <summary>
         /// The number label on the screen
