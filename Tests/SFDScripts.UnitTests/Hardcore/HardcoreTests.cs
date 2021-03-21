@@ -8,8 +8,8 @@ namespace SFDScripts.UnitTests
     [TestClass]
     public class HardcoreTests
     {
-        private Mock<IGame> GameMock;
-        private Hardcore HardcoreGameInstance;
+        // private readonly Mock<IGame> GameMock;
+        // private readonly Hardcore HardcoreGameInstance;
 
         [TestInitialize]
         public void Initialize()
