@@ -120,7 +120,7 @@ namespace SFDScriptInjector
 
         private static void InsertSFDScriptTextIntoSFDMapFileContent()
         {
-            if (string.IsNullOrEmpty(HardcoreClassFileScriptText))
+            if (string.IsNullOrEmpty(ScriptToInsertIntoMap))
             {
                 Result = 1;
                 return;
@@ -174,7 +174,7 @@ namespace SFDScriptInjector
             var oldScriptTextInBytes = Convert.FromBase64String(oldScriptTextInBase64);
             var oldScriptText = System.Text.Encoding.UTF8.GetString(oldScriptTextInBytes);
 
-            var scriptTextBytes = System.Text.Encoding.UTF8.GetBytes(HardcoreClassFileScriptText);
+            var scriptTextBytes = System.Text.Encoding.UTF8.GetBytes(ScriptToInsertIntoMap);
             var newScriptTextInBase64 = Convert.ToBase64String(scriptTextBytes);
             var newScriptTextInBytes = Encoding.UTF8.GetBytes(newScriptTextInBase64);
             var byteArrayUntilByteBeforeFirstByteOfScript = new byte[bytesCountUntilByteBeforeFirstByteOfScript + 1];
