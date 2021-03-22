@@ -65,12 +65,12 @@ namespace SFDScripts
         /// - Doesn't show timer
         /// - Doesn't end the game when there isn't enough players
         /// </remakrs>
-        public static bool IsDebug = false;
+        public static bool IsDebug = true;
 
         /// <summary>
         /// Defines wether we want to show the debug messages or not as logs in the chat
         /// </summary>
-        public static bool ShowDebugMessages = false;
+        public static bool ShowDebugMessages = true;
         #endregion
 
         #region Settings
