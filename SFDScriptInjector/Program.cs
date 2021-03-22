@@ -14,10 +14,15 @@ namespace SFDScriptInjector
 
         private static int Result;
 
-        private static string CSharpFilePath;
-        private static string CSharpFileContent;
-        private static string SFDScriptText;
+        private static string MapDependantDataClassFilePath;
+        private static string MapDependantDataFileContent;
+        private static string MapDependantDataText;
 
+        private static string HardcoreClassFilePath;
+        private static string HardcoreClassFileContent;
+        private static string HardcoreClassFileScriptText;
+
+        private static string ScriptToInsertIntoMap;
 
         private static string SFDMapFilePath;
         private static byte[] SFDMapFileBytesContent;
@@ -29,49 +34,85 @@ namespace SFDScriptInjector
         static async Task<int> Main(string[] args)
         {
             await GetFileContentsAndPathsFromArguments(args);
+            
             await GetSFDScriptTextFromCSharpFileContent();
+            
+            await GetMapDependantDataFromMapDependantDataFileContent();
+
+            CreateScriptTextToInsertInMap();
+            
             InsertSFDScriptTextIntoSFDMapFileContent();
-            // await WriteSFDMapFileContentIntoSFDMapFile();
+            
+            
+            await WriteSFDMapFileContentIntoSFDMapFile();
             await WriteSFDMapFileBytesIntoSFDMapFile();
 
             return Result;
         }
 
-        private static async Task WriteSFDMapFileBytesIntoSFDMapFile()
+        private static void CreateScriptTextToInsertInMap()
         {
-            if (SFDMapFileBytesContent != null)
-            {
-                Result = 1;
-                await Task.FromResult(default(Task));
-            }
-            using FileStream fout = new FileStream(SFDMapFilePath + ".tmp", FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
-            using var bw = new BinaryWriter(fout);
-            bw.Write(SFDMapFileBytesContent);
-            bw.Close();
-            // await File.WriteAllBytesAsync(SFDMapFilePath + ".tmp", SFDMapFileBytesContent, CancellationToken.None);
+            ScriptToInsertIntoMap = MapDependantDataText + '\n' + HardcoreClassFileScriptText;
         }
 
-        private static async Task GetSFDScriptTextFromCSharpFileContent()
+        private static async Task GetMapDependantDataFromMapDependantDataFileContent()
         {
-            if (string.IsNullOrEmpty(CSharpFileContent))
+            if (string.IsNullOrEmpty(MapDependantDataFileContent))
             {
                 Result = 1;
                 return;
             }
 
+            await Task.Run(() =>
+            {
+                Regex regex = new Regex(@"#region Map Dependant Data([\s\S\r]*)#endregion");
+                string incomingValue = MapDependantDataFileContent;
+                Match match = regex.Match(incomingValue);
+                if (match.Success)
+                {
+                    MapDependantDataText = match.Groups.Values.FirstOrDefault()?.Value.ToString();
+                }
+            });
+
+            if (string.IsNullOrEmpty(HardcoreClassFileScriptText))
+            {
+                Result = 1;
+            }
+        }
+
+        private static async Task WriteSFDMapFileBytesIntoSFDMapFile()
+        {
+            if (SFDMapFileBytesContent == null)
+            {
+                Result = 1;
+                await Task.FromResult(default(Task));
+            }
+            using FileStream fout = new FileStream(SFDMapFilePath + ".tmp", FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
+            using var bw = new BinaryWriter(fout, Encoding.UTF8, false);
+            bw.Write(SFDMapFileBytesContent);
+            // await File.WriteAllBytesAsync(SFDMapFilePath + ".tmp", SFDMapFileBytesContent, CancellationToken.None);
+        }
+
+        private static async Task GetSFDScriptTextFromCSharpFileContent()
+        {
+            if (string.IsNullOrEmpty(HardcoreClassFileContent))
+            {
+                Result = 1;
+                return;
+            }
 
             await Task.Run(() =>
             {
                 Regex regex = new Regex(@"#region Generic Script([\s\S\r]*)#endregion");
-                string incomingValue = CSharpFileContent;
-                Match match = regex.Match(incomingValue);
+                string incomingValue = HardcoreClassFileContent;
+                var match = regex.Match(incomingValue);
                 if (match.Success)
                 {
-                    SFDScriptText = match.Groups.Values.FirstOrDefault()?.Value.ToString();
+                    HardcoreClassFileScriptText = "#region Generic Script \n" + match.Groups[1]?.Value.ToString();
                 }
             });
 
-            if (string.IsNullOrEmpty(SFDScriptText))
+            if (string.IsNullOrEmpty(HardcoreClassFileScriptText))
             {
                 Result = 1;
             }
@@ -79,7 +120,7 @@ namespace SFDScriptInjector
 
         private static void InsertSFDScriptTextIntoSFDMapFileContent()
         {
-            if (string.IsNullOrEmpty(SFDScriptText))
+            if (string.IsNullOrEmpty(HardcoreClassFileScriptText))
             {
                 Result = 1;
                 return;
@@ -87,7 +128,7 @@ namespace SFDScriptInjector
 
             FindingAndReplacingScriptTextWithBytes();
 
-            // FindingAndReplacingWithRegex();
+            // FindingAndReplacingScripTextWithRegex();
         }
 
         private static void FindingAndReplacingScriptTextWithBytes()
@@ -133,7 +174,7 @@ namespace SFDScriptInjector
             var oldScriptTextInBytes = Convert.FromBase64String(oldScriptTextInBase64);
             var oldScriptText = System.Text.Encoding.UTF8.GetString(oldScriptTextInBytes);
 
-            var scriptTextBytes = System.Text.Encoding.UTF8.GetBytes(SFDScriptText);
+            var scriptTextBytes = System.Text.Encoding.UTF8.GetBytes(HardcoreClassFileScriptText);
             var newScriptTextInBase64 = Convert.ToBase64String(scriptTextBytes);
             var newScriptTextInBytes = Encoding.UTF8.GetBytes(newScriptTextInBase64);
             var byteArrayUntilByteBeforeFirstByteOfScript = new byte[bytesCountUntilByteBeforeFirstByteOfScript + 1];
@@ -169,7 +210,7 @@ namespace SFDScriptInjector
             var startOfDataUntilLastCharacterBeforeScriptString = SFDMapFileTextContent.Substring(0, firstIndex);
             var stringAfterTheLastCharacterOfScriptUntilOfEndOfData = SFDMapFileTextContent.Substring(lastIndex);
 
-            var scriptTextBytes = System.Text.Encoding.UTF8.GetBytes(SFDScriptText);
+            var scriptTextBytes = System.Text.Encoding.UTF8.GetBytes(HardcoreClassFileScriptText);
             var newScriptTextInBase64 = Convert.ToBase64String(scriptTextBytes);
 
             // byte[] data = Convert.FromBase64String(scriptInBase64);
@@ -186,7 +227,7 @@ namespace SFDScriptInjector
                 await Task.FromResult(default(Task));
             }
             var bytes = Encoding.UTF8.GetBytes(SFDMapFileTextContent);
-            await File.WriteAllBytesAsync(SFDMapFilePath + ".tmp", SFDMapFileBytesContent, CancellationToken.None);
+            await File.WriteAllBytesAsync(SFDMapFilePath + ".tmp", bytes, CancellationToken.None);
         }
 
 
@@ -198,7 +239,8 @@ namespace SFDScriptInjector
 
         private static async Task ReadAndVerifyFileContents()
         {
-            await ReadAndVerifyCSharpFileContent();
+            await ReadAndVerifyHardcoreClassFileContent();
+            await ReadAndVerifyMapDependantDataFileContent();
             await ReadAndVerifySFDMapFileContent();
         }
 
@@ -263,10 +305,27 @@ namespace SFDScriptInjector
         }
 
 
-        private static async Task ReadAndVerifyCSharpFileContent()
+        private static async Task ReadAndVerifyHardcoreClassFileContent()
         {
-            CSharpFileContent = await File.ReadAllTextAsync(CSharpFilePath, CancellationToken.None);
-            if (CSharpFileContent.Length < 0)
+            HardcoreClassFileContent = await File.ReadAllTextAsync(HardcoreClassFilePath, CancellationToken.None);
+            if (HardcoreClassFileContent.Length < 0)
+            {
+                Result = 1;
+            }
+        }
+
+        private static async Task ReadAndVerifyMapDependantDataFileContent()
+        {
+            var lastSlashIndex = SFDMapFilePath.LastIndexOf("\\");
+            var mapDependantDataFolder = SFDMapFilePath.Substring(0, SFDMapFilePath.Substring(0, lastSlashIndex).LastIndexOf("\\") + 1);
+            var mapFileName = SFDMapFilePath.Substring(lastSlashIndex + 1, (SFDMapFilePath.Length - 1) - lastSlashIndex);
+            var mapClassFileName = mapFileName.Replace(".sfdm", ".cs").Replace(" ", string.Empty);
+
+
+            var mapClassFilePath = mapDependantDataFolder + mapClassFileName;
+
+            MapDependantDataFileContent = await File.ReadAllTextAsync(mapClassFilePath, CancellationToken.None);
+            if (MapDependantDataFileContent.Length < 0)
             {
                 Result = 1;
             }
@@ -280,10 +339,10 @@ namespace SFDScriptInjector
 
         private static void CheckAndRecoverBothFilePaths(string[] args)
         {
-            CSharpFilePath = RecoverFirstArgument(args);
+            HardcoreClassFilePath = RecoverFirstArgument(args);
             SFDMapFilePath = RecoverSecondArgument(args);
 
-            CheckThatBothFilesExist(CSharpFilePath, SFDMapFilePath);
+            CheckThatBothFilesExist(HardcoreClassFilePath, SFDMapFilePath);
         }
 
         private static void CheckThatArgumentsAreFilled(string[] args)
