@@ -211,15 +211,12 @@ namespace SFDScriptInjector
 
         private static byte[] GetSizePrefixedScript(string newScriptTextInBase64)
         {
-            using (MemoryStream stream = new MemoryStream())
-            {
-                using (BinaryWriter writer = new BinaryWriter(stream))
-                {
-                    writer.Write(newScriptTextInBase64);
-                    return stream.ToArray();
-                }
-            }
+            using MemoryStream stream = new MemoryStream();
+            using BinaryWriter writer = new BinaryWriter(stream);
+            writer.Write(newScriptTextInBase64);
+            return stream.ToArray();
         }
+
         private static byte[] CombineByteArrays(byte[] a1, byte[] a2, byte[] a3)
         {
             byte[] result = new byte[a1.Length + a2.Length + a3.Length];
