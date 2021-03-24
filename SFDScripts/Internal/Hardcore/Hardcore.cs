@@ -60,7 +60,7 @@ namespace SFDScripts
         /// Is the debug mode enabled
         /// </summary>
         /// <remakrs>
-        /// Changes the game a little bit :
+        /// Changes the game a little bit : PUTAIN DE MERDE CA MARCHE
         /// - Never finishes a matches by player's death
         /// - Doesn't show timer
         /// - Doesn't end the game when there isn't enough players
