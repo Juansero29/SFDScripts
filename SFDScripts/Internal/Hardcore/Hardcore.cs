@@ -5940,7 +5940,6 @@ namespace SFDScripts
                         break;
                     }
             }
-            }
         }
 
         public static void ApplyThrownWeapon(TPlayer player, int id)
