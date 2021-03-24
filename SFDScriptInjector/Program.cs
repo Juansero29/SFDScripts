@@ -86,10 +86,10 @@ namespace SFDScriptInjector
                 Result = 1;
                 await Task.FromResult(default(Task));
             }
-            using FileStream fout = new FileStream(SFDMapFilePath + ".tmp", FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
-            using var bw = new BinaryWriter(fout, Encoding.UTF8, false);
-            bw.Write(SFDMapFileBytesContent);
-            // await File.WriteAllBytesAsync(SFDMapFilePath + ".tmp", SFDMapFileBytesContent, CancellationToken.None);
+            //using FileStream fout = new FileStream(SFDMapFilePath + ".tmp", FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
+            //using var bw = new BinaryWriter(fout, Encoding.UTF8, false);
+            //bw.Write(SFDMapFileBytesContent);
+            await File.WriteAllBytesAsync(SFDMapFilePath, SFDMapFileBytesContent, CancellationToken.None);
         }
 
         private static async Task GetSFDScriptTextFromCSharpFileContent()
@@ -136,77 +136,37 @@ namespace SFDScriptInjector
         {
             var scriptTagInBytes = Encoding.UTF8.GetBytes("c_scrpt");
             var numberOfCharactersInScriptTag = scriptTagInBytes.Length;
-
-
-            // NUMBER OF BYTES USED FOR WRITING THE NUMBER OF BYTES USED BY THE BASE64 STRING IN THE C_SCRPT SECTION
-            var numberOfPaddingBytesBetweenScriptTagAndScriptText = (int)Math.Ceiling((NumberOfBytesUsedByExistingScriptInBase64 / 255d));
-            var bytesFromFirstScriptTagByteUntilFirstScriptTextByte = numberOfCharactersInScriptTag + numberOfPaddingBytesBetweenScriptTagAndScriptText;
-
+            
             var nextTagInBytes = Encoding.UTF8.GetBytes("c_lr");
-
 
             var indexArrayOfFirstTagInBytes = SFDMapFileBytesContent.Locate(scriptTagInBytes);
             var indexesArrayNextTagInBytes = SFDMapFileBytesContent.Locate(nextTagInBytes);
 
-
             if (indexArrayOfFirstTagInBytes.Length == 0 || indexesArrayNextTagInBytes.Length == 0) return;
-
+            
             var indexOfFirstTagInBytes = indexArrayOfFirstTagInBytes[0];
             var indexOfNextTagInBytes = indexesArrayNextTagInBytes[0];
             var endOfTransmissionCharacterCount = 1;
-
-
-            var indexOfFirstByteOfScript = indexOfFirstTagInBytes + bytesFromFirstScriptTagByteUntilFirstScriptTextByte;
             var indexOfFirstSizeByte = indexOfFirstTagInBytes + numberOfCharactersInScriptTag;
             var indexOfByteBeforeFirstSizeByte = indexOfFirstSizeByte - 1;
-
             var indexOfLastByteOfScript = indexOfNextTagInBytes - endOfTransmissionCharacterCount - 1;
-
-            var bytesCountUntilByteBeforeFirstByteOfScript = indexOfFirstByteOfScript - 1;
             var indexOfByteAfterLastByteOfScript = indexOfLastByteOfScript + 1;
 
-            var firstByteOfScriptText = SFDMapFileBytesContent[indexOfFirstByteOfScript];
-            var lastByteOfScriptText = SFDMapFileBytesContent[indexOfLastByteOfScript];
 
-            // SFDMapFileBytesContent[indexOfNextTagInBytes[0] - 1]
-            // System.Text.Encoding.UTF8.GetString(new byte[] { SFDMapFileBytesContent[indexOfLastByteOfScript] })
+            var newScriptTextBytes = Encoding.UTF8.GetBytes(ScriptToInsertIntoMap);
+            var newScriptTextInBase64 = Convert.ToBase64String(newScriptTextBytes);
 
-            var bytesCountFromByteAfterLastByteOfScriptUntilTheEnd = SFDMapFileBytesContent.Length - indexOfByteAfterLastByteOfScript;
-
-            var oldScriptTextBase64InBytes = new byte[indexOfByteAfterLastByteOfScript - indexOfFirstByteOfScript];
-            Array.Copy(SFDMapFileBytesContent, indexOfFirstByteOfScript, oldScriptTextBase64InBytes, 0, oldScriptTextBase64InBytes.Length);
-            var oldScriptTextInBase64 = System.Text.Encoding.UTF8.GetString(oldScriptTextBase64InBytes);
-            var oldScriptTextInBytes = Convert.FromBase64String(oldScriptTextInBase64);
-            var oldScriptText = System.Text.Encoding.UTF8.GetString(oldScriptTextInBytes);
-            var lengthInInt = oldScriptTextBase64InBytes.Length;
-            var lengthInShort = (short)oldScriptTextBase64InBytes.Length;
-            byte[] oldScriptSizeInBytesShort = BitConverter.GetBytes(lengthInShort);
-            byte[] oldScriptSizeInBytesInt = BitConverter.GetBytes(lengthInInt);
-            var scriptTextBytes = System.Text.Encoding.UTF8.GetBytes(ScriptToInsertIntoMap);
-            var newScriptTextInBase64 = Convert.ToBase64String(scriptTextBytes);
-            var newScriptTextInBytes = Encoding.UTF8.GetBytes(newScriptTextInBase64);
-
-            byte[] scriptSizeInBytes = BitConverter.GetBytes(newScriptTextInBytes.Length);
-
-
-            byte[] sizePrefixedScript = GetSizePrefixedScript(newScriptTextInBase64);
-            //if (scriptSizeInBytes[scriptSizeInBytes.Length - 1] == 0)
-            //{
-            //    var barray = new byte[scriptSizeInBytes.Length - 1];
-            //    for (int i = 0; i < scriptSizeInBytes.Length - 1; i++)
-            //    {
-            //        barray[i] = scriptSizeInBytes[i];
-            //    }
-            //    scriptSizeInBytes = barray;
-            //}
+            var newScriptInBase64SizePrefixedInBytes = GetSizePrefixedScript(newScriptTextInBase64);
 
             var byteArrayUntilByteBeforeFirstSizeByte = new byte[indexOfByteBeforeFirstSizeByte + 1];
+
+            var bytesCountFromByteAfterLastByteOfScriptUntilTheEnd = SFDMapFileBytesContent.Length - indexOfByteAfterLastByteOfScript;
             var byteArrayFromByteAfterLastByteOfScriptUntilTheEnd = new byte[bytesCountFromByteAfterLastByteOfScriptUntilTheEnd + 1];
 
             Array.Copy(SFDMapFileBytesContent, sourceIndex: 0, destinationArray: byteArrayUntilByteBeforeFirstSizeByte, destinationIndex: 0, length: indexOfByteBeforeFirstSizeByte + 1);
             Array.Copy(SFDMapFileBytesContent, sourceIndex: indexOfByteAfterLastByteOfScript, destinationArray: byteArrayFromByteAfterLastByteOfScriptUntilTheEnd, destinationIndex: 0, length: bytesCountFromByteAfterLastByteOfScriptUntilTheEnd);
 
-            SFDMapFileBytesContent = CombineByteArrays(byteArrayUntilByteBeforeFirstSizeByte, sizePrefixedScript, byteArrayFromByteAfterLastByteOfScriptUntilTheEnd);
+            SFDMapFileBytesContent = CombineByteArrays(byteArrayUntilByteBeforeFirstSizeByte, newScriptInBase64SizePrefixedInBytes, byteArrayFromByteAfterLastByteOfScriptUntilTheEnd);
         }
 
         private static byte[] GetSizePrefixedScript(string newScriptTextInBase64)
@@ -259,7 +219,7 @@ namespace SFDScriptInjector
                 await Task.FromResult(default(Task));
             }
             var bytes = Encoding.UTF8.GetBytes(SFDMapFileTextContent);
-            await File.WriteAllBytesAsync(SFDMapFilePath + ".tmp", bytes, CancellationToken.None);
+            await File.WriteAllBytesAsync(SFDMapFilePath, bytes, CancellationToken.None);
         }
 
 
