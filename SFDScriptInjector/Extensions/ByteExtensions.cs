@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SFDScriptInjector
+namespace SFDScriptInjector.Extensions
 {
     public static class ByteExtensions
     {

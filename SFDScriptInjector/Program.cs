@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SFDScriptInjector.Extensions;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -19,21 +20,19 @@ namespace SFDScriptInjector
 
         private static string HardcoreClassFilePath;
         private static string HardcoreClassFileContent;
-        private static string HardcoreClassFileScriptText;
+        private static string HardcoreScriptText;
 
         private static string ScriptToInsertIntoMap;
 
         private static string SFDMapFilePath;
         private static byte[] SFDMapFileBytesContent;
-        public static string SFDMapFileTextContent;
-        public static int NumberOfBytesUsedByExistingScriptInBase64 { get; set; }
 
 
         static async Task<int> Main(string[] args)
         {
             await GetFileContentsAndPathsFromArguments(args);
 
-            await GetSFDScriptTextFromCSharpFileContent();
+            await GetScriptTextFromFileContent();
 
             await GetMapDependantDataFromMapDependantDataFileContent();
 
@@ -45,6 +44,9 @@ namespace SFDScriptInjector
 
             return Result;
         }
+
+
+        #region Arguments and Checks
         private static async Task GetFileContentsAndPathsFromArguments(string[] args)
         {
             VerifyArgumentsAndGetFilePaths(args);
@@ -56,8 +58,6 @@ namespace SFDScriptInjector
             CheckThatArgumentsAreFilled(args);
             CheckAndRecoverBothFilePaths(args);
         }
-
-        #region Arguments and Checks
 
         private static void CheckThatArgumentsAreFilled(string[] args)
         {
@@ -160,53 +160,58 @@ namespace SFDScriptInjector
                 return;
             }
 
-            await Task.Run(() =>
-            {
-                Regex regex = new Regex(@"#region Map Dependant Data([\s\S\r]*)#endregion");
-                string incomingValue = MapDependantDataFileContent;
-                Match match = regex.Match(incomingValue);
-                if (match.Success)
-                {
-                    MapDependantDataText = match.Groups.Values.FirstOrDefault()?.Value.ToString();
-                }
-            });
+            await DoRegexToRecoverMapDependantDataTextFromFileContent();
 
-            if (string.IsNullOrEmpty(HardcoreClassFileScriptText))
+            if (string.IsNullOrEmpty(HardcoreScriptText))
             {
                 Result = 1;
             }
         }
 
-        private static async Task GetSFDScriptTextFromCSharpFileContent()
+        private static async Task DoRegexToRecoverMapDependantDataTextFromFileContent()
+        {
+            await Task.Run(() =>
+            {
+                Regex regex = new Regex(@"#region Map Dependant Data([\s\S\r]*)#endregion");
+                string incomingValue = MapDependantDataFileContent;
+                Match match = regex.Match(incomingValue);
+                if (!match.Success) return;
+                MapDependantDataText = match.Groups.Values.FirstOrDefault()?.Value.ToString();
+            });
+        }
+
+        private static async Task GetScriptTextFromFileContent()
         {
             if (string.IsNullOrEmpty(HardcoreClassFileContent))
             {
                 Result = 1;
                 return;
             }
+            await DoRegexToRecoverHardcoreScriptTextFromFileContent();
 
+            if (string.IsNullOrEmpty(HardcoreScriptText))
+            {
+                Result = 1;
+            }
+        }
+
+        private static async Task DoRegexToRecoverHardcoreScriptTextFromFileContent()
+        {
             await Task.Run(() =>
             {
                 Regex regex = new Regex(@"#region Generic Script([\s\S\r]*)#endregion");
                 string incomingValue = HardcoreClassFileContent;
                 var match = regex.Match(incomingValue);
-                if (match.Success)
-                {
-                    HardcoreClassFileScriptText = "#region Generic Script \n" + match.Groups[1]?.Value.ToString();
-                }
+                if (!match.Success) return;
+                HardcoreScriptText = "#region Generic Script \n" + match.Groups[1]?.Value.ToString();
             });
-
-            if (string.IsNullOrEmpty(HardcoreClassFileScriptText))
-            {
-                Result = 1;
-            }
         }
         #endregion
 
         #region Creating New Script Text To Insert
         private static void CreateScriptTextToInsertInMap()
         {
-            ScriptToInsertIntoMap = MapDependantDataText + '\n' + HardcoreClassFileScriptText;
+            ScriptToInsertIntoMap = MapDependantDataText + '\n' + HardcoreScriptText;
         }
 
         #endregion
@@ -231,21 +236,11 @@ namespace SFDScriptInjector
                 return;
             }
 
-            GetNumberOfBytesUsedByExistingScriptInBase64();
-
-
             FindingAndReplacingScriptTextWithBytes();
 
         }
 
-        private static void GetNumberOfBytesUsedByExistingScriptInBase64()
-        {
-            // https://regex101.com/ - to understand regex
-            Regex regex = new Regex(@"c_scrpt[^\x1F-\x7F]+([A-Za-z0-9+\/=]*)");
-            var match = regex.Match(SFDMapFileTextContent);
-            var scriptInBase64 = match.Groups[1].Value;
-            NumberOfBytesUsedByExistingScriptInBase64 = scriptInBase64.Length;
-        }
+
 
         private static void FindingAndReplacingScriptTextWithBytes()
         {
@@ -285,15 +280,6 @@ namespace SFDScriptInjector
         }
 
         #endregion
-
-        //private static byte[] CombineByteArrays(byte[] a1, byte[] a2, byte[] a3)
-        //{
-        //    byte[] result = new byte[a1.Length + a2.Length + a3.Length];
-        //    Array.Copy(a1, 0, result, 0, a1.Length);
-        //    Array.Copy(a2, 0, result, a1.Length, a2.Length);
-        //    Array.Copy(a3, 0, result, a1.Length + a2.Length, a3.Length);
-        //    return result;
-        //}
 
     }
 }
