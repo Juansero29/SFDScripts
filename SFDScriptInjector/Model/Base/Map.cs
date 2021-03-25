@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace SFDScriptInjector.Model.Base
 {
-    public class SFDScript
+    public class Map
     {
-        public string SurroundingRegionName { get; set; }
-        public string FilePath { get; set; }
-        public string Text { get; set; }
+        public string Path { get; set; }
+        public byte[] ContentInBytes { get; set; }
     }
 }

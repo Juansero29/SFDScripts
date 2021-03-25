@@ -13,8 +13,6 @@ namespace SFDScriptInjector
     static class Program
     {
 
-        private static int Result;
-
         private static string MapDependantDataFileContent;
         private static string MapDependantDataText;
 
@@ -30,21 +28,28 @@ namespace SFDScriptInjector
 
         static async Task<int> Main(string[] args)
         {
-            await GetFileContentsAndPathsFromArguments(args);
+            try
+            {
+                await GetFileContentsAndPathsFromArguments(args);
 
-            await GetScriptTextFromFileContent();
+                // one script from hardcore.cs
+                await GetScriptTextFromFileContent();
+                // and another script from mapdependantdata.cs each would have its own instance of SFDScript
+                await GetMapDependantDataFromMapDependantDataFileContent();
 
-            await GetMapDependantDataFromMapDependantDataFileContent();
+                CreateScriptTextToInsertInMap();
 
-            CreateScriptTextToInsertInMap();
+                InsertSFDScriptTextIntoSFDMapFileContent();
 
-            InsertSFDScriptTextIntoSFDMapFileContent();
-
-            await WriteSFDMapFileBytesIntoSFDMapFile();
-
-            return Result;
+                await WriteSFDMapFileBytesIntoSFDMapFile();
+                return 0;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Unexpected error: " + e.Message);
+                return 1;
+            }
         }
-
 
         #region Arguments and Checks
         private static async Task GetFileContentsAndPathsFromArguments(string[] args)
@@ -63,8 +68,7 @@ namespace SFDScriptInjector
         {
             if (!ThereAreEnoughArguments(args))
             {
-                Console.WriteLine($"Use the app by passing a C# file path as the first parameter and a SFD Map (*.sfdm) as a second parameter.");
-                Result = 1;
+                throw new InvalidOperationException("Use the app by passing a C# file path as the first parameter and a SFD Map (*.sfdm) as a second parameter.");
             }
         }
 
@@ -79,16 +83,10 @@ namespace SFDScriptInjector
         private static void CheckThatBothFilesExist(string cSharpFilePath, string sfdMapFilePath)
         {
             if (!File.Exists(cSharpFilePath))
-            {
-                Console.WriteLine($"A file does not exist at path: \"{cSharpFilePath}\"");
-                Result = 1;
-            }
+                throw new InvalidOperationException($"A file does not exist at path: \"{cSharpFilePath}\"");
 
             if (!File.Exists(sfdMapFilePath))
-            {
-                Console.WriteLine($"A file does not exist at path: \"{sfdMapFilePath}\"");
-                Result = 1;
-            }
+                throw new InvalidOperationException($"A file does not exist at path: \"{sfdMapFilePath}\"");
         }
 
         private static string RecoverSecondArgument(string[] args)
@@ -112,6 +110,7 @@ namespace SFDScriptInjector
 
         private static async Task ReadAndVerifyFileContents()
         {
+            // to do by script injector from the received files
             await ReadAndVerifyHardcoreClassFileContent();
             await ReadAndVerifyMapDependantDataFileContent();
             await ReadAndVerifySFDMapFileContent();
@@ -120,9 +119,10 @@ namespace SFDScriptInjector
         private static async Task ReadAndVerifyHardcoreClassFileContent()
         {
             HardcoreClassFileContent = await File.ReadAllTextAsync(HardcoreClassFilePath, CancellationToken.None);
-            if (HardcoreClassFileContent.Length < 0)
+
+            if (HardcoreClassFileContent == null || HardcoreClassFileContent.Length < 0)
             {
-                Result = 1;
+                throw new InvalidDataException($"The file at {HardcoreClassFilePath} has no data inside or was null");
             }
         }
 
@@ -137,34 +137,31 @@ namespace SFDScriptInjector
             MapDependantDataFileContent = await File.ReadAllTextAsync(mapClassFilePath, CancellationToken.None);
             if (MapDependantDataFileContent.Length < 0)
             {
-                Result = 1;
+                throw new InvalidDataException($"No data was found inside the map dependant data file at {mapClassFilePath}");
             }
         }
 
         private static async Task ReadAndVerifySFDMapFileContent()
         {
-            SFDMapFileBytesContent = await File.ReadAllBytesAsync(SFDMapFilePath, CancellationToken.None);
-            if (SFDMapFileBytesContent.Length < 0)
-            {
-                Result = 1;
-            }
+            if (string.IsNullOrEmpty(SFDMapFilePath)) throw new InvalidOperationException("Cannot recover map file content from an empty map file path.");
 
-            SFDMapFileTextContent = await File.ReadAllTextAsync(SFDMapFilePath, Encoding.UTF8);
+            SFDMapFileBytesContent = await File.ReadAllBytesAsync(SFDMapFilePath, CancellationToken.None);
+
+            if (SFDMapFileBytesContent.Length < 0) throw new InvalidDataException($"No content was found inside the map file read at {SFDMapFilePath}");
         }
 
         private static async Task GetMapDependantDataFromMapDependantDataFileContent()
         {
             if (string.IsNullOrEmpty(MapDependantDataFileContent))
             {
-                Result = 1;
-                return;
+                throw new InvalidDataException("The map dependant data file content is null or empty");
             }
 
             await DoRegexToRecoverMapDependantDataTextFromFileContent();
 
-            if (string.IsNullOrEmpty(HardcoreScriptText))
+            if (string.IsNullOrEmpty(MapDependantDataText))
             {
-                Result = 1;
+                throw new InvalidDataException($"The regex could not find the needed information inside the map dependant data file.");
             }
         }
 
@@ -184,14 +181,13 @@ namespace SFDScriptInjector
         {
             if (string.IsNullOrEmpty(HardcoreClassFileContent))
             {
-                Result = 1;
-                return;
+                throw new InvalidDataException("The data inside the script class file was null or empty");
             }
             await DoRegexToRecoverHardcoreScriptTextFromFileContent();
 
             if (string.IsNullOrEmpty(HardcoreScriptText))
             {
-                Result = 1;
+                throw new InvalidDataException($"No script text could be found after regex execution inside {HardcoreClassFilePath}");
             }
         }
 
@@ -222,8 +218,7 @@ namespace SFDScriptInjector
         {
             if (SFDMapFileBytesContent == null)
             {
-                Result = 1;
-                await Task.FromResult(default(Task));
+                throw new InvalidOperationException("Cannot save empty content for the generated map file");
             }
             await File.WriteAllBytesAsync(SFDMapFilePath, SFDMapFileBytesContent, CancellationToken.None);
         }
@@ -232,8 +227,7 @@ namespace SFDScriptInjector
         {
             if (string.IsNullOrEmpty(ScriptToInsertIntoMap))
             {
-                Result = 1;
-                return;
+                throw new InvalidOperationException("The script to insert into the map file was null or empty");
             }
 
             FindingAndReplacingScriptTextWithBytes();
@@ -280,6 +274,5 @@ namespace SFDScriptInjector
         }
 
         #endregion
-
     }
 }
