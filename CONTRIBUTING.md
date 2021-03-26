@@ -34,11 +34,12 @@ Some basic code rules:
 * Untested code won't be merged with master
 * Avoid commenting code: rather spend time thinking on naming variables and functions correctly
 * Prefer adding a field or property to a class rather than passing around lots of arguments in the functions
-* Leave the code cleaner than you found it
+* Leave the code cleaner than you found it!
   * Feel free to do small refactors and name changes whenever you feel it is useful and will leave the code at a better state than without those modifications.
   * Code that gets cleaner over time is way better than code that gets dirtier over time
 * Keep your functions as small as possible
 * Redact your commit messages well, in clear English, so that anyone can understand what was done in each commit. Do as much commits as you need to, as long as your commit messages are always clear and concise.
+  * If you are in a long work session, be sure to commit your work regularly and push it to the server. Committing and push ensure work loss won't happen!
 * Make your branches have meaningful names. It is also a good idea to write the number of the Issue you are fixing with your PR in the name of your banch. Prefer a long, clear name rather than a concise unclear name: (e.g prefer `34-fixing-airstrike-cost` rather than `patch-1`)
 * As scripts are a single file due to SFD's restrictions, please organize related methods, properties, fields, classes and interfaces into regions.
   * Regions can be collapsed, and searcheable, whick makes them very useful in single file scripts.
