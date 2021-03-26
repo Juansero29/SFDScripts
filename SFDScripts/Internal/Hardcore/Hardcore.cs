@@ -4443,8 +4443,8 @@ namespace SFDScripts
             weaponModSlot.AddEquipment(3, 50, 8, "Extra Explosives", "Add extra ammo to your explosive weapon."); //3
             weaponModSlot.AddEquipment(4, 50, 10, "Extra Heavy Ammo", "Add extra ammo to your heavy weapon: Revolvers, Snipers, Magnums and M60s"); //4
             weaponModSlot.AddEquipment(5, 25, 4, "DNA Scanner", "If the enemy tries to shoot from your gun, it will explode!"); //4
-            weaponModSlot.AddEquipment(6, 250, 17, "Bouncing ammo", "Bounce some ammo around"); //5
-            weaponModSlot.AddEquipment(7, 275, 25, "Fire ammo", "Fire? Who asked for it anyway!"); //5
+            weaponModSlot.AddEquipment(6, 150, 17, "Bouncing ammo", "Bounce some ammo around"); //5
+            weaponModSlot.AddEquipment(7, 175, 25, "Fire ammo", "Fire? Who asked for it anyway!"); //5
 
             //equipment
             equipmentSlot.AddEquipment(1, 25, 1, "Small Medkit", "Allows one time stop the bleeding or revive teammate."); //1
@@ -5817,6 +5817,22 @@ namespace SFDScripts
             if (!pl.IsCrouching && !pl.IsDiving && !pl.IsFalling && !pl.IsLayingOnGround) pos.Y += 4;
             return pos;
         }
+                public static int[] CalculateSpecialAmmoSecondary(HandgunWeaponItem secondary)
+        {
+            int[] ammo = { 0, 1 };
+            if (secondary.WeaponItem == WeaponItem.FLAREGUN)
+            {
+                ammo = new int[] { 2, 0 };
+            }
+            return ammo;
+        }
+
+
+        public static int[] CalculateSpecialAmmoPrimary(RifleWeaponItem primary)
+        {
+            int[] ammo = { (int)Math.Ceiling((double)primary.MaxTotalAmmo / 4), 0 };
+            return ammo;
+        }
         public static void ApplyWeaponMod(TPlayer player, int id)
         {
             IPlayer pl = player.User.GetPlayer();
@@ -5887,12 +5903,40 @@ namespace SFDScripts
                     }
                 case 6:
                     {
-                        pl.GiveWeaponItem(WeaponItem.BOUNCINGAMMO);
+                        if (player.PrimaryWeapon != null && pl.CurrentPrimaryWeapon.WeaponItem != WeaponItem.FLAMETHROWER)
+                        {
+                            RifleWeaponItem first = pl.CurrentPrimaryWeapon;
+                            int[] ammo = CalculateSpecialAmmoPrimary(first);
+                            pl.SetCurrentPrimaryWeaponAmmo(ammo[0], ammo[1], ProjectilePowerup.Bouncing);
+                            pl.GiveWeaponItem(first.WeaponItem);
+
+                        }
+                        else if (player.SecondaryWeapon != null)
+                        {
+                            HandgunWeaponItem second = pl.CurrentSecondaryWeapon;
+                            int[] ammo = CalculateSpecialAmmoSecondary(second);
+                            pl.SetCurrentSecondaryWeaponAmmo(ammo[0], ammo[1], ProjectilePowerup.Bouncing);
+                            pl.GiveWeaponItem(second.WeaponItem);
+                        }
                         break;
                     }
                 case 7:
                     {
-                        pl.GiveWeaponItem(WeaponItem.FIREAMMO);
+                        if (player.PrimaryWeapon != null && pl.CurrentPrimaryWeapon.WeaponItem != WeaponItem.FLAMETHROWER)
+                        {
+                            RifleWeaponItem first = pl.CurrentPrimaryWeapon;
+                            int[] ammo = CalculateSpecialAmmoPrimary(first);
+                            pl.SetCurrentPrimaryWeaponAmmo(ammo[0], ammo[1], ProjectilePowerup.Fire);
+                            pl.GiveWeaponItem(first.WeaponItem);
+
+                        }
+                        else if (player.SecondaryWeapon != null)
+                        {
+                            HandgunWeaponItem second = pl.CurrentSecondaryWeapon;
+                            int[] ammo = CalculateSpecialAmmoSecondary(second);
+                            pl.SetCurrentSecondaryWeaponAmmo(ammo[0], ammo[1], ProjectilePowerup.Fire);
+                            pl.GiveWeaponItem(second.WeaponItem);
+                        }
                         break;
                     }
             }
