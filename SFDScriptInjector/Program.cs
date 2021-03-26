@@ -13,43 +13,49 @@ namespace SFDScriptInjector
 {
     static class Program
     {
-
-
-        private static string HardcoreScriptFilePath;
+        private static string ScriptFilePath;
 
         private static string MapFilePath;
-
-
-
 
         static async Task<int> Main(string[] args)
         {
             try
             {
                 await GetAndCheckFilePathsFromArguments(args);
-
-                var scriptLoader = new ScriptLoader();
-                var hardcoreScript = await scriptLoader.LoadScriptAsync(HardcoreScriptFilePath, "Generic Script");
-                var mapScript = await scriptLoader.LoadScriptAsync(GetMapScriptFilePath(), "Map Dependant Data");
-
-                var scriptAggregator = new ScriptAggregator();
-                var scriptToInject = await ScriptAggregator.MergeIntoOneScript(mapScript, hardcoreScript);
-
-                var map = new Map() 
-                { 
-                    Path = MapFilePath
-                };
-
-                var scriptInjector = new ScriptInjector();
-                await scriptInjector.InjectScriptIntoMap(scriptToInject, map);
-                await scriptInjector.SaveInjectedMap();
+                var scriptToInject = await PrepareScriptToInject();
+                await InjectScriptIntoMap(scriptToInject);
                 return 0;
             }
             catch (Exception e)
             {
-                Console.WriteLine("Unexpected error: " + e.Message);
+                Console.WriteLine("Error: " + e.Message);
                 return 1;
             }
+        }
+
+        private static async Task InjectScriptIntoMap(Script scriptToInject)
+        {
+            var map = new Map()
+            {
+                Path = MapFilePath
+            };
+
+            var scriptInjector = new ScriptInjector();
+            await scriptInjector.InjectScriptIntoMap(scriptToInject, map);
+            await scriptInjector.SaveInjectedMap();
+        }
+
+        private static async Task<Script> PrepareScriptToInject()
+        {
+            var scriptLoader = new ScriptLoader();
+            var scriptToInject = await scriptLoader.LoadScriptAsync(ScriptFilePath, scriptSurroundingRegionName: "Script To Copy");
+            if (ScriptFilePath.Contains("Hardcore"))
+            {
+                var mapScript = await scriptLoader.LoadScriptAsync(GetMapScriptFilePath(), scriptSurroundingRegionName: "Map Dependant Data");
+                scriptToInject = await ScriptAggregator.MergeIntoOneScript(mapScript, scriptToInject);
+            }
+
+            return scriptToInject;
         }
 
         private static string GetMapScriptFilePath()
@@ -65,7 +71,10 @@ namespace SFDScriptInjector
         #region Get & Check Arguments
         private static async Task GetAndCheckFilePathsFromArguments(string[] args)
         {
-            await Task.Run(() => { VerifyArgumentsAndGetFilePaths(args); });
+            await Task.Run(() =>
+            {
+                VerifyArgumentsAndGetFilePaths(args);
+            });
         }
 
         private static void VerifyArgumentsAndGetFilePaths(string[] args)
@@ -84,10 +93,10 @@ namespace SFDScriptInjector
 
         private static void CheckAndRecoverBothFilePaths(string[] args)
         {
-            HardcoreScriptFilePath = RecoverFirstArgument(args);
+            ScriptFilePath = RecoverFirstArgument(args);
             MapFilePath = RecoverSecondArgument(args);
 
-            CheckThatBothFilesExist(HardcoreScriptFilePath, MapFilePath);
+            CheckThatBothFilesExist(ScriptFilePath, MapFilePath);
         }
 
         private static void CheckThatBothFilesExist(string cSharpFilePath, string sfdMapFilePath)

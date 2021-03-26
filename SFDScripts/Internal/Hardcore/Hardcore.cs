@@ -51,7 +51,7 @@ namespace SFDScripts
         public static int CameraHeight = 425;
         #endregion
 
-        #region Generic Script
+        #region Script To Copy
 
         #region Debug
         /// <summary>
