@@ -9,9 +9,19 @@ namespace SFDScriptInjector
 {
     public class ScriptAggregator
     {
-        public Script MergeIntoOneScript(params Script[] scripts)
+        public static async Task<Script> MergeIntoOneScript(params Script[] scripts)
         {
-            return default;
+            var s = new Script();
+            await Task.Run(() =>
+               {
+                   foreach (var script in scripts)
+                   {
+                       s.FilePath += script.FilePath;
+                       s.SurroundingRegionName += script.SurroundingRegionName;
+                       s.ScriptText += '\n' + script.ScriptText;
+                   }
+               });
+            return s;
         }
     }
 }

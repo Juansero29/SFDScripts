@@ -1,4 +1,5 @@
 ﻿using SFDScriptInjector.Extensions;
+using SFDScriptInjector.Model.Base;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,39 +14,35 @@ namespace SFDScriptInjector
     static class Program
     {
 
-        private static string MapDependantDataFileContent;
-        private static string MapDependantDataText;
 
-        private static string HardcoreClassFilePath;
-        private static string HardcoreClassFileContent;
-        private static string HardcoreScriptText;
+        private static string HardcoreScriptFilePath;
 
-        private static string ScriptToInsertIntoMap;
+        private static string MapFilePath;
 
-        private static string SFDMapFilePath;
-        private static byte[] SFDMapFileBytesContent;
+
 
 
         static async Task<int> Main(string[] args)
         {
             try
             {
-                // another class for arguments management?
-                await GetFileContentsAndPathsFromArguments(args);
+                await GetAndCheckFilePathsFromArguments(args);
 
-                // one script from hardcore.cs
-                await GetScriptTextFromFileContent();
-                // and another script from mapdependantdata.cs each would have its own instance of SFDScript
-                await GetMapDependantDataFromMapDependantDataFileContent();
+                var scriptLoader = new ScriptLoader();
+                var hardcoreScript = await scriptLoader.LoadScriptAsync(HardcoreScriptFilePath, "Generic Script");
+                var mapScript = await scriptLoader.LoadScriptAsync(GetMapScriptFilePath(), "Map Dependant Data");
 
-                // script aggregator does this via a method
-                CreateScriptTextToInsertInMap();
+                var scriptAggregator = new ScriptAggregator();
+                var scriptToInject = await ScriptAggregator.MergeIntoOneScript(mapScript, hardcoreScript);
 
-                // script injector does this via a method
-                InsertSFDScriptTextIntoSFDMapFileContent();
+                var map = new Map() 
+                { 
+                    Path = MapFilePath
+                };
 
-                // having received a Map with desired contents, we can just persist its contents
-                await WriteSFDMapFileBytesIntoSFDMapFile();
+                var scriptInjector = new ScriptInjector();
+                await scriptInjector.InjectScriptIntoMap(scriptToInject, map);
+                await scriptInjector.SaveInjectedMap();
                 return 0;
             }
             catch (Exception e)
@@ -55,11 +52,20 @@ namespace SFDScriptInjector
             }
         }
 
-        #region Arguments and Checks
-        private static async Task GetFileContentsAndPathsFromArguments(string[] args)
+        private static string GetMapScriptFilePath()
         {
-            VerifyArgumentsAndGetFilePaths(args);
-            await ReadAndVerifyFileContents();
+            var lastSlashIndex = MapFilePath.LastIndexOf("\\");
+            var mapDependantDataFolder = MapFilePath.Substring(0, MapFilePath.Substring(0, lastSlashIndex).LastIndexOf("\\") + 1);
+            var mapFileName = MapFilePath.Substring(lastSlashIndex + 1, (MapFilePath.Length - 1) - lastSlashIndex);
+            var mapClassFileName = mapFileName.Replace(".sfdm", ".cs").Replace(" ", string.Empty);
+            var mapClassFilePath = mapDependantDataFolder + mapClassFileName;
+            return mapClassFilePath;
+        }
+
+        #region Get & Check Arguments
+        private static async Task GetAndCheckFilePathsFromArguments(string[] args)
+        {
+            await Task.Run(() => { VerifyArgumentsAndGetFilePaths(args); });
         }
 
         private static void VerifyArgumentsAndGetFilePaths(string[] args)
@@ -78,10 +84,10 @@ namespace SFDScriptInjector
 
         private static void CheckAndRecoverBothFilePaths(string[] args)
         {
-            HardcoreClassFilePath = RecoverFirstArgument(args);
-            SFDMapFilePath = RecoverSecondArgument(args);
+            HardcoreScriptFilePath = RecoverFirstArgument(args);
+            MapFilePath = RecoverSecondArgument(args);
 
-            CheckThatBothFilesExist(HardcoreClassFilePath, SFDMapFilePath);
+            CheckThatBothFilesExist(HardcoreScriptFilePath, MapFilePath);
         }
 
         private static void CheckThatBothFilesExist(string cSharpFilePath, string sfdMapFilePath)
@@ -110,173 +116,6 @@ namespace SFDScriptInjector
 
         #endregion
 
-        #region Read And Get File Contents
 
-        private static async Task ReadAndVerifyFileContents()
-        {
-            // to do by script injector from the received files
-            await ReadAndVerifyHardcoreClassFileContent();
-            await ReadAndVerifyMapDependantDataFileContent();
-            await ReadAndVerifySFDMapFileContent();
-        }
-
-        private static async Task ReadAndVerifyHardcoreClassFileContent()
-        {
-            HardcoreClassFileContent = await File.ReadAllTextAsync(HardcoreClassFilePath, CancellationToken.None);
-
-            if (HardcoreClassFileContent == null || HardcoreClassFileContent.Length < 0)
-            {
-                throw new InvalidDataException($"The file at {HardcoreClassFilePath} has no data inside or was null");
-            }
-        }
-
-        private static async Task ReadAndVerifyMapDependantDataFileContent()
-        {
-            var lastSlashIndex = SFDMapFilePath.LastIndexOf("\\");
-            var mapDependantDataFolder = SFDMapFilePath.Substring(0, SFDMapFilePath.Substring(0, lastSlashIndex).LastIndexOf("\\") + 1);
-            var mapFileName = SFDMapFilePath.Substring(lastSlashIndex + 1, (SFDMapFilePath.Length - 1) - lastSlashIndex);
-            var mapClassFileName = mapFileName.Replace(".sfdm", ".cs").Replace(" ", string.Empty);
-            var mapClassFilePath = mapDependantDataFolder + mapClassFileName;
-
-            MapDependantDataFileContent = await File.ReadAllTextAsync(mapClassFilePath, CancellationToken.None);
-            if (MapDependantDataFileContent.Length < 0)
-            {
-                throw new InvalidDataException($"No data was found inside the map dependant data file at {mapClassFilePath}");
-            }
-        }
-
-        private static async Task ReadAndVerifySFDMapFileContent()
-        {
-            if (string.IsNullOrEmpty(SFDMapFilePath)) throw new InvalidOperationException("Cannot recover map file content from an empty map file path.");
-
-            SFDMapFileBytesContent = await File.ReadAllBytesAsync(SFDMapFilePath, CancellationToken.None);
-
-            if (SFDMapFileBytesContent.Length < 0) throw new InvalidDataException($"No content was found inside the map file read at {SFDMapFilePath}");
-        }
-
-        private static async Task GetMapDependantDataFromMapDependantDataFileContent()
-        {
-            if (string.IsNullOrEmpty(MapDependantDataFileContent))
-            {
-                throw new InvalidDataException("The map dependant data file content is null or empty");
-            }
-
-            await DoRegexToRecoverMapDependantDataTextFromFileContent();
-
-            if (string.IsNullOrEmpty(MapDependantDataText))
-            {
-                throw new InvalidDataException($"The regex could not find the needed information inside the map dependant data file.");
-            }
-        }
-
-        private static async Task DoRegexToRecoverMapDependantDataTextFromFileContent()
-        {
-            await Task.Run(() =>
-            {
-                Regex regex = new Regex(@"#region Map Dependant Data([\s\S\r]*)#endregion");
-                string incomingValue = MapDependantDataFileContent;
-                Match match = regex.Match(incomingValue);
-                if (!match.Success) return;
-                MapDependantDataText = match.Groups.Values.FirstOrDefault()?.Value.ToString();
-            });
-        }
-
-        private static async Task GetScriptTextFromFileContent()
-        {
-            if (string.IsNullOrEmpty(HardcoreClassFileContent))
-            {
-                throw new InvalidDataException("The data inside the script class file was null or empty");
-            }
-            await DoRegexToRecoverHardcoreScriptTextFromFileContent();
-
-            if (string.IsNullOrEmpty(HardcoreScriptText))
-            {
-                throw new InvalidDataException($"No script text could be found after regex execution inside {HardcoreClassFilePath}");
-            }
-        }
-
-        private static async Task DoRegexToRecoverHardcoreScriptTextFromFileContent()
-        {
-            await Task.Run(() =>
-            {
-                Regex regex = new Regex(@"#region Generic Script([\s\S\r]*)#endregion");
-                string incomingValue = HardcoreClassFileContent;
-                var match = regex.Match(incomingValue);
-                if (!match.Success) return;
-                HardcoreScriptText = "#region Generic Script \n" + match.Groups[1]?.Value.ToString();
-            });
-        }
-        #endregion
-
-        #region Creating New Script Text To Insert
-        private static void CreateScriptTextToInsertInMap()
-        {
-            ScriptToInsertIntoMap = MapDependantDataText + '\n' + HardcoreScriptText;
-        }
-
-        #endregion
-
-        #region Writing New Script Into SFD Map File
-
-        private static async Task WriteSFDMapFileBytesIntoSFDMapFile()
-        {
-            if (SFDMapFileBytesContent == null)
-            {
-                throw new InvalidOperationException("Cannot save empty content for the generated map file");
-            }
-            await File.WriteAllBytesAsync(SFDMapFilePath, SFDMapFileBytesContent, CancellationToken.None);
-        }
-
-        private static void InsertSFDScriptTextIntoSFDMapFileContent()
-        {
-            if (string.IsNullOrEmpty(ScriptToInsertIntoMap))
-            {
-                throw new InvalidOperationException("The script to insert into the map file was null or empty");
-            }
-
-            FindingAndReplacingScriptTextWithBytes();
-
-        }
-
-
-
-        private static void FindingAndReplacingScriptTextWithBytes()
-        {
-            var scriptTagInBytes = Encoding.UTF8.GetBytes("c_scrpt");
-            var numberOfCharactersInScriptTag = scriptTagInBytes.Length;
-
-            var nextTagInBytes = Encoding.UTF8.GetBytes("c_lr");
-
-            var indexArrayOfFirstTagInBytes = SFDMapFileBytesContent.Locate(scriptTagInBytes);
-            var indexesArrayNextTagInBytes = SFDMapFileBytesContent.Locate(nextTagInBytes);
-
-            if (indexArrayOfFirstTagInBytes.Length == 0 || indexesArrayNextTagInBytes.Length == 0) return;
-
-            var indexOfFirstTagInBytes = indexArrayOfFirstTagInBytes[0];
-            var indexOfNextTagInBytes = indexesArrayNextTagInBytes[0];
-            var endOfTransmissionCharacterCount = 1;
-            var indexOfFirstSizeByte = indexOfFirstTagInBytes + numberOfCharactersInScriptTag;
-            var indexOfByteBeforeFirstSizeByte = indexOfFirstSizeByte - 1;
-            var indexOfLastByteOfScript = indexOfNextTagInBytes - endOfTransmissionCharacterCount - 1;
-            var indexOfByteAfterLastByteOfScript = indexOfLastByteOfScript + 1;
-
-
-            var newScriptTextBytes = Encoding.UTF8.GetBytes(ScriptToInsertIntoMap);
-            var newScriptTextInBase64 = Convert.ToBase64String(newScriptTextBytes);
-
-            var newScriptInBase64SizePrefixedInBytes = newScriptTextInBase64.ToSizePrefixedByteArray();
-
-            var byteArrayUntilByteBeforeFirstSizeByte = new byte[indexOfByteBeforeFirstSizeByte + 1];
-
-            var bytesCountFromByteAfterLastByteOfScriptUntilTheEnd = SFDMapFileBytesContent.Length - indexOfByteAfterLastByteOfScript;
-            var byteArrayFromByteAfterLastByteOfScriptUntilTheEnd = new byte[bytesCountFromByteAfterLastByteOfScriptUntilTheEnd + 1];
-
-            Array.Copy(SFDMapFileBytesContent, sourceIndex: 0, destinationArray: byteArrayUntilByteBeforeFirstSizeByte, destinationIndex: 0, length: indexOfByteBeforeFirstSizeByte + 1);
-            Array.Copy(SFDMapFileBytesContent, sourceIndex: indexOfByteAfterLastByteOfScript, destinationArray: byteArrayFromByteAfterLastByteOfScriptUntilTheEnd, destinationIndex: 0, length: bytesCountFromByteAfterLastByteOfScriptUntilTheEnd);
-
-            SFDMapFileBytesContent = ByteExtensions.CombineByteArrays(byteArrayUntilByteBeforeFirstSizeByte, newScriptInBase64SizePrefixedInBytes, byteArrayFromByteAfterLastByteOfScriptUntilTheEnd);
-        }
-
-        #endregion
     }
 }
