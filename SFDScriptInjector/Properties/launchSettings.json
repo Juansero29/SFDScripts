@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "SFDScriptInjector": {
-      "commandName": "Project",
-      "commandLineArgs": "\"C:\\Users\\juans\\source\\repos\\SFDScripts\\SFDScripts\\Internal\\Hardcore\\Hardcore.cs\" \"C:\\Users\\juans\\source\\repos\\SFDScripts\\SFDScripts\\Internal\\Hardcore\\Maps\\Hardcore Template.sfdm\""
-    }
-  }
-}
