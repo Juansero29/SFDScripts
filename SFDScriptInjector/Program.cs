@@ -24,11 +24,16 @@ namespace SFDScriptInjector
                 await GetAndCheckFilePathsFromArguments(args);
                 var scriptToInject = await PrepareScriptToInject();
                 await InjectScriptIntoMap(scriptToInject);
+                Console.WriteLine($"Injected map saved to {MapFilePath}");
+                Console.WriteLine($"Press 'ENTER' to exit...");
+                Console.ReadLine();
                 return 0;
             }
             catch (Exception e)
             {
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Error: " + e.Message);
+                Console.ResetColor();
                 return 1;
             }
         }
@@ -54,7 +59,6 @@ namespace SFDScriptInjector
                 var mapScript = await scriptLoader.LoadScriptAsync(GetMapScriptFilePath(), scriptSurroundingRegionName: "Map Dependant Data");
                 scriptToInject = await ScriptAggregator.MergeIntoOneScript(mapScript, scriptToInject);
             }
-
             return scriptToInject;
         }
 
@@ -87,7 +91,7 @@ namespace SFDScriptInjector
         {
             if (!ThereAreEnoughArguments(args))
             {
-                throw new InvalidOperationException("Use the app by passing a C# file path as the first parameter and a SFD Map (*.sfdm) as a second parameter.");
+                throw new InvalidOperationException("Use the app by passing a C# file path as the first parameter and a SFD Map (*.sfdm) as a second parameter.\nExample: .\\SFDScriptInjector C:\\Script\\FileContainingScript.cs C:\\Maps\\MapToBeInjected.sfdm");
             }
         }
 
