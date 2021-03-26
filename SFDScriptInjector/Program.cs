@@ -30,6 +30,7 @@ namespace SFDScriptInjector
         {
             try
             {
+                // another class for arguments management?
                 await GetFileContentsAndPathsFromArguments(args);
 
                 // one script from hardcore.cs
@@ -37,10 +38,13 @@ namespace SFDScriptInjector
                 // and another script from mapdependantdata.cs each would have its own instance of SFDScript
                 await GetMapDependantDataFromMapDependantDataFileContent();
 
+                // script aggregator does this via a method
                 CreateScriptTextToInsertInMap();
 
+                // script injector does this via a method
                 InsertSFDScriptTextIntoSFDMapFileContent();
 
+                // having received a Map with desired contents, we can just persist its contents
                 await WriteSFDMapFileBytesIntoSFDMapFile();
                 return 0;
             }
