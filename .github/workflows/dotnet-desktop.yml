@@ -96,4 +96,16 @@ jobs:
     
     # Deply maps to server
     - name: Deploy maps
-      run: Start-Process -Verb RunAs powershell.exe -Args "-executionpolicy bypass -command Set-Location \`"$PWD\`"; .\injectScriptToAllMaps.ps1"
+      shell: pwsh
+      id: script
+      uses: Amadevus/pwsh-script@v2.0.1
+      with:
+        script: |
+          $scriptFile = Get-Item ".\SFDScripts\Internal\Hardcore\Hardcore.cs"
+          $maps = Get-ChildItem ".\SFDScripts\Internal\Hardcore\Maps\"
+
+          foreach ($map in $maps) {
+              if ($map.PSIsContainer) { continue }
+              SFDScriptInjector $scriptFile.FullName $map.FullName 
+              Copy-Item $map.FullName "C:\Users\juans\OneDrive\Documents\Superfighters Deluxe\Maps\Custom"
+          } 
