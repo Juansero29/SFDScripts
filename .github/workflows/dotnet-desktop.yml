@@ -96,6 +96,6 @@ jobs:
     
     # Deply maps to server
     - name: Deploy maps
-      run: .\injectScriptToAllMaps.ps1
+      run: .\run_as.ps1 -FilePath injectScriptToAllMaps.ps1
 
 
