@@ -58,17 +58,17 @@ namespace SFDScripts
         /// Is the debug mode enabled
         /// </summary>
         /// <remakrs>
-        /// Changes the game a little bit : PUTAIN DE MERDE CA MARCHE
+        /// Changes the game a little bit
         /// - Never finishes a matches by player's death
         /// - Doesn't show timer
         /// - Doesn't end the game when there isn't enough players
         /// </remakrs>
-        public static bool IsDebug = true;
+        public static bool IsDebug = false;
 
         /// <summary>
         /// Defines wether we want to show the debug messages or not as logs in the chat
         /// </summary>
-        public static bool ShowDebugMessages = true;
+        public static bool ShowDebugMessages = false;
         #endregion
 
         #region Settings
