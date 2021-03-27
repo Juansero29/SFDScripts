@@ -1,3 +1,4 @@
+![Build Status](https://github.com/Juansero29/SFDScripts/actions/workflows/dotnet-desktop.yml/badge.svg)
 # SFDScripts
 
 ## My Superfighters Deluxe Scripts
