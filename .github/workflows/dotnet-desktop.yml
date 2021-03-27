@@ -96,9 +96,9 @@ jobs:
     
     # Deply maps to server
     - name: Deploy maps
+      uses: Amadevus/pwsh-script@v2.0.1
       shell: pwsh
       id: script
-      uses: Amadevus/pwsh-script@v2.0.1
       with:
         script: |
           $scriptFile = Get-Item ".\SFDScripts\Internal\Hardcore\Hardcore.cs"
