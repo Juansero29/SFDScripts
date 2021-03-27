@@ -53,7 +53,9 @@
     <Compile Include="Internal\Hardcore\Hardcore.cs" />
     <Compile Include="Internal\Hardcore\HardcoreClassic.cs" />
     <Compile Include="Internal\Hardcore\HardcoreClassicRemastered.cs" />
-    <Compile Include="Internal\Hardcore\HardcoreCliff.cs" />
+    <Compile Include="Internal\Hardcore\HardcoreColdWar.cs" />
+    <Compile Include="Internal\Hardcore\HardcoreDeepCliff.cs" />
+    <Compile Include="Internal\Hardcore\HardcorePoliceStation.cs" />
     <Compile Include="Internal\Hardcore\HardcoreSmallHill.cs" />
     <Compile Include="Internal\Hardcore\HardcoreSummitOfEvil.cs" />
     <Compile Include="Internal\Hardcore\HardcoreTemplate.cs" />
@@ -66,7 +68,6 @@
     <Compile Include="Internal\Battle Of Teams\BOT5dot0.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Tests\DataStorageTest\DataStorageTest.cs" />
-    <Compile Include="Internal\Hardcore\HardcoreDefinitiveEdition.cs" />
     <Compile Include="Internal\Mario Panadero\MarioPanadero.cs" />
     <Compile Include="Internal\Battle Of Teams\NoGrav.cs" />
     <Compile Include="Internal\Battle Of Teams\PirateWars.cs" />
