@@ -36,7 +36,7 @@
 # For a complete CI/CD sample to get started with GitHub Action workflows for Desktop Applications,
 # refer to https://github.com/microsoft/github-actions-for-desktop-apps
 
-name: Project Build
+name: Project Build & Deploy
 
 on:
   push:
@@ -88,5 +88,9 @@ jobs:
     # Execute all unit tests in the solution
     - name: Execute unit tests
       run: dotnet test
+    
+    # Deply maps to server
+    - name: Deploy maps
+      run: .\injectScriptToAllMaps.ps1
 
 
