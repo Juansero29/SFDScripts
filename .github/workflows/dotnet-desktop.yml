@@ -50,7 +50,7 @@ jobs:
 
     strategy:
       matrix:
-        configuration: [Debug, Release]
+        configuration: [Release]
 
     runs-on: [self-hosted, windows] 
 
@@ -96,6 +96,6 @@ jobs:
     
     # Deply maps to server
     - name: Deploy maps
-      run: .\run_as.ps1 -FilePath injectScriptToAllMaps.ps1
+      run: Start-Process -Verb RunAs powershell.exe -Args "-executionpolicy bypass -command Set-Location \`"$PWD\`"; .\injectScriptToAllMaps.ps1"
 
 
