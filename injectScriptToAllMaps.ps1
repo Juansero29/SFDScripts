@@ -1,9 +1,8 @@
-$scriptFile = Get-Item "..\Hardcore.cs"
-$files = Get-ChildItem "."
-$myshell = New-Object -com "Wscript.Shell"
+$scriptFile = Get-Item ".\SFDScripts\Internal\Hardcore\Hardcore.cs"
+$maps = Get-ChildItem ".\SFDScripts\Internal\Hardcore\Maps\"
 
-foreach ($file in $files) {
-    if ($file.PSIsContainer) { continue }
-    SFDScriptInjector.exe $scriptFile.FullName $file.FullName 
-    $myshell.sendkeys("{ENTER}")
+foreach ($map in $maps) {
+    if ($map.PSIsContainer) { continue }
+    SFDScriptInjector.exe $scriptFile.FullName $map.FullName 
+    Copy-Item $map.FullName "C:\Users\juans\OneDrive\Documents\Superfighters Deluxe\Maps\Custom"
 } 
