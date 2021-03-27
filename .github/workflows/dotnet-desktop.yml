@@ -55,8 +55,8 @@ jobs:
     runs-on: [self-hosted, windows] 
 
     env:
-      Solution_Name: SFDScripts.sln                         # Replace with your solution name, i.e. MyWpfApp.sln.
-      Test_Project_Path: Tests\SFDScripts.UnitTests\SFDScripts.UnitTests.csproj               # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
+      Solution_Name: SFDScripts.sln                         
+      Test_Project_Path: Tests\SFDScripts.UnitTests\SFDScripts.UnitTests.csproj
 
     steps:
     - name: Checkout
@@ -69,16 +69,28 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.x
+
     # Setup NuGet for use with actions
     - name: Setup NuGet.exe for use with actions
       uses: NuGet/setup-nuget@v1.0.5
     - run: nuget restore $env:Solution_Name
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+  
+
+    # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
+    - name: Setup MSBuild.exe
+      uses: microsoft/setup-msbuild@2008f912f56e61277eefaac6d1888b750582aa16
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+
+
+    # Restore the application to populate the obj folder with RuntimeIdentifiers
+    - name: Restore the application
+      run: msbuild $env:Solution_Name /t:Restore
 
     # Execute all unit tests in the solution
     - name: Execute unit tests
       run: dotnet test
 
-    # Restore the application to populate the obj folder with RuntimeIdentifiers
-    - name: Restore the application
-      run: msbuild $env:Solution_Name /t:Restore
 
