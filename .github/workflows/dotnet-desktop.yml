@@ -93,7 +93,11 @@ jobs:
     # Execute all unit tests in the solution
     - name: Execute unit tests
       run: dotnet test
-    
-    # Deply maps to server
+
+    # Pull LFS Maps
+    - name: Pull LFS Maps
+      run: git lfs pull
+      
+    # Deploy maps to server
     - name: Deploy Maps
       run: .\injectScriptToAllMaps.ps1
