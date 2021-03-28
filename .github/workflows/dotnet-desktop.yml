@@ -96,5 +96,4 @@ jobs:
     
     # Deply maps to server
     - name: Deploy maps
-      shell: pwsh
       run: .\injectScriptToAllMaps.ps1
