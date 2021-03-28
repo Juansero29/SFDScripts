@@ -59,6 +59,7 @@ Contributions are made to this repo via Issues and Pull Requests (PRs). A few ge
 
 * Search for existing Issues and PRs before creating your own.
 * For the moment I (juansero29) am the only reviewer. I will review your code when I have the time to, mostly on weekends. I'll try to do it as quick as possible but I am no machine, so don't hesitate to ping me here or on Discord if it's been too long since your contributions have been there without review.
+* Once your contribution has been reviewed and accepted, a GitHub Action will validate that the code compiles correctly. If it does and all the tests pass, then the code will be deployed instantly to the server. This means you updates will have gone into production. If it doesn't compile, then it will not be merged into master and you will have to commit fixes to your PR in order to fix the failing deployement.
 * If you have noticed a bug or an issue with one of the scripts and no Issue treats it, then please add an Issue **before** submitting the associated PR.
 * If you've never contributed before, see [the first timer's guide in this blog](https://auth0.com/blog/a-first-timers-guide-to-an-open-source-project/) for resources and tips on how to get started.
 
