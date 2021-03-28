@@ -8,26 +8,21 @@ namespace SFDScripts.UnitTests
     [TestClass]
     public class HardcoreTests
     {
-        // private readonly Mock<IGame> GameMock;
-        // private readonly Hardcore HardcoreGameInstance;
+        private Mock<IGame> GameMock;
+        private Hardcore HardcoreGameInstance;
 
         [TestInitialize]
         public void Initialize()
         {
+            //GameMock = new Mock<IGame>();
+            //GameMock.Setup(m => m.GetSingleObjectByCustomId(It.IsAny<string>())).Returns(() => new IObjectDestroyTargets()());
+            HardcoreGameInstance = new Hardcore(GameMock.Object);
         }
 
         [TestMethod]
         public void ConstructorTest()
         {
             var hardcore = new Hardcore();
-            Assert.IsNotNull(hardcore);
-        }
-
-        [TestMethod]
-        public void OnStartupTest()
-        {
-            var hardcore = new Hardcore();
-            hardcore.OnStartup();
             Assert.IsNotNull(hardcore);
         }
     }

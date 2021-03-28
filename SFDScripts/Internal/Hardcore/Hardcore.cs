@@ -9,8 +9,7 @@ namespace SFDScripts
 {
     public class Hardcore : GameScriptInterface
     {
-        public Hardcore() : base(null) { }
-        
+        public Hardcore(IGame game = null) : base(game) { }
         #region Map Dependant Data
         /// <summary>
         /// The number of map parts in this map. For each map part, an startup process
@@ -1985,7 +1984,7 @@ namespace SFDScripts
                     WeaponList.Add(weapon);
                 }
                 if (Id == 6)
-                { 
+                {
                     TTurretWeapon weapon = new TTurretWeapon
                     {
                         Distance = 50,
@@ -4307,8 +4306,10 @@ namespace SFDScripts
             // so all player's see the complete menu
             GlobalGame.SetCurrentCameraMode(CameraMode.Static);
 
+            System.Diagnostics.Debugger.Break();
 
-            var menuCameraPosition = GlobalGame.GetSingleObjectByCustomId("MenuCameraPosition").GetWorldPosition();
+            var menuCameraLedgeGrab = GlobalGame.GetSingleObjectByCustomId("MenuCameraPosition");
+            var menuCameraPosition = menuCameraLedgeGrab.GetWorldPosition();
             CameraPosition.X = menuCameraPosition.X;
             CameraPosition.Y = menuCameraPosition.Y;
             CameraSpeed = 20000.0f;
@@ -5815,7 +5816,7 @@ namespace SFDScripts
             if (!pl.IsCrouching && !pl.IsDiving && !pl.IsFalling && !pl.IsLayingOnGround) pos.Y += 4;
             return pos;
         }
-                public static int[] CalculateSpecialAmmoSecondary(HandgunWeaponItem secondary)
+        public static int[] CalculateSpecialAmmoSecondary(HandgunWeaponItem secondary)
         {
             int[] ammo = { 0, 1 };
             if (secondary.WeaponItem == WeaponItem.FLAREGUN)
