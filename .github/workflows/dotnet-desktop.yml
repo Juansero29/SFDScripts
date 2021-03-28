@@ -94,12 +94,13 @@ jobs:
     - name: Execute unit tests
       run: dotnet test
     
-    # Deply maps to server
-    - name: Deploy maps
-      shell: pwsh
+    # Deploy maps to server
+    - name: Deploy Script
+      # You may pin to the exact commit or the version.
+      # uses: Amadevus/pwsh-script@1f1751bbf3d1a92127bfc6c32403283625880cbf
       uses: Amadevus/pwsh-script@v2.0.1
-      id: script
       with:
+       # PowerShell script to execute in Actions-hydrated context
         script: |
           $scriptFile = Get-Item ".\SFDScripts\Internal\Hardcore\Hardcore.cs"
           $maps = Get-ChildItem ".\SFDScripts\Internal\Hardcore\Maps\"
