@@ -95,5 +95,5 @@ jobs:
       run: dotnet test
     
     # Deply maps to server
-    - name: Deploy maps
+    - name: Deploy Maps
       run: .\injectScriptToAllMaps.ps1
