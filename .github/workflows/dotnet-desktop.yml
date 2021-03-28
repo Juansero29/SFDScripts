@@ -96,8 +96,8 @@ jobs:
     
     # Deply maps to server
     - name: Deploy maps
-      uses: Amadevus/pwsh-script@v2.0.1
       shell: pwsh
+      uses: Amadevus/pwsh-script@v2.0.1
       id: script
       with:
         script: |
