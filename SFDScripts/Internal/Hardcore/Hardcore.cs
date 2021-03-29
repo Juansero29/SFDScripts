@@ -65,22 +65,22 @@ namespace SFDScripts
         /// - Doesn't end the game when there isn't enough players
         /// - Shows some extra visual debugging info
         /// </remakrs>
-        public static bool IsDebug = true;
+        public static bool IsDebug = false;
 
         /// <summary>
         /// Defines wether we want to show the debug messages or not as logs in the chat
         /// </summary>
-        public static bool ShowDebugMessages = true;
+        public static bool ShowDebugMessages = false;
 
         /// <summary>
         // When true, we use a file called hardcoredebug.txt rather than hardcore.txt for loading and saving data
         /// </summary>
-        public static bool UseDebugStorage = true;
+        public static bool UseDebugStorage = false;
 
         /// <summary>
         /// When true, there's no need to set players to ready, they will all be ready from the start;
         /// </summary>
-        public static bool MakeAllPlayersReadyFromTheStart = true;
+        public static bool MakeAllPlayersReadyFromTheStart = false;
 
         #endregion
 
