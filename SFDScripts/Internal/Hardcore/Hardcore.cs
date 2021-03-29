@@ -370,7 +370,7 @@ namespace SFDScripts
                     Object = obj;
                 }
                 Position = Object.GetWorldPosition();
-                if (Id == 2 || Id == 3) FastReloading = 1000;
+                if (Id == 2 || Id == 3) FastReloading = 100;
                 if (Id == 2)
                 {
                     SmokeCount = 400;
@@ -384,9 +384,14 @@ namespace SFDScripts
                     GlobalGame.SpawnFireNodes(Position, 50, new Vector2(0, 0), 3, 10, FireNodeType.Flamethrower);
                 }
                 if (Id == 0 || Id == 1) ReadyForRemove = true;
-                if (Id == 2 || Id == 3)
+
+                if(Id == 3)
                 {
-                    System.Diagnostics.Debugger.Break();
+                    StunExplosion();
+                }
+
+                if (Id == 2)
+                {
                     Object = GlobalGame.CreateObject("DrinkingGlass00", Position);
                 }
             }
@@ -396,7 +401,7 @@ namespace SFDScripts
                 if (Object != null && !Object.RemovalInitiated && !Object.IsRemoved) Position = Object.GetWorldPosition();
                 else if (!IsDestroyed) OnDestroyed();
                 
-                if (IsDebug)
+                if (IsDebug && Id == 3)
                 {
                     DebugPlayersWhoAreBeingHitByFlash();
                 }
@@ -416,12 +421,6 @@ namespace SFDScripts
                 else if (Id == 3 && FastReloading == 0)
                 {
                     StunExplosion();
-                    GlobalGame.PlayEffect("EXP", Position);
-                    GlobalGame.PlayEffect("S_P", Position);
-                    GlobalGame.PlayEffect("S_P", Position);
-                    GlobalGame.PlaySound("Explosion", Position, 1);
-                    Object.Remove();
-                    ReadyForRemove = true;
                 }
             }
 
@@ -429,6 +428,22 @@ namespace SFDScripts
             private TPlayer _currentPlayerBeingTested;
 
             public void StunExplosion()
+            {
+                PlayExplosionVisualEffects();
+                GlobalGame.PlaySound("Explosion", Position, 1);
+                StunPlayersInRangeNotCoveredByWall();
+                Object.Remove();
+                ReadyForRemove = true;
+            }
+
+            private void PlayExplosionVisualEffects()
+            {
+                GlobalGame.PlayEffect("EXP", Position);
+                GlobalGame.PlayEffect("S_P", Position);
+                GlobalGame.PlayEffect("S_P", Position);
+            }
+
+            private void StunPlayersInRangeNotCoveredByWall()
             {
                 var position = Position + new Vector2(0, 10);
                 for (int i = 0; i < PlayerList.Count; i++)
@@ -441,12 +456,9 @@ namespace SFDScripts
                     if (dist > RangeForFlashbang) continue;
 
                     if (!IsPlayerBeingTestedHitByFlashbang()) continue;
-
-                    // if (TracePath(position, PlayerList[i].Position, PlayerTeam.Independent, true) <= 2)
                     _currentPlayerBeingTested.StunTime += (int)(DurationOfFlashbangStunTime * (1 - dist / RangeForFlashbang));
                 }
             }
-
 
             private void DebugPlayersWhoAreBeingHitByFlash()
             {
@@ -458,7 +470,6 @@ namespace SFDScripts
                     {
                         continue;
                     }
-
                     IsPlayerBeingTestedHitByFlashbang();
                 }
             }
