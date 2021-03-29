@@ -10,12 +10,14 @@ namespace SFDScripts
     public class Hardcore : GameScriptInterface
     {
         public Hardcore(IGame game = null) : base(game) { }
+
         #region Map Dependant Data
         /// <summary>
         /// The number of map parts in this map. For each map part, an startup process
         /// will be done in the 'OnStartup' method.
         /// </summary>
-        public static int NumberOfMapParts = 1;
+        public static int NumberOfMapParts = 3;
+
 
         /// <summary>
         /// Defines the number of wins required per map part to advance
@@ -23,31 +25,31 @@ namespace SFDScripts
         /// <remarks>
         /// Has to be an uneven number to avoid ties.
         /// </remarks>
-        public static int RoundsPerMapPart = 3;
+        public static int RoundsPerMapPart = 1;
 
         /// <summary>
         /// Defines the map part that we should start on
         /// </summary>
-        public static int CurrentMapPartIndex = 0;
+        public static int CurrentMapPartIndex = 1;
 
         /// <summary>
         /// The world top position (where airstrikes get launched from)
         /// </summary>
-        public static int WorldTop = 200;
+        public static int WorldTop = 500;
 
         #region Drones
         /// <summary>
         /// Left bottom corner spot of the map. (x and  y coordinates)
         /// </summary>
-        public static Vector2 DroneAreaBegin = new Vector2(-270, -220);
+        public static Vector2 DroneAreaBegin = new Vector2(442, 218);
         /// <summary>
         /// An area that covers each of the map parts (x = width, y = height)
         /// </summary>
-        public static Vector2 DroneAreaSize = new Vector2(632, 424);
+        public static Vector2 DroneAreaSize = new Vector2(600, 300);
         #endregion
 
-        public static int CameraWidth = 600;
-        public static int CameraHeight = 425;
+        public static int CameraWidth = 770;
+        public static int CameraHeight = 550;
         #endregion
 
         #region Script To Copy
@@ -57,10 +59,11 @@ namespace SFDScripts
         /// Is the debug mode enabled
         /// </summary>
         /// <remakrs>
-        /// Changes the game a little bit
+        // If true:
         /// - Never finishes a matches by player's death
         /// - Doesn't show timer
         /// - Doesn't end the game when there isn't enough players
+        /// - Shows some extra visual debugging info
         /// </remakrs>
         public static bool IsDebug = false;
 
@@ -68,6 +71,17 @@ namespace SFDScripts
         /// Defines wether we want to show the debug messages or not as logs in the chat
         /// </summary>
         public static bool ShowDebugMessages = false;
+
+        /// <summary>
+        // When true, we use a file called hardcoredebug.txt rather than hardcore.txt for loading and saving data
+        /// </summary>
+        public static bool UseDebugStorage = false;
+
+        /// <summary>
+        /// When true, there's no need to set players to ready, they will all be ready from the start;
+        /// </summary>
+        public static bool MakeAllPlayersReadyFromTheStart = false;
+
         #endregion
 
         #region Settings
@@ -265,6 +279,37 @@ namespace SFDScripts
 
         #region Class Declarations
 
+        #region Helper Class
+        public static class CategoryBits
+        {
+            internal const ushort None = 0x0000;
+
+            /// <summary>
+            /// Static impassable objects (wall, ground, plate...)
+            /// </summary>
+            internal const ushort StaticGround = 0x0001;
+
+            internal const ushort DynamicPlatform = 0x0002;
+
+            internal const ushort Player = 0x0004;
+            /// <summary>
+            /// Dynamic objects that can collide with player without setting IObject.TrackAsMissle(true)
+            /// Example: table, chair, couch, crate...
+            /// </summary>
+            internal const ushort DynamicG1 = 0x0008;
+            /// <summary>
+            /// Dynamic objects that cannot collide with player but can collide with other dynamic objects
+            /// Set IObject.TrackAsMissle(true) to make them collide with players
+            /// Example: glass, cup, bottle, weapons on map...
+            /// </summary>
+            internal const ushort DynamicG2 = 0x0010;
+            internal const ushort Dynamic = DynamicG1 + DynamicG2;
+
+            internal const ushort Items = 0x0020;
+            internal const ushort Debris = 0x0010;
+            internal const ushort DynamicsThrown = 0x8000;
+        }
+        #endregion
 
         #region Debug Logger Class
 
@@ -302,28 +347,30 @@ namespace SFDScripts
         public class TThrownWeapon
         {
             public int Id = 0;
-            public IObject Object = null;
+            public IObject ThrownWeaponObject = null;
             public WeaponItem Weapon = WeaponItem.NONE;
             public Vector2 Position = new Vector2(0, 0);
             public bool IsDestroyed = false;
             public bool ReadyForRemove = false;
-            public int FastReloading = 0;
+            public int TicksUntilExplosion = 0;
             public int SmokeCount = 0;
+            public float RangeForFlashbang = 100;
+            public int DurationOfFlashbangStunTime = 200;
             public TThrownWeapon(IObject obj, int id)
             {
                 Id = id;
                 if (Id == 2 || Id == 3)
                 {
-                    Object = GlobalGame.CreateObject("DrinkingGlass00", obj.GetWorldPosition(), obj.GetAngle(), obj.GetLinearVelocity(), obj.GetAngularVelocity());
-                    ObjectsToRemove.Add(Object);
+                    ThrownWeaponObject = GlobalGame.CreateObject("DrinkingGlass00", obj.GetWorldPosition(), obj.GetAngle(), obj.GetLinearVelocity(), obj.GetAngularVelocity());
+                    ObjectsToRemove.Add(ThrownWeaponObject);
                     obj.Remove();
                 }
                 else
                 {
-                    Object = obj;
+                    ThrownWeaponObject = obj;
                 }
-                Position = Object.GetWorldPosition();
-                if (Id == 2 || Id == 3) FastReloading = 100;
+                Position = ThrownWeaponObject.GetWorldPosition();
+                if (Id == 2 || Id == 3) TicksUntilExplosion = 100;
                 if (Id == 2)
                 {
                     SmokeCount = 400;
@@ -337,39 +384,179 @@ namespace SFDScripts
                     GlobalGame.SpawnFireNodes(Position, 50, new Vector2(0, 0), 3, 10, FireNodeType.Flamethrower);
                 }
                 if (Id == 0 || Id == 1) ReadyForRemove = true;
-                if (Id == 2 || Id == 3)
+
+                if(Id == 3)
                 {
-                    Object = GlobalGame.CreateObject("DrinkingGlass00", Position);
+                    FlashbangExplosion();
+                }
+
+                if (Id == 2)
+                {
+                    ThrownWeaponObject = GlobalGame.CreateObject("DrinkingGlass00", Position);
                 }
             }
             public void Update()
             {
-                if (FastReloading > 0) FastReloading--;
-                if (Object != null && !Object.RemovalInitiated && !Object.IsRemoved) Position = Object.GetWorldPosition();
+                if (TicksUntilExplosion > 0) TicksUntilExplosion--;
+
+                if (ThrownWeaponIsNotRemovedOrBeingRemoved()) Position = ThrownWeaponObject.GetWorldPosition();
                 else if (!IsDestroyed) OnDestroyed();
-                if (Id == 2 && FastReloading == 0)
+
+                IfDebugShowPlayersHitByThrownWeapon();
+
+                if (TicksUntilExplosion > 0) return;
+
+                if (Id == 2)
                 {
                     if (SmokeCount > 0)
                     {
                         SmokeCount--;
                         SpawnSmokeCircle(0);
                         SpawnSmokeCircle(20);
-                        FastReloading = 2;
+                        TicksUntilExplosion = 2;
                         SmokePlayers(30);
                     }
                     else ReadyForRemove = true;
                 }
-                else if (Id == 3 && FastReloading == 0)
+
+                if (Id == 3)
                 {
-                    StunExplosion(Position + new Vector2(0, 10), 100, 200);
-                    GlobalGame.PlayEffect("EXP", Position);
-                    GlobalGame.PlayEffect("S_P", Position);
-                    GlobalGame.PlayEffect("S_P", Position);
-                    GlobalGame.PlaySound("Explosion", Position, 1);
-                    Object.Remove();
-                    ReadyForRemove = true;
+                    FlashbangExplosion();
                 }
             }
+
+            private bool ThrownWeaponIsNotRemovedOrBeingRemoved()
+            {
+                return ThrownWeaponObject != null && !ThrownWeaponObject.RemovalInitiated && !ThrownWeaponObject.IsRemoved;
+            }
+
+            private void IfDebugShowPlayersHitByThrownWeapon()
+            {
+                if (!IsDebug) return;
+                if (Id == 3)
+                {
+                    DebugPlayersWhoAreBeingHitByFlash();
+                }
+            }
+
+            private TPlayer _currentPlayerBeingTested;
+
+            public void FlashbangExplosion()
+            {
+                PlayExplosionVisualEffects();
+                GlobalGame.PlaySound("Explosion", Position, 1);
+
+                StunPlayersInRangeNotCoveredByWall();
+                
+                ThrownWeaponObject.Remove();
+                ReadyForRemove = true;
+            }
+
+            private void PlayExplosionVisualEffects()
+            {
+                GlobalGame.PlayEffect("EXP", Position);
+                GlobalGame.PlayEffect("S_P", Position);
+                GlobalGame.PlayEffect("S_P", Position);
+            }
+
+            private void StunPlayersInRangeNotCoveredByWall()
+            {
+                var position = Position + new Vector2(0, 10);
+                for (int i = 0; i < PlayerList.Count; i++)
+                {
+                    _currentPlayerBeingTested = PlayerList[i];
+                    if (IsCurrentPlayerBodyDeadOrNull()) continue;
+
+                    var distanceFromPlayerToFlashbang = (_currentPlayerBeingTested.Position - position).Length();
+                    if (distanceFromPlayerToFlashbang > RangeForFlashbang) continue;
+
+                    if (!IsPlayerBeingTestedHitByFlashbang()) continue;
+
+                    _currentPlayerBeingTested.StunTime += (int)(DurationOfFlashbangStunTime * (1 - distanceFromPlayerToFlashbang / RangeForFlashbang));
+                }
+            }
+
+            private bool IsCurrentPlayerBodyDeadOrNull()
+            {
+                return _currentPlayerBeingTested.User.GetPlayer() == null || _currentPlayerBeingTested.User.GetPlayer().IsDead;
+            }
+
+            private void DebugPlayersWhoAreBeingHitByFlash()
+            {
+                for (int i = 0; i < PlayerList.Count; i++)
+                {
+                    _currentPlayerBeingTested = PlayerList[i];
+
+                    if (_currentPlayerBeingTested.User.GetPlayer() == null || _currentPlayerBeingTested.User.GetPlayer().IsDead)
+                    {
+                        continue;
+                    }
+                    IsPlayerBeingTestedHitByFlashbang();
+                }
+            }
+
+            private bool IsPlayerBeingTestedHitByFlashbang()
+            {
+                var rci = CreateFlashbangRayCastInput();
+                var distanceBetweenGrenadeAndPlayer = (Position - _currentPlayerBeingTested.Position).Length();
+                var raycastResults = Game.RayCast(Position, _currentPlayerBeingTested.Position, rci);
+                var isThereStaticGroundBetweenGrenadeAndPlayer = false;
+
+                for (int j = 0; j < raycastResults.Length; j++)
+                {
+                    var hitResult = raycastResults[j];
+
+
+                    if (!hitResult.IsPlayer)
+                    {
+                        isThereStaticGroundBetweenGrenadeAndPlayer = true;
+                    }
+
+                    if (hitResult.IsPlayer && !isThereStaticGroundBetweenGrenadeAndPlayer && distanceBetweenGrenadeAndPlayer <= RangeForFlashbang && _currentPlayerBeingTested.Name.Equals(hitResult.HitObject.Name))
+                    {
+                        if (IsDebug)
+                        {
+                            Game.DrawCircle(hitResult.Position, 1f, Color.Yellow);
+                            Game.DrawLine(hitResult.Position, hitResult.Position + hitResult.Normal * 5f, Color.Yellow);
+                            Game.DrawArea(hitResult.HitObject.GetAABB(), Color.Green);
+                            Game.DrawText(distanceBetweenGrenadeAndPlayer.ToString(), hitResult.Position, Color.Green);
+                        }
+                        return true;
+                    }
+                    else if (!hitResult.IsPlayer)
+                    {
+                        if (IsDebug)
+                        {
+                            Game.DrawCircle(hitResult.Position, 1f, Color.Yellow);
+                            Game.DrawLine(hitResult.Position, hitResult.Position + hitResult.Normal * 5f, Color.Yellow);
+                            Game.DrawArea(hitResult.HitObject.GetAABB(), Color.Red);
+                            Game.DrawText(distanceBetweenGrenadeAndPlayer.ToString(), hitResult.Position, Color.Green);
+                        }
+                    }
+                }
+                return false;
+            }
+
+            private static RayCastInput CreateFlashbangRayCastInput()
+            {
+                var rci = new RayCastInput()
+                {
+                    // include the objects that are overlaping the source of the raycast
+                    IncludeOverlap = true,
+                    // only look at the closest hit
+                    ClosestHitOnly = false,
+                    // Only hit objects that are hit by projectiles
+                    ProjectileHit = RayCastFilterMode.True,
+                    // Only hit objects that absorb projectiles
+                    AbsorbProjectile = RayCastFilterMode.True,
+                    // filter to hit only walls and players
+                    MaskBits = CategoryBits.Player + CategoryBits.StaticGround,
+                    // activate filter
+                    FilterOnMaskBits = true,
+                };
+                return rci;
+            }
+
             public bool IsRemove()
             {
                 return ReadyForRemove;
@@ -418,7 +605,7 @@ namespace SFDScripts
                     bool have = false;
                     for (int j = 0; j < ThrownTrackingList.Count; j++)
                     {
-                        if (ThrownTrackingList[j].Object == list[i])
+                        if (ThrownTrackingList[j].ThrownWeaponObject == list[i])
                         {
                             have = true;
                             break;
@@ -1033,6 +1220,8 @@ namespace SFDScripts
             public bool Change = true;
             public bool IsDescription = false;
             public int AccessLevel = 0;
+
+
             public void SetPlayer(TPlayer player)
             {
                 if (player == null) return;
@@ -1184,6 +1373,10 @@ namespace SFDScripts
                 IPlayer pl = Player.User.GetPlayer();
                 Player.UpdateActiveStatus();
                 if (pl == null) return;
+                if (MakeAllPlayersReadyFromTheStart)
+                {
+                    Ready = true;
+                }
                 if (!pl.IsDead && !Ready)
                 {
                     if (ActionTimer <= 0)
@@ -2200,7 +2393,6 @@ namespace SFDScripts
 
                     foreach (var result in raycastResult)
                     {
-
                         Game.DrawCircle(result.Position, 1f, Color.Yellow);
                         Game.DrawLine(result.Position, result.Position + result.Normal * 5f, Color.Yellow);
                         Game.DrawArea(result.HitObject.GetAABB(), Color.Yellow);
@@ -2209,7 +2401,7 @@ namespace SFDScripts
 
                         if (raycastResult.Length > 2 + raycastResultPlayersCount && (MainMotor.GetWorldPosition() - Target.GetWorldPosition()).Length() <= 50)
                         {
-                            // if there's more than 2 object between drone and player, don't shoot
+                            // if there's more than 2 objects between drone and player, don't shoot
                             // and choose another target
                             ChangingRoute = true;
                             IPlayer ply = Target as IPlayer;
@@ -4306,8 +4498,6 @@ namespace SFDScripts
             // so all player's see the complete menu
             GlobalGame.SetCurrentCameraMode(CameraMode.Static);
 
-            System.Diagnostics.Debugger.Break();
-
             var menuCameraLedgeGrab = GlobalGame.GetSingleObjectByCustomId("MenuCameraPosition");
             var menuCameraPosition = menuCameraLedgeGrab.GetWorldPosition();
             CameraPosition.X = menuCameraPosition.X;
@@ -5248,7 +5438,7 @@ namespace SFDScripts
             // clear the file before so that data doesn't get inserted at the end of file
             Mutex.WaitOne();   // Wait until it is safe to enter. 
 
-            GlobalGame.GetSharedStorage("HARDCORE").Clear();
+            GlobalGame.GetSharedStorage(GetCurrentStorageFileName()).Clear();
             string data = OtherData;
             var menusToSave = PlayerMenuList.Where(m => m.Player != null).ToList();
             for (int i = 0; i < menusToSave.Count; i++)
@@ -5262,7 +5452,7 @@ namespace SFDScripts
                     DebugLogger.DebugOnlyDialogLog("SAVED DATA FOR PLAYER " + player.Name + ". PLAYER DATA SAVED: [ " + playerData + " ]");
                 }
             }
-            GlobalGame.GetSharedStorage("HARDCORE").SetItem("SaveData", data);
+            GlobalGame.GetSharedStorage(GetCurrentStorageFileName()).SetItem("SaveData", data);
             IsDataSaved = true;
             var playersSavedCount = data.Split(';').Count();
             DebugLogger.DebugOnlyDialogLog("GAME SAVED " + playersSavedCount + " PLAYERS IN DATABASE");
@@ -5275,7 +5465,7 @@ namespace SFDScripts
         {
             Mutex.WaitOne();   // Wait until it is safe to enter. 
             string data;
-            bool status = GlobalGame.GetSharedStorage("HARDCORE").TryGetItemString("SaveData", out data);
+            bool status = GlobalGame.GetSharedStorage(GetCurrentStorageFileName()).TryGetItemString("SaveData", out data);
             if (!status) data = "";
             // data = data.Replace("BEGIN" + "DATA", "").Replace("ENDDATA", "");
             string[] playerList = data.Split(';');
@@ -5317,6 +5507,11 @@ namespace SFDScripts
                 }
             }
             Mutex.ReleaseMutex();
+        }
+
+        private static string GetCurrentStorageFileName()
+        {
+            return UseDebugStorage ? "HARDCOREDEBUG" : "HARDCORE";
         }
         #endregion
 
@@ -5684,6 +5879,9 @@ namespace SFDScripts
             }
             TurretList.Clear();
         }
+
+
+
 
 
         public static int TracePath(Vector2 fromPos, Vector2 toPos, PlayerTeam team, bool fullCheck = false)
@@ -6268,23 +6466,6 @@ namespace SFDScripts
             }
         }
 
-        public static void StunExplosion(Vector2 position, float range, int duration)
-        {
-            for (int i = 0; i < PlayerList.Count; i++)
-            {
-                if (PlayerList[i].User.GetPlayer() != null && !PlayerList[i].User.GetPlayer().IsDead)
-                {
-                    float dist = (PlayerList[i].Position - position).Length();
-                    if (dist <= range)
-                    {
-                        if (TracePath(position, PlayerList[i].Position, PlayerTeam.Independent, true) <= 2)
-                        {
-                            PlayerList[i].StunTime += (int)(duration * (1 - dist / range));
-                        }
-                    }
-                }
-            }
-        }
 
         #endregion
 
