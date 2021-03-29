@@ -347,12 +347,12 @@ namespace SFDScripts
         public class TThrownWeapon
         {
             public int Id = 0;
-            public IObject Object = null;
+            public IObject ThrownWeaponObject = null;
             public WeaponItem Weapon = WeaponItem.NONE;
             public Vector2 Position = new Vector2(0, 0);
             public bool IsDestroyed = false;
             public bool ReadyForRemove = false;
-            public int FastReloading = 0;
+            public int TicksUntilExplosion = 0;
             public int SmokeCount = 0;
             public float RangeForFlashbang = 100;
             public int DurationOfFlashbangStunTime = 200;
@@ -361,16 +361,16 @@ namespace SFDScripts
                 Id = id;
                 if (Id == 2 || Id == 3)
                 {
-                    Object = GlobalGame.CreateObject("DrinkingGlass00", obj.GetWorldPosition(), obj.GetAngle(), obj.GetLinearVelocity(), obj.GetAngularVelocity());
-                    ObjectsToRemove.Add(Object);
+                    ThrownWeaponObject = GlobalGame.CreateObject("DrinkingGlass00", obj.GetWorldPosition(), obj.GetAngle(), obj.GetLinearVelocity(), obj.GetAngularVelocity());
+                    ObjectsToRemove.Add(ThrownWeaponObject);
                     obj.Remove();
                 }
                 else
                 {
-                    Object = obj;
+                    ThrownWeaponObject = obj;
                 }
-                Position = Object.GetWorldPosition();
-                if (Id == 2 || Id == 3) FastReloading = 100;
+                Position = ThrownWeaponObject.GetWorldPosition();
+                if (Id == 2 || Id == 3) TicksUntilExplosion = 100;
                 if (Id == 2)
                 {
                     SmokeCount = 400;
@@ -392,38 +392,52 @@ namespace SFDScripts
 
                 if (Id == 2)
                 {
-                    Object = GlobalGame.CreateObject("DrinkingGlass00", Position);
+                    ThrownWeaponObject = GlobalGame.CreateObject("DrinkingGlass00", Position);
                 }
             }
             public void Update()
             {
-                if (FastReloading > 0) FastReloading--;
-                if (Object != null && !Object.RemovalInitiated && !Object.IsRemoved) Position = Object.GetWorldPosition();
-                else if (!IsDestroyed) OnDestroyed();
-                
-                if (IsDebug && Id == 3)
-                {
-                    DebugPlayersWhoAreBeingHitByFlash();
-                }
+                if (TicksUntilExplosion > 0) TicksUntilExplosion--;
 
-                if (Id == 2 && FastReloading == 0)
+                if (ThrownWeaponIsNotRemovedOrBeingRemoved()) Position = ThrownWeaponObject.GetWorldPosition();
+                else if (!IsDestroyed) OnDestroyed();
+
+                IfDebugShowPlayersHitByThrownWeapon();
+
+                if (TicksUntilExplosion > 0) return;
+
+                if (Id == 2)
                 {
                     if (SmokeCount > 0)
                     {
                         SmokeCount--;
                         SpawnSmokeCircle(0);
                         SpawnSmokeCircle(20);
-                        FastReloading = 2;
+                        TicksUntilExplosion = 2;
                         SmokePlayers(30);
                     }
                     else ReadyForRemove = true;
                 }
-                else if (Id == 3 && FastReloading == 0)
+
+                if (Id == 3)
                 {
                     StunExplosion();
                 }
             }
 
+            private bool ThrownWeaponIsNotRemovedOrBeingRemoved()
+            {
+                return ThrownWeaponObject != null && !ThrownWeaponObject.RemovalInitiated && !ThrownWeaponObject.IsRemoved;
+            }
+
+            private void IfDebugShowPlayersHitByThrownWeapon()
+            {
+                if (!IsDebug) return;
+                if (Id == 3)
+                {
+                    DebugPlayersWhoAreBeingHitByFlash();
+                }
+            }
 
             private TPlayer _currentPlayerBeingTested;
 
@@ -432,7 +446,7 @@ namespace SFDScripts
                 PlayExplosionVisualEffects();
                 GlobalGame.PlaySound("Explosion", Position, 1);
                 StunPlayersInRangeNotCoveredByWall();
-                Object.Remove();
+                ThrownWeaponObject.Remove();
                 ReadyForRemove = true;
             }
 
@@ -476,24 +490,11 @@ namespace SFDScripts
 
             private bool IsPlayerBeingTestedHitByFlashbang()
             {
-                var rci = new RayCastInput()
-                {
-                    // include the objects that are overlaping the source of the raycast
-                    IncludeOverlap = true,
-                    // only look at the closest hit
-                    ClosestHitOnly = false,
-                    ProjectileHit = RayCastFilterMode.True,
-                    // filter to hit only walls and players
-                    MaskBits = CategoryBits.Player + CategoryBits.StaticGround,
-                    // activate filter
-                    FilterOnMaskBits = true,
-                };
+                var rci = CreateFlashbangRayCastInput();
                 var distanceBetweenGrenadeAndPlayer = (Position - _currentPlayerBeingTested.Position).Length();
-
                 var raycastResults = Game.RayCast(Position, _currentPlayerBeingTested.Position, rci);
-
-
                 var isThereStaticGroundBetweenGrenadeAndPlayer = false;
+
                 for (int j = 0; j < raycastResults.Length; j++)
                 {
                     var hitResult = raycastResults[j];
@@ -527,6 +528,24 @@ namespace SFDScripts
                     }
                 }
                 return false;
+            }
+
+            private static RayCastInput CreateFlashbangRayCastInput()
+            {
+                var rci = new RayCastInput()
+                {
+                    // include the objects that are overlaping the source of the raycast
+                    IncludeOverlap = true,
+                    // only look at the closest hit
+                    ClosestHitOnly = false,
+                    // Only hit objects that are hit by projectiles
+                    ProjectileHit = RayCastFilterMode.True,
+                    // filter to hit only walls and players
+                    MaskBits = CategoryBits.Player + CategoryBits.StaticGround,
+                    // activate filter
+                    FilterOnMaskBits = true,
+                };
+                return rci;
             }
 
             public bool IsRemove()
@@ -577,7 +596,7 @@ namespace SFDScripts
                     bool have = false;
                     for (int j = 0; j < ThrownTrackingList.Count; j++)
                     {
-                        if (ThrownTrackingList[j].Object == list[i])
+                        if (ThrownTrackingList[j].ThrownWeaponObject == list[i])
                         {
                             have = true;
                             break;
