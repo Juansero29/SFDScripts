@@ -59,12 +59,13 @@ namespace SFDScripts
         /// Is the debug mode enabled
         /// </summary>
         /// <remakrs>
-        /// Changes the game a little bit
+        // If true:
         /// - Never finishes a matches by player's death
         /// - Doesn't show timer
         /// - Doesn't end the game when there isn't enough players
+        /// - Shows some extra visual debugging info
         /// </remakrs>
-        public static bool IsDebug = false;
+        public static bool IsDebug = true;
 
         /// <summary>
         /// Defines wether we want to show the debug messages or not as logs in the chat
@@ -278,6 +279,37 @@ namespace SFDScripts
 
         #region Class Declarations
 
+        #region Helper Class
+        public static class CategoryBits
+        {
+            internal const ushort None = 0x0000;
+
+            /// <summary>
+            /// Static impassable objects (wall, ground, plate...)
+            /// </summary>
+            internal const ushort StaticGround = 0x0001;
+
+            internal const ushort DynamicPlatform = 0x0002;
+
+            internal const ushort Player = 0x0004;
+            /// <summary>
+            /// Dynamic objects that can collide with player without setting IObject.TrackAsMissle(true)
+            /// Example: table, chair, couch, crate...
+            /// </summary>
+            internal const ushort DynamicG1 = 0x0008;
+            /// <summary>
+            /// Dynamic objects that cannot collide with player but can collide with other dynamic objects
+            /// Set IObject.TrackAsMissle(true) to make them collide with players
+            /// Example: glass, cup, bottle, weapons on map...
+            /// </summary>
+            internal const ushort DynamicG2 = 0x0010;
+            internal const ushort Dynamic = DynamicG1 + DynamicG2;
+
+            internal const ushort Items = 0x0020;
+            internal const ushort Debris = 0x0010;
+            internal const ushort DynamicsThrown = 0x8000;
+        }
+        #endregion
 
         #region Debug Logger Class
 
@@ -354,15 +386,21 @@ namespace SFDScripts
                 if (Id == 0 || Id == 1) ReadyForRemove = true;
                 if (Id == 2 || Id == 3)
                 {
+                    System.Diagnostics.Debugger.Break();
                     Object = GlobalGame.CreateObject("DrinkingGlass00", Position);
                 }
             }
             public void Update()
             {
-                DrawPlayersHit();
                 if (FastReloading > 0) FastReloading--;
                 if (Object != null && !Object.RemovalInitiated && !Object.IsRemoved) Position = Object.GetWorldPosition();
                 else if (!IsDestroyed) OnDestroyed();
+                
+                if (IsDebug)
+                {
+                    DebugPlayersWhoAreBeingHitByFlash();
+                }
+
                 if (Id == 2 && FastReloading == 0)
                 {
                     if (SmokeCount > 0)
@@ -377,7 +415,7 @@ namespace SFDScripts
                 }
                 else if (Id == 3 && FastReloading == 0)
                 {
-                    StunExplosion(Position + new Vector2(0, 10), RangeForFlashbang, DurationOfFlashbangStunTime);
+                    StunExplosion();
                     GlobalGame.PlayEffect("EXP", Position);
                     GlobalGame.PlayEffect("S_P", Position);
                     GlobalGame.PlayEffect("S_P", Position);
@@ -387,28 +425,45 @@ namespace SFDScripts
                 }
             }
 
+
             private TPlayer _currentPlayerBeingTested;
-            private void DrawPlayersHit()
+
+            public void StunExplosion()
+            {
+                var position = Position + new Vector2(0, 10);
+                for (int i = 0; i < PlayerList.Count; i++)
+                {
+                    _currentPlayerBeingTested = PlayerList[i];
+                    if (_currentPlayerBeingTested.User.GetPlayer() == null || _currentPlayerBeingTested.User.GetPlayer().IsDead) continue;
+
+                    var dist = (_currentPlayerBeingTested.Position - position).Length();
+
+                    if (dist > RangeForFlashbang) continue;
+
+                    if (!IsPlayerBeingTestedHitByFlashbang()) continue;
+
+                    // if (TracePath(position, PlayerList[i].Position, PlayerTeam.Independent, true) <= 2)
+                    _currentPlayerBeingTested.StunTime += (int)(DurationOfFlashbangStunTime * (1 - dist / RangeForFlashbang));
+                }
+            }
+
+
+            private void DebugPlayersWhoAreBeingHitByFlash()
             {
                 for (int i = 0; i < PlayerList.Count; i++)
                 {
                     _currentPlayerBeingTested = PlayerList[i];
 
-                    if (_currentPlayerBeingTested.User.GetPlayer() != null && !_currentPlayerBeingTested.User.GetPlayer().IsDead)
+                    if (_currentPlayerBeingTested.User.GetPlayer() == null || _currentPlayerBeingTested.User.GetPlayer().IsDead)
                     {
-                        // UseObjectRayCast();
-                        UseGameRayCast();
-
-                        float dist = (_currentPlayerBeingTested.Position - Position).Length();
-                        if (dist <= RangeForFlashbang)
-                        {
-
-                        }
+                        continue;
                     }
+
+                    IsPlayerBeingTestedHitByFlashbang();
                 }
             }
 
-            private void UseGameRayCast()
+            private bool IsPlayerBeingTestedHitByFlashbang()
             {
                 var rci = new RayCastInput()
                 {
@@ -416,64 +471,51 @@ namespace SFDScripts
                     IncludeOverlap = true,
                     // only look at the closest hit
                     ClosestHitOnly = false,
-                    // mark as hit the objects that projectiles hit
                     ProjectileHit = RayCastFilterMode.True,
-                    // mark as hit the objects that absorb the projectile
-                    AbsorbProjectile = RayCastFilterMode.Any
+                    // filter to hit only walls and players
+                    MaskBits = CategoryBits.Player + CategoryBits.StaticGround,
+                    // activate filter
+                    FilterOnMaskBits = true,
                 };
+                var distanceBetweenGrenadeAndPlayer = (Position - _currentPlayerBeingTested.Position).Length();
+
                 var raycastResults = Game.RayCast(Position, _currentPlayerBeingTested.Position, rci);
 
-                var isThereAnObjectBetweenGrenadeAndPlayer = false;
+
+                var isThereStaticGroundBetweenGrenadeAndPlayer = false;
                 for (int j = 0; j < raycastResults.Length; j++)
                 {
-                    // 0 is the grenade
-                    // 1 is the first object hit
-                    var result = raycastResults[j];
-                    var distanceBetweenGrenadeAndPlayer = (Position - _currentPlayerBeingTested.Position).Length();
+                    var hitResult = raycastResults[j];
 
-                    if (!result.IsPlayer && !result.HitObject.Name.Contains("DrinkingGlass00"))
+
+                    if (!hitResult.IsPlayer)
                     {
-                        isThereAnObjectBetweenGrenadeAndPlayer = true;
+                        isThereStaticGroundBetweenGrenadeAndPlayer = true;
                     }
 
-
-                    if (result.IsPlayer && !isThereAnObjectBetweenGrenadeAndPlayer && distanceBetweenGrenadeAndPlayer <= RangeForFlashbang)
+                    if (hitResult.IsPlayer && !isThereStaticGroundBetweenGrenadeAndPlayer && distanceBetweenGrenadeAndPlayer <= RangeForFlashbang && _currentPlayerBeingTested.Name.Equals(hitResult.HitObject.Name))
                     {
-                        // this is the first object to be hit, not being the origin object
-                        Game.DrawCircle(result.Position, 1f, Color.Yellow);
-                        Game.DrawLine(result.Position, result.Position + result.Normal * 5f, Color.Yellow);
-                        Game.DrawArea(result.HitObject.GetAABB(), Color.Green);
-                        Game.DrawText(distanceBetweenGrenadeAndPlayer.ToString(), result.Position, Color.Green);
+                        if (IsDebug)
+                        {
+                            Game.DrawCircle(hitResult.Position, 1f, Color.Yellow);
+                            Game.DrawLine(hitResult.Position, hitResult.Position + hitResult.Normal * 5f, Color.Yellow);
+                            Game.DrawArea(hitResult.HitObject.GetAABB(), Color.Green);
+                            Game.DrawText(distanceBetweenGrenadeAndPlayer.ToString(), hitResult.Position, Color.Green);
+                        }
+                        return true;
                     }
-                    else
+                    else if (!hitResult.IsPlayer)
                     {
-                        Game.DrawCircle(result.Position, 1f, Color.Yellow);
-                        Game.DrawLine(result.Position, result.Position + result.Normal * 5f, Color.Yellow);
-                        Game.DrawArea(result.HitObject.GetAABB(), Color.Red);
-                        Game.DrawText(distanceBetweenGrenadeAndPlayer.ToString(), result.Position, Color.Green);
+                        if (IsDebug)
+                        {
+                            Game.DrawCircle(hitResult.Position, 1f, Color.Yellow);
+                            Game.DrawLine(hitResult.Position, hitResult.Position + hitResult.Normal * 5f, Color.Yellow);
+                            Game.DrawArea(hitResult.HitObject.GetAABB(), Color.Red);
+                            Game.DrawText(distanceBetweenGrenadeAndPlayer.ToString(), hitResult.Position, Color.Green);
+                        }
                     }
                 }
-            }
-
-            private void UseObjectRayCast()
-            {
-
-                var result = _currentPlayerBeingTested.Body.RayCast(Position, _currentPlayerBeingTested.Position);
-                if (!result.Hit) return;
-                if (result.IsPlayer)
-                {
-                    Game.DrawCircle(result.Position, 1f, Color.Yellow);
-                    Game.DrawLine(result.Position, result.Position + result.Normal * 5f, Color.Yellow);
-                    Game.DrawArea(result.HitObject.GetAABB(), Color.Green);
-                    Game.DrawText((Position - _currentPlayerBeingTested.Position).Length().ToString(), result.Position, Color.Green);
-                }
-                else
-                {
-                    Game.DrawCircle(result.Position, 1f, Color.Yellow);
-                    Game.DrawLine(result.Position, result.Position + result.Normal * 5f, Color.Yellow);
-                    Game.DrawArea(result.HitObject.GetAABB(), Color.Red);
-                    Game.DrawText((Position - _currentPlayerBeingTested.Position).Length().ToString(), result.Position, Color.Green);
-                }
+                return false;
             }
 
             public bool IsRemove()
@@ -1292,7 +1334,7 @@ namespace SFDScripts
                 IPlayer pl = Player.User.GetPlayer();
                 Player.UpdateActiveStatus();
                 if (pl == null) return;
-                if(MakeAllPlayersReadyFromTheStart)
+                if (MakeAllPlayersReadyFromTheStart)
                 {
                     Ready = true;
                 }
@@ -5800,6 +5842,9 @@ namespace SFDScripts
         }
 
 
+
+
+
         public static int TracePath(Vector2 fromPos, Vector2 toPos, PlayerTeam team, bool fullCheck = false)
         {
             int width = 4;
@@ -6382,52 +6427,6 @@ namespace SFDScripts
             }
         }
 
-        public static void StunExplosion(Vector2 position, float range, int duration)
-        {
-            System.Diagnostics.Debugger.Break();
-            for (int i = 0; i < PlayerList.Count; i++)
-            {
-                if (PlayerList[i].User.GetPlayer() != null && !PlayerList[i].User.GetPlayer().IsDead)
-                {
-                    float dist = (PlayerList[i].Position - position).Length();
-                    if (dist <= range)
-                    {
-
-                        var rci = new RayCastInput()
-                        {
-                            // include the objects that are overlaping the source of the raycast
-                            IncludeOverlap = true,
-                            // only look at the closest hit
-                            ClosestHitOnly = false,
-                            // mark as hit the objects that projectiles hit
-                            ProjectileHit = RayCastFilterMode.True,
-                            // mark as hit the objects that absorb the projectile
-                            AbsorbProjectile = RayCastFilterMode.Any
-                        };
-
-
-                        var raycastResults = Game.RayCast(position, PlayerList[i].Position, rci);
-
-
-                        foreach(var result in raycastResults)
-                        {
-                            Game.DrawCircle(result.Position, 1f, Color.Yellow);
-                            Game.DrawLine(result.Position, result.Position + result.Normal * 5f, Color.Yellow);
-                            Game.DrawArea(result.HitObject.GetAABB(), Color.Yellow);
-                            Game.DrawText((position - PlayerList[i].Position).Length().ToString(), result.Position, Color.Green);
-                        }
-                        // if more than one object between player and grenade
-                        if (raycastResults.Length > 1) return;
-
-                        // if there are no vision objects between grenade position and player position, then add stun time to player
-                        if (TracePath(position, PlayerList[i].Position, PlayerTeam.Independent, true) <= 2)
-                        {
-                            PlayerList[i].StunTime += (int)(duration * (1 - dist / range));
-                        }
-                    }
-                }
-            }
-        }
 
         #endregion
 
