@@ -387,7 +387,7 @@ namespace SFDScripts
 
                 if(Id == 3)
                 {
-                    StunExplosion();
+                    FlashbangExplosion();
                 }
 
                 if (Id == 2)
@@ -421,7 +421,7 @@ namespace SFDScripts
 
                 if (Id == 3)
                 {
-                    StunExplosion();
+                    FlashbangExplosion();
                 }
             }
 
@@ -441,11 +441,13 @@ namespace SFDScripts
 
             private TPlayer _currentPlayerBeingTested;
 
-            public void StunExplosion()
+            public void FlashbangExplosion()
             {
                 PlayExplosionVisualEffects();
                 GlobalGame.PlaySound("Explosion", Position, 1);
+
                 StunPlayersInRangeNotCoveredByWall();
+                
                 ThrownWeaponObject.Remove();
                 ReadyForRemove = true;
             }
@@ -463,15 +465,20 @@ namespace SFDScripts
                 for (int i = 0; i < PlayerList.Count; i++)
                 {
                     _currentPlayerBeingTested = PlayerList[i];
-                    if (_currentPlayerBeingTested.User.GetPlayer() == null || _currentPlayerBeingTested.User.GetPlayer().IsDead) continue;
+                    if (IsCurrentPlayerBodyDeadOrNull()) continue;
 
-                    var dist = (_currentPlayerBeingTested.Position - position).Length();
-
-                    if (dist > RangeForFlashbang) continue;
+                    var distanceFromPlayerToFlashbang = (_currentPlayerBeingTested.Position - position).Length();
+                    if (distanceFromPlayerToFlashbang > RangeForFlashbang) continue;
 
                     if (!IsPlayerBeingTestedHitByFlashbang()) continue;
-                    _currentPlayerBeingTested.StunTime += (int)(DurationOfFlashbangStunTime * (1 - dist / RangeForFlashbang));
+
+                    _currentPlayerBeingTested.StunTime += (int)(DurationOfFlashbangStunTime * (1 - distanceFromPlayerToFlashbang / RangeForFlashbang));
                 }
+            }
+
+            private bool IsCurrentPlayerBodyDeadOrNull()
+            {
+                return _currentPlayerBeingTested.User.GetPlayer() == null || _currentPlayerBeingTested.User.GetPlayer().IsDead;
             }
 
             private void DebugPlayersWhoAreBeingHitByFlash()
@@ -540,6 +547,8 @@ namespace SFDScripts
                     ClosestHitOnly = false,
                     // Only hit objects that are hit by projectiles
                     ProjectileHit = RayCastFilterMode.True,
+                    // Only hit objects that absorb projectiles
+                    AbsorbProjectile = RayCastFilterMode.True,
                     // filter to hit only walls and players
                     MaskBits = CategoryBits.Player + CategoryBits.StaticGround,
                     // activate filter
