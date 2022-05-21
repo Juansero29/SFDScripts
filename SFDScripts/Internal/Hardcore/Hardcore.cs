@@ -11,13 +11,13 @@ namespace SFDScripts
     {
         public Hardcore(IGame game = null) : base(game) { }
 
+
         #region Map Dependant Data
         /// <summary>
         /// The number of map parts in this map. For each map part, an startup process
         /// will be done in the 'OnStartup' method.
         /// </summary>
         public static int NumberOfMapParts = 3;
-
 
         /// <summary>
         /// Defines the number of wins required per map part to advance
@@ -35,21 +35,21 @@ namespace SFDScripts
         /// <summary>
         /// The world top position (where airstrikes get launched from AND where drones spawn)
         /// </summary>
-        public static int WorldTop = 500;
+        public static int WorldTop = 580;
 
         #region Drones
         /// <summary>
         /// Left bottom corner spot of the map. (x and  y coordinates)
         /// </summary>
-        public static Vector2 DroneAreaBegin = new Vector2(442, 218);
+        public static Vector2 DroneAreaBegin = new Vector2(-2070, -332);
         /// <summary>
         /// An area that covers each of the map parts (x = width, y = height)
         /// </summary>
-        public static Vector2 DroneAreaSize = new Vector2(600, 300);
+        public static Vector2 DroneAreaSize = new Vector2(3784, 590);
         #endregion
 
-        public static int CameraWidth = 770;
-        public static int CameraHeight = 550;
+        public static int CameraWidth = 1240;
+        public static int CameraHeight = 540;
         #endregion
 
         #region Script To Copy
@@ -385,7 +385,7 @@ namespace SFDScripts
                 }
                 if (Id == 0 || Id == 1) ReadyForRemove = true;
 
-                if(Id == 3)
+                if (Id == 3)
                 {
                     FlashbangExplosion();
                 }
@@ -447,7 +447,7 @@ namespace SFDScripts
                 GlobalGame.PlaySound("Explosion", Position, 1);
 
                 StunPlayersInRangeNotCoveredByWall();
-                
+
                 ThrownWeaponObject.Remove();
                 ReadyForRemove = true;
             }
@@ -1893,7 +1893,12 @@ namespace SFDScripts
             public float RotationLimit = (float)Math.PI / 3;
             public float MainBlockAngle;
             public float DefaultAngle;
+
+            /// <summary>
+            /// The rate at which this turret gets destroyed. Higher means faster.
+            /// </summary>
             public float DamageFactor = 0.15f;
+
             public IObject Target = null;
             public int TargetVision = 3;
             public int LastTargetFinding = 10;
@@ -1963,10 +1968,11 @@ namespace SFDScripts
                 }
 
 
-                if (Id == 6 || Id == 7) MainBlock = GlobalGame.CreateObject("CrabCan00", position, -(float)Math.PI / 2 * dir);
-                else MainBlock = GlobalGame.CreateObject("Computer00", position, -(float)Math.PI / 2 * dir);
+                MainBlock = GlobalGame.CreateObject("Computer00", position, -(float)Math.PI / 2 * dir);
 
                 MainBlock.SetHealth(1000);
+
+
 
                 if (Id >= 4)
                 {
@@ -1974,7 +1980,7 @@ namespace SFDScripts
                     collisionDisabler.SetDisableCollisionTargetObjects(true);
                     collisionDisabler.SetDisableProjectileHit(false);
                     collisionDisabler.AddTargetObject(MainBlock);
-                    IObject[] platforms = GlobalGame.GetObjectsByName(new string[] { "MetalPlat01A", "Lift00C", "Lift00B", "MetalPlat00G", "Elevator02B", "InvisiblePlatform", "MetalPlat01F", "MetalPlat01B", "MetalPlat01C" });
+                    IObject[] platforms = GlobalGame.GetObjectsByName(new string[] { "MetalPlat01A", "Lift00C", "Lift00B", "MetalPlat00G", "Elevator02B", "InvisiblePlatform", "MetalPlat01F", "MetalPlat01B", "MetalPlat01C", "MetalPlat01E", "Plank00" });
                     for (int i = 0; i < platforms.Length; ++i)
                     {
                         collisionDisabler.AddTargetObject(platforms[i]);
@@ -2025,10 +2031,10 @@ namespace SFDScripts
                     HackingProtection = false;
                     EnableMovement = true;
                     PathSize = 2;
-                    Speed = 4;
-                    RotationSpeed = 2f;
+                    Speed = 4f;
+                    RotationSpeed = 10f;
                     DamageFactor = 1.5f;
-                    DroneMinDistance = 4 * 8;
+                    DroneMinDistance = 5 * 8;
                 }
                 else if (Id == 7)
                 {
@@ -2180,12 +2186,12 @@ namespace SFDScripts
                 {
                     TTurretWeapon weapon = new TTurretWeapon
                     {
-                        Distance = 50,
+                        Distance = 150,
                         BulletType = -2,
                         Sound = "Splash",
-                        ReloadingTime = 150,
+                        ReloadingTime = 50,
                         SuppressiveFire = true,
-                        Ammo = 25,
+                        Ammo = 40,
                         TurretTarget = false
                     };
                     WeaponList.Add(weapon);
@@ -2520,7 +2526,7 @@ namespace SFDScripts
                     DamagedObjectHp[i] -= ch;
                     DamagedObjects[i].SetHealth(DamagedObjectMaxHp[i]);
 
-                    Game.DrawText(DamagedObjectHp[i].ToString(), MainMotor.GetWorldPosition());
+                    Game.DrawText(DamagedObjectHp[i].ToString(), MainMotor.GetWorldPosition(), Color.Green);
                     if (DamagedObjectHp[i] <= 0)
                     {
                         Destroy();
@@ -2605,7 +2611,7 @@ namespace SFDScripts
                 }
                 else if (weapon.BulletType == -2)
                 {
-                    ElectricExplosion(MainMotor.GetWorldPosition(), 20, 50);
+                    ElectricExplosion(MainMotor.GetWorldPosition(), 45, 80);
                 }
                 else if (weapon.BulletType == -3)
                 {
@@ -4622,10 +4628,10 @@ namespace SFDScripts
             thrownWeaponSlot.AddEquipment(1, 50, 6, "Grenades", "Everyone loves grenades, make them explode. These grenades can't touch people though. 3 grenades"); //1	
             thrownWeaponSlot.AddEquipment(2, 25, 5, "Molotovs", "These little russian bottles we love. 3 in here for your pleasure."); //2
             thrownWeaponSlot.AddEquipment(3, 50, 7, "Mines", "Mines have a priming 'timer' in which while it flashes it will not detonate. 3 mines."); //3
-            thrownWeaponSlot.AddEquipment(4, 100, 10, "Incendiary grenades"); //4
+            thrownWeaponSlot.AddEquipment(4, 100, 10, "Incendiary grenades", "Grenades that blast an expansive ring of fire when they explode."); //4
             thrownWeaponSlot.AddEquipment(5, 25, 23, "Smoke grenades", ""); //5
-            thrownWeaponSlot.AddEquipment(6, 50, 24, "Flashbang", ""); //6
-            thrownWeaponSlot.AddEquipment(7, 50, 3, "Shuriken"); //7
+            thrownWeaponSlot.AddEquipment(6, 50, 24, "Flashbang", "This flash bangs will stun the enemies on its radius for some time depending on the enemy's distance. Walls and other elements can block the stun radius. "); //6
+            thrownWeaponSlot.AddEquipment(7, 50, 3, "Shuriken", "These shurikens are quick to throw. Three of this well placed may kill a soldier"); //7
 
             weaponModSlot.AddEquipment(1, 25, 3, "Lazer Scope", "Helps to aim precisely."); //1
             weaponModSlot.AddEquipment(2, 25, 4, "Extra Ammo", "Add extra ammo to your light weapon."); //2

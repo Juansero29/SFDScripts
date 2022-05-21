@@ -51,10 +51,10 @@
     <Compile Include="External\#B.cs" />
     <Compile Include="External\#F.cs" />
     <Compile Include="Internal\Hardcore\Hardcore.cs" />
-    <Compile Include="Internal\Hardcore\HardcoreDetentionTower.cs" />
     <Compile Include="Internal\Hardcore\HardcoreClassic.cs" />
-    <Compile Include="Internal\Hardcore\HardcoreClassicDetentionTower.cs" />
+    <Compile Include="Internal\Hardcore\HardcoreClassicEditionDetentionTower.cs" />
     <Compile Include="Internal\Hardcore\HardcoreClassicRemastered.cs" />
+    <Compile Include="Internal\Hardcore\HardcoreDefinitiveEditionDetentionTower.cs" />
     <Compile Include="Internal\Hardcore\HardcorePrecinct9.cs" />
     <Compile Include="Internal\Hardcore\HardcoreColdWar.cs" />
     <Compile Include="Internal\Hardcore\HardcoreDeepCliff.cs" />
@@ -82,6 +82,17 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Internal\Hardcore\Maps\Hardcore Classic Edition Detention Tower.sfdm" />
+    <None Include="Internal\Hardcore\Maps\Hardcore Classic Remastered.sfdm" />
+    <None Include="Internal\Hardcore\Maps\Hardcore Classic.sfdm" />
+    <None Include="Internal\Hardcore\Maps\Hardcore Cold War.sfdm" />
+    <None Include="Internal\Hardcore\Maps\Hardcore Deep Cliff.sfdm" />
+    <None Include="Internal\Hardcore\Maps\Hardcore Definitive Edition Detention Tower.sfdm" />
+    <None Include="Internal\Hardcore\Maps\Hardcore Police Station.sfdm" />
+    <None Include="Internal\Hardcore\Maps\Hardcore Precinct 9.sfdm" />
+    <None Include="Internal\Hardcore\Maps\Hardcore Small Hill.sfdm" />
+    <None Include="Internal\Hardcore\Maps\Hardcore Summit Of Evil.sfdm" />
+    <None Include="Internal\Hardcore\Maps\Hardcore Template.sfdm" />
     <None Include="LICENSE" />
   </ItemGroup>
   <ItemGroup />
