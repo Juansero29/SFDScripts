@@ -45,8 +45,8 @@ namespace SFDScripts
         public static Vector2 DroneAreaSize = new Vector2(1552, 912);
         #endregion
 
-        public static int CameraWidth = 1200;
-        public static int CameraHeight = 900;
+        public static int CameraWidth = 1240;
+        public static int CameraHeight = 540;
         #endregion
     }
 }
