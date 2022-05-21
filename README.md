@@ -1,6 +1,6 @@
 # SFDScripts
 
-![Build Status](https://github.com/Juansero29/SFDScripts/actions/workflows/dotnet-desktop.yml/badge.svg)
+[![Project Build, Test & Deploy](https://github.com/Juansero29/SFDScripts/actions/workflows/build-test-and-deploy.yml/badge.svg)](https://github.com/Juansero29/SFDScripts/actions/workflows/build-test-and-deploy.yml)
 
 ## My Superfighters Deluxe Scripts
 
