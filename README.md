@@ -1,5 +1,6 @@
-![Build Status](https://github.com/Juansero29/SFDScripts/actions/workflows/dotnet-desktop.yml/badge.svg)
 # SFDScripts
+
+![Build Status](https://github.com/Juansero29/SFDScripts/actions/workflows/dotnet-desktop.yml/badge.svg)
 
 ## My Superfighters Deluxe Scripts
 
@@ -47,6 +48,14 @@ You can follow these projects in here: <https://github.com/Juansero29/SFDScripts
 You're free to make comments, create issues and PRs! I'm open to suggestions.
 
 Check [CONTRIBUTING.MD](https://github.com/Juansero29/SFDScripts/blob/master/CONTRIBUTING.md) for very detailed information on how to start contributing.
+
+## PUSHING NEW MAPS
+
+1. `git add --renormalize .`
+1. `git lfs fetch --all origin your-branch-name`
+1. `git lfs push --all origin your-branch-name`
+1. `git commit -m "commit message"`
+1. `git push`
 
 ## LICENSE
 

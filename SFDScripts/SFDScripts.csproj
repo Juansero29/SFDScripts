@@ -51,8 +51,11 @@
     <Compile Include="External\#B.cs" />
     <Compile Include="External\#F.cs" />
     <Compile Include="Internal\Hardcore\Hardcore.cs" />
+    <Compile Include="Internal\Hardcore\HardcoreDetentionTower.cs" />
     <Compile Include="Internal\Hardcore\HardcoreClassic.cs" />
+    <Compile Include="Internal\Hardcore\HardcoreClassicDetentionTower.cs" />
     <Compile Include="Internal\Hardcore\HardcoreClassicRemastered.cs" />
+    <Compile Include="Internal\Hardcore\HardcorePrecinct9.cs" />
     <Compile Include="Internal\Hardcore\HardcoreColdWar.cs" />
     <Compile Include="Internal\Hardcore\HardcoreDeepCliff.cs" />
     <Compile Include="Internal\Hardcore\HardcorePoliceStation.cs" />

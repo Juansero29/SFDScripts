@@ -33,7 +33,7 @@ namespace SFDScripts
         public static int CurrentMapPartIndex = 1;
 
         /// <summary>
-        /// The world top position (where airstrikes get launched from)
+        /// The world top position (where airstrikes get launched from AND where drones spawn)
         /// </summary>
         public static int WorldTop = 500;
 
@@ -1974,7 +1974,7 @@ namespace SFDScripts
                     collisionDisabler.SetDisableCollisionTargetObjects(true);
                     collisionDisabler.SetDisableProjectileHit(false);
                     collisionDisabler.AddTargetObject(MainBlock);
-                    IObject[] platforms = GlobalGame.GetObjectsByName(new string[] { "MetalPlat01A", "Lift00C", "Lift00B", "MetalPlat00G", "Elevator02B", "InvisiblePlatform", "MetalPlat01F" });
+                    IObject[] platforms = GlobalGame.GetObjectsByName(new string[] { "MetalPlat01A", "Lift00C", "Lift00B", "MetalPlat00G", "Elevator02B", "InvisiblePlatform", "MetalPlat01F", "MetalPlat01B", "MetalPlat01C" });
                     for (int i = 0; i < platforms.Length; ++i)
                     {
                         collisionDisabler.AddTargetObject(platforms[i]);
@@ -3540,7 +3540,7 @@ namespace SFDScripts
             {
                 Area area = GlobalGame.GetCameraArea();
                 float x = GlobalRandom.Next((int)(area.Left + area.Width / 5), (int)(area.Right - area.Width / 5));
-                float y = area.Top + 10;
+                float y = WorldTop;
                 CreateTurret(id, new Vector2(x, y), player.User.GetPlayer().FacingDirection, player.Team);
                 GlobalGame.PlayEffect("EXP", new Vector2(x, y));
                 GlobalGame.PlaySound("Explosion", new Vector2(x, y), 1.0f);
@@ -6433,7 +6433,7 @@ namespace SFDScripts
         {
             Area area = GlobalGame.GetCameraArea();
             float x = GlobalRandom.Next((int)(area.Left + area.Width / 5), (int)(area.Right - area.Width / 5));
-            float y = area.Top - 10;
+            float y = WorldTop;
             CreateTurret(id, new Vector2(x, y), 1, team);
             GlobalGame.PlayEffect("EXP", new Vector2(x, y));
             GlobalGame.PlaySound("Explosion", new Vector2(x, y), 1.0f);
