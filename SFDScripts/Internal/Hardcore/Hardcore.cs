@@ -75,12 +75,12 @@ namespace SFDScripts
         /// <summary>
         // When true, we use a file called hardcoredebug.txt rather than hardcore.txt for loading and saving data
         /// </summary>
-        public static bool UseDebugStorage = true;
+        public static bool UseDebugStorage = false;
 
         /// <summary>
         /// When true, there's no need to set players to ready, they will all be ready from the start;
         /// </summary>
-        public static bool MakeAllPlayersReadyFromTheStart = true;
+        public static bool MakeAllPlayersReadyFromTheStart = false;
 
         #endregion
 
