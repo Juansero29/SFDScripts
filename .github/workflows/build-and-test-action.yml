@@ -36,11 +36,9 @@
 # For a complete CI/CD sample to get started with GitHub Action workflows for Desktop Applications,
 # refer to https://github.com/microsoft/github-actions-for-desktop-apps
 
-name: Project Build & Deploy
+name: Project Build & Test
 
 on:
-  push:
-    branches: [ master ]
   pull_request:
     branches: [ master ]
 
@@ -93,11 +91,3 @@ jobs:
     # Execute all unit tests in the solution
     - name: Execute unit tests
       run: dotnet test
-
-    # Pull LFS Maps
-    - name: Pull LFS Maps
-      run: git lfs pull
-      
-    # Deploy maps to server
-    - name: Deploy Maps
-      run: .\injectScriptToAllMaps.ps1
