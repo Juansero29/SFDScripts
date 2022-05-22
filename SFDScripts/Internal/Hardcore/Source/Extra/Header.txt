@@ -1,0 +1,22 @@
+﻿using SFDGameScriptInterface;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SFDScripts
+{
+    public class Hardcore : GameScriptInterface
+    {
+        public Hardcore(IGame game = null) : base(game) { }
+
+        #region Map Dependant Data
+
+        #region Drones
+
+        #endregion
+
+        #endregion
+
+        #region Script To Copy
