@@ -11,7 +11,6 @@ namespace SFDScripts
     {
         public Hardcore(IGame game = null) : base(game) { }
 
-
         #region Map Dependant Data
 
         #region Drones
@@ -21,7 +20,7 @@ namespace SFDScripts
         #endregion
 
         #region Script To Copy
-/* HardcoreColdWar.cs */
+        /* HardcoreColdWar.cs */
         #region Map Dependant Data
         /// <summary>
         /// The number of map parts in this map. For each map part, an startup process
@@ -43,26 +42,26 @@ namespace SFDScripts
         public static int CurrentMapPartIndex = 0;
 
         /// <summary>
-        /// The world top position (where airstrikes get launched from AND where drones spawn)
+        /// The world top position (where airstrikes get launched from)
         /// </summary>
-        public static int WorldTop = 580;
+        public static int WorldTop = 260;
 
         #region Drones
         /// <summary>
         /// Left bottom corner spot of the map. (x and  y coordinates)
         /// </summary>
-        public static Vector2 DroneAreaBegin = new Vector2(-2070, -332);
+        public static Vector2 DroneAreaBegin = new Vector2(-556, -236);
         /// <summary>
         /// An area that covers each of the map parts (x = width, y = height)
         /// </summary>
-        public static Vector2 DroneAreaSize = new Vector2(3784, 590);
+        public static Vector2 DroneAreaSize = new Vector2(632, 424);
         #endregion
 
-        public static int CameraWidth = 1240;
-        public static int CameraHeight = 540;
+        public static int CameraWidth = 600;
+        public static int CameraHeight = 455;
         #endregion
-        
-/* Camera.cs */
+
+        /* Camera.cs */
 
         #region Camera Settings
 
@@ -95,118 +94,6 @@ namespace SFDScripts
                 }
                 else
                 {
-                    ThrownWeaponObject = obj;
-                }
-                Position = ThrownWeaponObject.GetWorldPosition();
-                if (Id == 2 || Id == 3) TicksUntilExplosion = 100;
-                if (Id == 2)
-                {
-                    SmokeCount = 400;
-                }
-            }
-            public void OnDestroyed()
-            {
-                IsDestroyed = true;
-                if (Id == 1)
-                {
-                    GlobalGame.SpawnFireNodes(Position, 50, new Vector2(0, 0), 3, 10, FireNodeType.Flamethrower);
-                }
-                if (Id == 0 || Id == 1) ReadyForRemove = true;
-
-                if (Id == 3)
-                {
-                    FlashbangExplosion();
-                }
-
-                if (Id == 2)
-                {
-                    ThrownWeaponObject = GlobalGame.CreateObject("DrinkingGlass00", Position);
-                }
-            }
-            public void Update()
-            {
-                if (TicksUntilExplosion > 0) TicksUntilExplosion--;
-
-                if (ThrownWeaponIsNotRemovedOrBeingRemoved()) Position = ThrownWeaponObject.GetWorldPosition();
-                else if (!IsDestroyed) OnDestroyed();
-
-                IfDebugShowPlayersHitByThrownWeapon();
-
-                if (TicksUntilExplosion > 0) return;
-
-                if (Id == 2)
-                {
-                    if (SmokeCount > 0)
-                    {
-                        SmokeCount--;
-                        SpawnSmokeCircle(0);
-                        SpawnSmokeCircle(20);
-                        TicksUntilExplosion = 2;
-                        SmokePlayers(30);
-                    }
-                    else ReadyForRemove = true;
-                }
-
-                if (Id == 3)
-                {
-                    FlashbangExplosion();
-                }
-            }
-
-            private bool ThrownWeaponIsNotRemovedOrBeingRemoved()
-            {
-                return ThrownWeaponObject != null && !ThrownWeaponObject.RemovalInitiated && !ThrownWeaponObject.IsRemoved;
-            }
-
-            private void IfDebugShowPlayersHitByThrownWeapon()
-            {
-                if (!IsDebug) return;
-                if (Id == 3)
-                {
-                    DebugPlayersWhoAreBeingHitByFlash();
-                }
-            }
-
-            private TPlayer _currentPlayerBeingTested;
-
-            public void FlashbangExplosion()
-            {
-                PlayExplosionVisualEffects();
-                GlobalGame.PlaySound("Explosion", Position, 1);
-
-                StunPlayersInRangeNotCoveredByWall();
-
-                ThrownWeaponObject.Remove();
-                ReadyForRemove = true;
-            }
-
-            private void PlayExplosionVisualEffects()
-            {
-                GlobalGame.PlayEffect("EXP", Position);
-                GlobalGame.PlayEffect("S_P", Position);
-                GlobalGame.PlayEffect("S_P", Position);
-            }
-
-            private void StunPlayersInRangeNotCoveredByWall()
-            {
-                var position = Position + new Vector2(0, 10);
-                for (int i = 0; i < PlayerList.Count; i++)
-                {
-                    _currentPlayerBeingTested = PlayerList[i];
-                    if (IsCurrentPlayerBodyDeadOrNull()) continue;
-
-                    var distanceFromPlayerToFlashbang = (_currentPlayerBeingTested.Position - position).Length();
-                    if (distanceFromPlayerToFlashbang > RangeForFlashbang) continue;
-
-                    if (!IsPlayerBeingTestedHitByFlashbang()) continue;
-
-                    _currentPlayerBeingTested.StunTime += (int)(DurationOfFlashbangStunTime * (1 - distanceFromPlayerToFlashbang / RangeForFlashbang));
-                }
-            }
-
-            private bool IsCurrentPlayerBodyDeadOrNull()
-            {
-                return _currentPlayerBeingTested.User.GetPlayer() == null || _currentPlayerBeingTested.User.GetPlayer().IsDead;
                     cameraArea.Left -= CameraSpeed;
                 }
                 cameraArea.Right = cameraArea.Left + CameraWidth;
@@ -233,8 +120,8 @@ namespace SFDScripts
 
         #endregion
 
-        
-/* CapturePoint.cs */
+
+        /* CapturePoint.cs */
 
         #region Capture Point Class
         public class TCapturePoint
@@ -311,1167 +198,8 @@ namespace SFDScripts
 
         #endregion
 
-        
-/* CustomArmor.cs */
 
-                    int additionLines = lineCount - text.Split('\n').Length;
-                    for (int i = 0; i < additionLines; i++)
-                    {
-                        text += "\n";
-                    }
-                    Menu.SetText(text);
-                }
-            }
-            public void SpawnPlayer(Vector2 position)
-            {
-                if (Player == null) return;
-                if (!Player.IsActive()) return;
-                if (!Ready && CurrentPoints <= LevelList[Player.Level].AllowPoints) Ready = true;
-                Player.Respawn();
-                if (Player.User.GetPlayer() != null) Player.User.GetPlayer().Remove();
-                IPlayer newPlayer = GlobalGame.CreatePlayer(position);
-                newPlayer.SetUser(Player.User);
-                newPlayer.SetTeam(Player.Team);
-                //newPlayer.SetStatusBarsVisible(false);
-                if (Ready)
-                {
-                    for (int i = 0; i < Equipment.Count; i++)
-                    {
-                        Player.AddEquipment(EquipmentList[i].EquipmentList[Equipment[i]].Id, i);
-                    }
-                }
-
-                if (KeepPlayersSkins)
-                {
-                    newPlayer.SetProfile(Player.User.GetProfile());
-                }
-                else
-                {
-                    newPlayer.SetProfile(Player.GetSkin());
-                }
-
-                Player.OnPlayerCreated();
-                newPlayer.SetInputEnabled(false);
-            }
-        }
-
-        #endregion
-
-        #region Shield Generator Class
-        public class TShieldGenerator
-        {
-            public class TShieldBlock
-            {
-                public Vector2 Position;
-                public float Angle = 0;
-                public List<IObject> ShieldGlass = new List<IObject>();
-                public IObject ShieldBlock = null;
-                public List<IObject> ShieldShard = new List<IObject>();
-                public PlayerTeam Team;
-                public float Sin;
-                public float Cos;
-                public float NSin;
-                public float NCos;
-                public int CheckShieldTimer = 0;
-                public bool Disabled = false;
-                public int NeedPower = 0;
-                public int AnimationTime = 0;
-                public TShieldBlock(Vector2 position, float angle, PlayerTeam team)
-                {
-                    Position = position;
-                    Angle = angle;
-                    Team = team;
-                    Sin = (float)Math.Sin(Angle);
-                    Cos = (float)Math.Cos(Angle);
-                    NSin = (float)Math.Sin(Angle + (float)Math.PI / 2);
-                    NCos = (float)Math.Cos(Angle + (float)Math.PI / 2);
-                    for (int i = 0; i < 2; i++)
-                    {
-                        ShieldGlass.Add(null);
-                        ShieldShard.Add(null);
-                    }
-                    AnimationTime = GlobalRandom.Next(50, 150);
-                }
-                public void Update()
-                {
-                    NeedPower = 0;
-                    if (CheckShieldTimer == 0)
-                    {
-                        bool d = false;
-                        for (int i = 0; i < PlayerList.Count; i++)
-                        {
-                            if (PlayerList[i].Team == Team)
-                            {
-                                IPlayer pl = PlayerList[i].User.GetPlayer();
-                                if (pl == null) continue;
-                                if (TestDistance(Position, PlayerList[i].Position, 28))
-                                {
-                                    d = true;
-                                    break;
-                                }
-                            }
-                        }
-                        if (d && !Disabled)
-                        {
-                            Remove();
-                            NeedPower = -2;
-                        }
-                        Disabled = d;
-                        CheckShieldTimer = 30;
-                    }
-                    else if (CheckShieldTimer > 0)
-                    {
-                        CheckShieldTimer--;
-                    }
-                    if (Disabled) return;
-                    if (ShieldBlock == null || ShieldBlock.IsRemoved)
-                    {
-                        ShieldBlock = GlobalGame.CreateObject("InvisibleBlock", Position + new Vector2(NCos * 4, NSin * 4), Angle);
-                        ShieldBlock.SetSizeFactor(new Point(1, 2));
-                    }
-                    for (int i = 0; i < ShieldGlass.Count; i++)
-                    {
-                        if (ShieldGlass[i] == null)
-                        {
-                            int s = (int)Math.Pow(-1, i);
-                            ShieldGlass[i] = GlobalGame.CreateObject("ReinforcedGlass00A", Position + new Vector2(NCos * 4 * s, NSin * 4 * s) - new Vector2(Cos, Sin), Angle);
-                        }
-                        else if (ShieldGlass[i].IsRemoved)
-                        {
-                            ShieldGlass[i].Remove();
-                            ShieldGlass[i] = null;
-                        }
-                    }
-                    for (int i = 0; i < ShieldShard.Count; i++)
-                    {
-                        int s = (int)Math.Pow(-1, i);
-                        if (ShieldShard[i] == null)
-                        {
-                            ShieldShard[i] = GlobalGame.CreateObject("GlassShard00A", Position + new Vector2(NCos * 4 * s, NSin * 4 * s) + new Vector2(Cos * 4, Sin * 4), Angle - (float)Math.PI / 2);
-                            ShieldShard[i].SetBodyType(BodyType.Static);
-                        }
-                        else if (ShieldShard[i].IsRemoved)
-                        {
-                            ShieldShard[i].Remove();
-                            ShieldShard[i] = null;
-                            NeedPower++;
-                        }
-                    }
-                    if (NeedPower > 0)
-                    {
-                        int offset = GlobalRandom.Next(-8, 8);
-                        GlobalGame.PlayEffect("S_P", Position + new Vector2(Cos * offset, Sin * offset));
-                    }
-                    if (AnimationTime <= 0)
-                    {
-                        AnimationTime = GlobalRandom.Next(50, 150);
-                        int offset = GlobalRandom.Next(-8, 8);
-                        GlobalGame.PlayEffect("GLM", Position + new Vector2(Cos * offset, Sin * offset));
-                    }
-                    else if (AnimationTime > 0)
-                    {
-                        AnimationTime--;
-                    }
-                }
-                public void Remove()
-                {
-                    if (ShieldBlock != null) ShieldBlock.Remove();
-                    for (int i = 0; i < ShieldGlass.Count; i++)
-                    {
-                        if (ShieldGlass[i] != null) ShieldGlass[i].Remove();
-                    }
-                    for (int i = 0; i < ShieldShard.Count; i++)
-                    {
-                        if (ShieldShard[i] != null) ShieldShard[i].Remove();
-                    }
-                }
-                public void Destroy()
-                {
-                    if (ShieldBlock != null) ShieldBlock.Remove();
-                    for (int i = 0; i < ShieldGlass.Count; i++)
-                    {
-                        if (ShieldGlass[i] != null) ShieldGlass[i].Destroy();
-                    }
-                    for (int i = 0; i < ShieldShard.Count; i++)
-                    {
-                        if (ShieldShard[i] != null) ShieldShard[i].Destroy();
-                    }
-                }
-            }
-            public IObject CoreObject;
-            public IObjectText TextName;
-            public List<IObject> OtherObjects = new List<IObject>();
-            public List<TShieldBlock> ShieldBlocks = new List<TShieldBlock>();
-            public PlayerTeam Team;
-            public float Power = 0;
-            public float Radius = 0;
-            public bool IsEnabled = false;
-            public int Loading = 50;
-            public TShieldGenerator(int power, Vector2 position, float radius, PlayerTeam team)
-            {
-                Team = team;
-                Power = power;
-                Radius = radius;
-                CoreObject = GlobalGame.CreateObject("Computer00", position, 0);
-                TextName = (IObjectText)GlobalGame.CreateObject("Text", position);
-                TextName.SetTextAlignment(TextAlignment.Middle);
-                TextName.SetTextScale(0.8f);
-                IObject leftLeg = GlobalGame.CreateObject("Duct00C_D", position + new Vector2(-5, -2), (float)Math.PI / 2);
-                IObject rightLeg = GlobalGame.CreateObject("Duct00C_D", position + new Vector2(6, -2), (float)Math.PI / 2);
-                IObjectWeldJoint joint = (IObjectWeldJoint)GlobalGame.CreateObject("WeldJoint", position);
-                joint.AddTargetObject(CoreObject);
-                joint.AddTargetObject(leftLeg);
-                joint.AddTargetObject(rightLeg);
-                OtherObjects.Add(leftLeg);
-                OtherObjects.Add(rightLeg);
-                OtherObjects.Add(joint);
-                OtherObjects.Add(TextName);
-            }
-            public void CreateShield()
-            {
-                float angleStep = (float)Math.Acos((double)(1f - (16f * 16f) / (2f * Radius * Radius)));
-                int count = (int)Math.Round(Math.PI * 2 / angleStep);
-                angleStep = (float)(Math.PI * 2 / count);
-                float currentAngle = 0;
-                for (int i = 0; i < count; i++)
-                {
-                    Vector2 position = CoreObject.GetWorldPosition() + new Vector2((float)Math.Cos(currentAngle) * Radius, (float)Math.Sin(currentAngle) * Radius);
-                    int status = TracePath(CoreObject.GetWorldPosition(), position, PlayerTeam.Independent, true);
-                    if (status < 3)
-                    {
-                        TShieldBlock block = new TShieldBlock(position, currentAngle, Team);
-                        ShieldBlocks.Add(block);
-                    }
-                    currentAngle += angleStep;
-                }
-            }
-            public void DestroyShield()
-            {
-                for (int i = 0; i < ShieldBlocks.Count; i++)
-                {
-                    ShieldBlocks[i].Destroy();
-                }
-                ShieldBlocks.Clear();
-            }
-            public void RemoveShield()
-            {
-                for (int i = 0; i < ShieldBlocks.Count; i++)
-                {
-                    ShieldBlocks[i].Remove();
-                }
-                ShieldBlocks.Clear();
-            }
-            public void Update()
-            {
-                if (Loading > 0)
-                {
-                    Loading--;
-                    return;
-                }
-                if (CoreObject == null || CoreObject.IsRemoved)
-                {
-                    if (OtherObjects.Count > 0)
-                    {
-                        for (int i = 0; i < OtherObjects.Count; i++)
-                        {
-                            if (OtherObjects[i] != null) OtherObjects[i].Destroy();
-                        }
-                        OtherObjects.Clear();
-                    }
-                    return;
-                }
-                TextName.SetWorldPosition(CoreObject.GetWorldPosition() + new Vector2(0, 10));
-                string name = "Shield Generator" + "[" + Power + "]";
-                TextName.SetText(name);
-                if (Team == PlayerTeam.Team1) TextName.SetTextColor(new Color(122, 122, 224));
-                else if (Team == PlayerTeam.Team2) TextName.SetTextColor(new Color(224, 122, 122));
-                else if (Team == PlayerTeam.Team3) TextName.SetTextColor(new Color(112, 224, 122));
-                if (Power > 0)
-                {
-                    float velocity = CoreObject.GetLinearVelocity().Length();
-                    if (!IsEnabled && velocity == 0)
-                    {
-                        IsEnabled = true;
-                        CreateShield();
-                    }
-                    else if (IsEnabled && velocity != 0)
-                    {
-                        IsEnabled = false;
-                        DestroyShield();
-                    }
-                    for (int i = 0; i < ShieldBlocks.Count; i++)
-                    {
-                        ShieldBlocks[i].Update();
-                        Power -= ShieldBlocks[i].NeedPower;
-                    }
-                    Power = Math.Max(0, Power);
-                    if (Power <= 0) DestroyShield();
-                }
-            }
-            public void Remove()
-            {
-                CoreObject.Remove();
-                for (int i = 0; i < OtherObjects.Count; i++)
-                {
-                    OtherObjects[i].Remove();
-                }
-                RemoveShield();
-            }
-        }
-
-        public static void CreateShieldGenerator(int power, Vector2 position, float radius, PlayerTeam team)
-        {
-            TShieldGenerator generator = new TShieldGenerator(power, position, radius, team);
-            ShieldGeneratorList.Add(generator);
-        }
-
-        #endregion
-
-        #region Turret Class
-        public class TTurret
-        {
-            public class TTurretWeapon
-            {
-                public int BulletType;
-                public string Sound;
-                public int ReloadingTime;
-                public int CurrentReloading = 100;
-                public int Ammo;
-                public int Scatter;
-                public bool SuppressiveFire = false;
-                public int MaxFireDelay = 0;
-                public int MaxBulletCount = 0;
-                public int FireDelay = 1;
-                public int BulletCount = 0;
-                public int Distance = 2000;
-                public bool TurretTarget = true;
-            }
-            public int Id;
-            public PlayerTeam Team;
-            public List<TTurretWeapon> WeaponList = new List<TTurretWeapon>();
-            public List<IObject> OtherObjects = new List<IObject>();
-            public List<IObject> DamagedObjects = new List<IObject>();
-            public List<float> DamagedObjectHp = new List<float>();
-            public List<float> DamagedObjectMaxHp = new List<float>();
-            public IObject Hull;
-            public IObject MainBlock;
-            public IObjectRevoluteJoint MainMotor;
-            public IObjectText TextName;
-            public IObjectRailJoint RailJoint = null;
-            public IObjectTargetObjectJoint TargetObject = null;
-            public IObjectRailAttachmentJoint RailAttachment = null;
-            public string Name;
-            public float RotationSpeed = 1f;
-            public float RotationLimit = (float)Math.PI / 3;
-            public float MainBlockAngle;
-            public float DefaultAngle;
-
-            /// <summary>
-            /// The rate at which this turret gets destroyed. Higher means faster.
-            /// </summary>
-            public float DamageFactor = 0.15f;
-
-            public IObject Target = null;
-            public int TargetVision = 3;
-            public int LastTargetFinding = 10;
-            public int LastPathFinding = 0;
-            public bool EnableMovement = false;
-            public int PathSize = 0;
-            public float Speed = 0;
-            public List<Vector2> CurrentPath = new List<Vector2>();
-            public bool HackingProtection = false;
-            public bool IsProtector = false;
-            public bool IsCapturer = false;
-            public float DroneMinDistance = 0;
-            public int SmokeEffectTime = 0;
-
-            public bool CanFire = false;
-
-            public bool ChangingRoute { get; private set; }
-
-            public TTurret(int id, Vector2 position, int dir, PlayerTeam team)
-            {
-                Id = id;
-                Team = team;
-                if (dir < 0)
-                {
-                    MainBlockAngle = (float)Math.PI / 2;
-                    DefaultAngle = (float)Math.PI;
-                }
-                else
-                {
-                    MainBlockAngle = (float)Math.PI / 2;
-                    DefaultAngle = 0;
-                }
-                IObject leftLeg = null;
-                IObject rightLeg = null;
-                IObject hull2 = null;
-                IObject hull3 = null;
-                IObject hull4 = null;
-
-                if (Id < 4)
-                {
-                    leftLeg = GlobalGame.CreateObject("Duct00C_D", position + new Vector2(-3, -9), 1.2f);
-                    rightLeg = GlobalGame.CreateObject("Duct00C_D", position + new Vector2(3, -9), -1.2f);
-                    leftLeg.SetMass(leftLeg.GetMass() * 20);
-                    rightLeg.SetMass(rightLeg.GetMass() * 20);
-                }
-                else if (Id == 4 || Id == 5 || Id == 6 || Id == 7)
-                {
-                    RotationLimit = 0;
-                    Hull = GlobalGame.CreateObject("BgMetal08H", position + new Vector2(-4, 4), (float)Math.PI / 2);
-                    hull2 = GlobalGame.CreateObject("BgMetal08H", position + new Vector2(4, 4), 0);
-                    hull3 = GlobalGame.CreateObject("BgMetal08H", position + new Vector2(4, -4), -(float)Math.PI / 2);
-                    hull4 = GlobalGame.CreateObject("BgMetal08H", position + new Vector2(-4, -4), -(float)Math.PI);
-                    hull2.SetBodyType(BodyType.Dynamic);
-                    hull3.SetBodyType(BodyType.Dynamic);
-                    hull4.SetBodyType(BodyType.Dynamic);
-                }
-                else if (Id == 6 || Id == 7)
-                {
-                    RotationLimit = 0;
-                    Hull = GlobalGame.CreateObject("BgMetal08H", position + new Vector2(-4, 4), (float)Math.PI / 2);
-                    hull2 = GlobalGame.CreateObject("BgMetal08H", position + new Vector2(4, 4), 0);
-                    hull3 = GlobalGame.CreateObject("BgMetal08H", position + new Vector2(4, -4), -(float)Math.PI / 2);
-                    hull4 = GlobalGame.CreateObject("BgMetal08H", position + new Vector2(-4, -4), -(float)Math.PI);
-                    hull2.SetBodyType(BodyType.Dynamic);
-                    hull3.SetBodyType(BodyType.Dynamic);
-                    hull4.SetBodyType(BodyType.Dynamic);
-                }
-
-
-                MainBlock = GlobalGame.CreateObject("Computer00", position, -(float)Math.PI / 2 * dir);
-
-                MainBlock.SetHealth(1000);
-
-
-
-                if (Id >= 4)
-                {
-                    IObjectAlterCollisionTile collisionDisabler = (IObjectAlterCollisionTile)GlobalGame.CreateObject("AlterCollisionTile", position);
-                    collisionDisabler.SetDisableCollisionTargetObjects(true);
-                    collisionDisabler.SetDisableProjectileHit(false);
-                    collisionDisabler.AddTargetObject(MainBlock);
-                    IObject[] platforms = GlobalGame.GetObjectsByName(new string[] { "MetalPlat01A", "Lift00C", "Lift00B", "MetalPlat00G", "Elevator02B", "InvisiblePlatform", "MetalPlat01F", "MetalPlat01B", "MetalPlat01C", "MetalPlat01E", "Plank00" });
-                    for (int i = 0; i < platforms.Length; ++i)
-                    {
-                        collisionDisabler.AddTargetObject(platforms[i]);
-                    }
-                }
-                IObject antenna = GlobalGame.CreateObject("BgAntenna00B", position + new Vector2(-2 * dir, 9));
-                antenna.SetBodyType(BodyType.Dynamic);
-                antenna.SetMass(0.0000001f);
-                IObjectWeldJoint bodyJoint = (IObjectWeldJoint)GlobalGame.CreateObject("WeldJoint", position);
-                IObjectWeldJoint hullJoint = (IObjectWeldJoint)GlobalGame.CreateObject("WeldJoint", position);
-                if (Id < 4)
-                {
-                    hullJoint.AddTargetObject(leftLeg);
-                    hullJoint.AddTargetObject(rightLeg);
-                    OtherObjects.Add(leftLeg);
-                    OtherObjects.Add(rightLeg);
-                }
-                else if (Id == 4 || Id == 5 || Id == 6 || Id == 7)
-                {
-                    hullJoint.AddTargetObject(Hull);
-                    hullJoint.AddTargetObject(hull2);
-                    hullJoint.AddTargetObject(hull3);
-                    hullJoint.AddTargetObject(hull4);
-                    OtherObjects.Add(Hull);
-                    OtherObjects.Add(hull2);
-                    OtherObjects.Add(hull3);
-                    OtherObjects.Add(hull4);
-                }
-                bodyJoint.AddTargetObject(MainBlock);
-                bodyJoint.AddTargetObject(antenna);
-                bodyJoint.SetPlatformCollision(WeldJointPlatformCollision.PerObject);
-                OtherObjects.Add(antenna);
-                OtherObjects.Add(bodyJoint);
-                OtherObjects.Add(hullJoint);
-                DamagedObjects.Add(MainBlock);
-                if (Id == 4 || Id == 5)
-                {
-                    HackingProtection = true;
-                    EnableMovement = true;
-                    PathSize = 2;
-                    Speed = 3;
-                    RotationSpeed = 3f;
-                    DamageFactor = 1f;
-                    DroneMinDistance = 5 * 8;
-                }
-                else if (Id == 6)
-                {
-                    HackingProtection = false;
-                    EnableMovement = true;
-                    PathSize = 2;
-                    Speed = 4f;
-                    RotationSpeed = 10f;
-                    DamageFactor = 1.5f;
-                    DroneMinDistance = 5 * 8;
-                }
-                else if (Id == 7)
-                {
-                    HackingProtection = false;
-                    EnableMovement = true;
-                    PathSize = 2;
-                    Speed = 4;
-                    RotationSpeed = 2f;
-                    DamageFactor = 1f;
-                    DroneMinDistance = 4 * 8;
-                }
-
-                if (id == 0) Name = "Light Turret";
-                else if (id == 1) Name = "Rocket Turret";
-                else if (id == 2) Name = "Heavy Turret";
-                else if (id == 3) Name = "Sniper Turret";
-                else if (id == 4) Name = "Assault Drone";
-                else if (id == 5) Name = "Fire Drone";
-                else if (id == 6) Name = "Tazer Drone";
-                else if (id == 7) Name = "Melee Drone";
-                if (id == 1 || id == 2)
-                { //@0:5B=8F0
-                    IObject gun2 = GlobalGame.CreateObject("BgBarberPole00", position + new Vector2(dir, -2), (float)Math.PI / 2);
-                    IObject gun1 = GlobalGame.CreateObject("BgBarberPole00", position + new Vector2(dir, 3), (float)Math.PI / 2);
-                    gun1.SetBodyType(BodyType.Dynamic);
-                    gun2.SetBodyType(BodyType.Dynamic);
-                    gun1.SetMass(0.0000001f);
-                    gun2.SetMass(0.0000001f);
-                    bodyJoint.AddTargetObject(gun1);
-                    bodyJoint.AddTargetObject(gun2);
-                    OtherObjects.Add(gun1);
-                    OtherObjects.Add(gun2);
-                    TTurretWeapon weapon = new TTurretWeapon
-                    {
-                        BulletType = (int)ProjectileItem.BAZOOKA,
-                        Sound = "Bazooka",
-                        ReloadingTime = 200
-                    };
-                    if (id == 2) weapon.Ammo = 4;
-                    else
-                    {
-                        weapon.Ammo = 6;
-                        weapon.SuppressiveFire = true;
-                        weapon.MaxFireDelay = 1;
-                        weapon.MaxBulletCount = 1;
-                    }
-                    weapon.Scatter = 0;
-                    WeaponList.Add(weapon);
-                }
-                if (id == 0 || id == 2 || id == 4)
-                { //?C;5<5B		
-                    IObject gun00 = GlobalGame.CreateObject("BgPipe02A", position + new Vector2(8 * dir, 0));
-                    IObject gun01 = GlobalGame.CreateObject("BgPipe02B", position + new Vector2(14 * dir, 0));
-                    IObject gun10 = GlobalGame.CreateObject("BgPipe02A", position + new Vector2(8 * dir, 2));
-                    IObject gun11 = GlobalGame.CreateObject("BgPipe02B", position + new Vector2(14 * dir, 2));
-                    gun00.SetBodyType(BodyType.Dynamic);
-                    gun01.SetBodyType(BodyType.Dynamic);
-                    gun10.SetBodyType(BodyType.Dynamic);
-                    gun11.SetBodyType(BodyType.Dynamic);
-                    gun00.SetMass(0.0000001f);
-                    gun01.SetMass(0.0000001f);
-                    gun10.SetMass(0.0000001f);
-                    gun11.SetMass(0.0000001f);
-                    bodyJoint.AddTargetObject(gun00);
-                    bodyJoint.AddTargetObject(gun01);
-                    bodyJoint.AddTargetObject(gun10);
-                    bodyJoint.AddTargetObject(gun11);
-                    OtherObjects.Add(gun00);
-                    OtherObjects.Add(gun01);
-                    OtherObjects.Add(gun10);
-                    OtherObjects.Add(gun11);
-                    TTurretWeapon weapon = new TTurretWeapon
-                    {
-                        BulletType = (int)ProjectileItem.UZI,
-                        Sound = "AssaultRifle",
-                        ReloadingTime = 7,
-                        Ammo = 150,
-                        Scatter = 2,
-                        SuppressiveFire = true,
-                        MaxFireDelay = 30,
-                        MaxBulletCount = 3
-                    };
-                    WeaponList.Add(weapon);
-                }
-                if (id == 3)
-                { //A=09?5@:0
-                    IObject gun1 = GlobalGame.CreateObject("BgPipe02A", position + new Vector2((dir == -1) ? -14 : 6, 0));
-                    IObject gun2 = GlobalGame.CreateObject("BgPipe02B", position + new Vector2(22 * dir, 0));
-                    IObject gun3 = GlobalGame.CreateObject("BgPipe02B", position + new Vector2(7 * dir, 2));
-                    gun1.SetSizeFactor(new Point(2, 1));
-                    gun1.SetBodyType(BodyType.Dynamic);
-                    gun2.SetBodyType(BodyType.Dynamic);
-                    gun3.SetBodyType(BodyType.Dynamic);
-                    gun1.SetMass(0.0000001f);
-                    gun2.SetMass(0.0000001f);
-                    gun3.SetMass(0.0000001f);
-                    bodyJoint.AddTargetObject(gun1);
-                    bodyJoint.AddTargetObject(gun2);
-                    bodyJoint.AddTargetObject(gun3);
-                    OtherObjects.Add(gun1);
-                    OtherObjects.Add(gun2);
-                    OtherObjects.Add(gun3);
-                    TTurretWeapon weapon = new TTurretWeapon
-                    {
-                        BulletType = (int)ProjectileItem.SNIPER,
-                        Sound = "Sniper",
-                        ReloadingTime = 150,
-                        Ammo = 10,
-                        Scatter = 0
-                    };
-                    WeaponList.Add(weapon);
-                }
-                if (id == 5)
-                { //>3=5<QB
-                    IObject gun1 = GlobalGame.CreateObject("BgPipe02A", position + new Vector2((dir == -1) ? -14 : 6, 0));
-                    IObject gun2 = GlobalGame.CreateObject("BgPipe02B", position + new Vector2(14 * dir, 0));
-                    IObject gun3 = GlobalGame.CreateObject("BgPipe02B", position + new Vector2(7 * dir, 2));
-                    IObject gun4 = GlobalGame.CreateObject("BgPipe02B", position + new Vector2(7 * dir, -2));
-                    gun1.SetBodyType(BodyType.Dynamic);
-                    gun2.SetBodyType(BodyType.Dynamic);
-                    gun3.SetBodyType(BodyType.Dynamic);
-                    gun4.SetBodyType(BodyType.Dynamic);
-                    gun1.SetMass(0.0000001f);
-                    gun2.SetMass(0.0000001f);
-                    gun3.SetMass(0.0000001f);
-                    gun4.SetMass(0.0000001f);
-                    bodyJoint.AddTargetObject(gun1);
-                    bodyJoint.AddTargetObject(gun2);
-                    bodyJoint.AddTargetObject(gun3);
-                    bodyJoint.AddTargetObject(gun4);
-                    OtherObjects.Add(gun1);
-                    OtherObjects.Add(gun2);
-                    OtherObjects.Add(gun3);
-                    OtherObjects.Add(gun4);
-                    TTurretWeapon weapon = new TTurretWeapon
-                    {
-                        Distance = 150,
-                        BulletType = -1,
-                        Sound = "Flamethrower",
-                        ReloadingTime = 3,
-                        Ammo = 300,
-                        SuppressiveFire = true,
-                        Scatter = 10,
-                        TurretTarget = false
-                    };
-                    WeaponList.Add(weapon);
-                }
-                if (Id == 6)
-                {
-                    TTurretWeapon weapon = new TTurretWeapon
-                    {
-                        Distance = 150,
-                        BulletType = -2,
-                        Sound = "Splash",
-                        ReloadingTime = 50,
-                        SuppressiveFire = true,
-                        Ammo = 40,
-                        TurretTarget = false
-                    };
-                    WeaponList.Add(weapon);
-                }
-                if (Id == 7)
-                {
-                    TTurretWeapon weapon = new TTurretWeapon
-                    {
-                        Distance = 60,
-                        BulletType = -3,
-                        Sound = "MeleeSwing",
-                        ReloadingTime = 50,
-                        SuppressiveFire = true,
-                        Ammo = 15,
-                        TurretTarget = false
-                    };
-                    WeaponList.Add(weapon);
-                }
-                TextName = (IObjectText)GlobalGame.CreateObject("Text", position);
-                TextName.SetTextAlignment(TextAlignment.Middle);
-                TextName.SetText(Name);
-                TextName.SetTextScale(0.8f);
-                OtherObjects.Add(TextName);
-                MainMotor = (IObjectRevoluteJoint)GlobalGame.CreateObject("RevoluteJoint", position);
-                MainMotor.SetTargetObjectB(MainBlock);
-                if (Id < 4) MainMotor.SetTargetObjectA(leftLeg);
-                else MainMotor.SetTargetObjectA(hull2);
-                MainMotor.SetMotorEnabled(true);
-                MainMotor.SetMaxMotorTorque(100000);
-                MainMotor.SetMotorSpeed(0);
-                OtherObjects.Add(MainMotor);
-                InitHealth();
-            }
-            public void InitHealth()
-            {
-                for (int i = 0; i < DamagedObjects.Count; i++)
-                {
-                    DamagedObjectHp.Add(DamagedObjects[i].GetHealth());
-                    DamagedObjectMaxHp.Add(DamagedObjects[i].GetHealth());
-                }
-            }
-            public bool HaveAmmo()
-            {
-                for (int i = 0; i < WeaponList.Count; i++)
-                {
-                    if (WeaponList[i].Ammo > 0)
-                    {
-                        return true;
-                    }
-                }
-                return false;
-            }
-            public bool CanHitTurret()
-            {
-                for (int i = 0; i < WeaponList.Count; i++) if (WeaponList[i].TurretTarget) return true;
-                return false;
-            }
-            public int GetMaxDistance()
-            {
-                int max = 0;
-                for (int i = 0; i < WeaponList.Count; i++)
-                {
-                    if (WeaponList[i].Ammo > 0 && WeaponList[i].Distance > max)
-                    {
-                        max = WeaponList[i].Distance;
-                    }
-                }
-                return max;
-            }
-
-
-
-            public void Update()
-            {
-                if (SmokeEffectTime > 0) SmokeEffectTime--;
-                if (MainBlock.GetHealth() <= 5 && SmokeEffectTime == 0)
-                {
-                    GlobalGame.PlayEffect("TR_S", MainMotor.GetWorldPosition());
-                    GlobalGame.PlayEffect("TR_S", MainMotor.GetWorldPosition() + new Vector2(0, 5));
-                    SmokeEffectTime = 5;
-                }
-                TextName.SetWorldPosition(MainMotor.GetWorldPosition() + new Vector2(0, 10));
-                string name = Name;
-                for (int i = 0; i < WeaponList.Count; i++)
-                {
-                    name += "[" + WeaponList[i].Ammo + "]";
-                }
-                TextName.SetText(name);
-                if (!HackingProtection && IsJamming(Team))
-                {
-                    TextName.SetTextColor(Color.White);
-                    if (GlobalRandom.Next(100) <= 10)
-                    {
-                        string line = " ";
-                        for (int i = 0; i < 10; i++)
-                        {
-                            switch (GlobalRandom.Next(5))
-                            {
-                                case 0: line += "#"; break;
-                                case 1: line += "@"; break;
-                                case 2: line += "%"; break;
-                                case 3: line += "_"; break;
-                                case 4: line += "*"; break;
-                            }
-                        }
-                        TextName.SetText(line);
-                    }
-                }
-                else if (Team == PlayerTeam.Independent || (!HackingProtection && IsHacking(Team))) TextName.SetTextColor(Color.White);
-                else if (Team == PlayerTeam.Team1) TextName.SetTextColor(new Color(122, 122, 224));
-                else if (Team == PlayerTeam.Team2) TextName.SetTextColor(new Color(224, 122, 122));
-                else if (Team == PlayerTeam.Team3) TextName.SetTextColor(new Color(112, 224, 122));
-                if (UpdateHealth()) return;
-                UpdateWeapon();
-                if (!HaveAmmo() || (IsJamming(Team) && !HackingProtection)) return;
-                if (LastTargetFinding == 0)
-                {
-                    PlayerTeam team = Team;
-                    if (IsHacking(Team) && !HackingProtection) team = PlayerTeam.Independent;
-                    List<IObject> targetList;
-                    if (IsProtector) targetList = GetFriendList(team, MainMotor.GetWorldPosition(), GetMaxDistance());
-                    else targetList = GetTargetList(team, MainMotor.GetWorldPosition(), GetMaxDistance(), CanHitTurret(), HackingProtection);
-                    Target = null;
-                    TargetVision = 3;
-                    for (int i = 0; i < targetList.Count; i++)
-                    {
-                        IObject obj = targetList[i];
-                        if (obj == MainMotor) continue;
-                        if (RotationLimit > 0)
-                        {
-                            float angle = TwoPointAngle(MainMotor.GetWorldPosition(), obj.GetWorldPosition());
-                            if (Math.Abs(GetAngleDistance(angle, DefaultAngle + MainMotor.GetAngle())) > RotationLimit) continue;
-                        }
-                        int trace = TraceToObject(obj);
-                        if (trace < TargetVision)
-                        {
-                            TargetVision = trace;
-                            Target = obj;
-                            break;
-                        }
-                    }
-                    LastTargetFinding = 10;
-                }
-                else
-                {
-                    LastTargetFinding--;
-                }
-                if (EnableMovement)
-                {
-                    if (Target != null && (MainMotor.GetWorldPosition() - Target.GetWorldPosition()).Length() <= DroneMinDistance && CanFire)
-                    {
-                        CurrentPath.Clear();
-                        StopMovement();
-                    }
-                    else if (LastPathFinding == 0)
-                    {
-                        CurrentPath.Clear();
-                        StopMovement();
-                        FindPathToTarget(randomTarget: ChangingRoute);
-                        LastPathFinding = 200;
-                    }
-                    if (LastPathFinding > 0)
-                    {
-                        LastPathFinding--;
-                    }
-                    Movement();
-                }
-                if (Target == null)
-                {
-                    MainMotor.SetMotorSpeed(0);
-                    return;
-                }
-                Vector2 targetPos = Target.GetWorldPosition();
-                if (IsPlayer(Target.Name)) targetPos = GetPlayerCenter((IPlayer)Target);
-                float targetAngle = TwoPointAngle(MainMotor.GetWorldPosition(), targetPos);
-                targetAngle = GetAngleDistance(targetAngle, MainBlockAngle + MainBlock.GetAngle());
-
-
-                if (Math.Abs(targetAngle) > 0.01f * RotationSpeed)
-                {
-                    if (targetAngle > 0) MainMotor.SetMotorSpeed(RotationSpeed);
-                    else MainMotor.SetMotorSpeed(-RotationSpeed);
-                }
-                else
-                {
-                    MainMotor.SetMotorSpeed(0);
-                    MainBlock.SetAngle(MainBlock.GetAngle() + targetAngle);
-
-                    var startPos = MainMotor.GetWorldPosition();
-                    var endPos = targetPos;
-                    Game.DrawLine(startPos, endPos, Color.Red);
-                    var rci = new RayCastInput()
-                    {
-                        // doesn't include the objects that are overlaping the source of the raycast (the drone)
-                        IncludeOverlap = true,
-                        // only look at the closest hit
-                        ClosestHitOnly = false,
-                        // mark as hit the objects that projectiles hit
-                        ProjectileHit = RayCastFilterMode.True,
-                        // mark as hit the objects that absorb the projectile
-                        AbsorbProjectile = RayCastFilterMode.Any
-                    };
-
-                    var raycastResult = Game.RayCast(startPos, endPos, rci);
-
-                    foreach (var result in raycastResult)
-                    {
-                        Game.DrawCircle(result.Position, 1f, Color.Yellow);
-                        Game.DrawLine(result.Position, result.Position + result.Normal * 5f, Color.Yellow);
-                        Game.DrawArea(result.HitObject.GetAABB(), Color.Yellow);
-                        Game.DrawText((MainMotor.GetWorldPosition() - Target.GetWorldPosition()).Length().ToString(), result.Position, Color.Green);
-                        var raycastResultPlayersCount = raycastResult.Where(r => r.IsPlayer).Count();
-
-                        if (raycastResult.Length > 2 + raycastResultPlayersCount && (MainMotor.GetWorldPosition() - Target.GetWorldPosition()).Length() <= 50)
-                        {
-                            // if there's more than 2 objects between drone and player, don't shoot
-                            // and choose another target
-                            ChangingRoute = true;
-                            IPlayer ply = Target as IPlayer;
-                            if (ply == null) continue;
-                            var originalTarget = Target;
-                            var possibleTargets = PlayerList.Where(pl => pl.Team != Team && !pl.Name.Equals(ply.Name));
-                            var i = GlobalRandom.Next(0, possibleTargets.Count());
-                            var player = possibleTargets.ElementAt(i);
-                            Target = player.Body;
-                            DebugLogger.DebugOnlyDialogLog("Target changed from " + ply.Name + " to " + player.Name);
-                            break;
-                        }
-                        else if (result.Hit &&
-                            !(raycastResult.Length > 2 + raycastResultPlayersCount) &&
-                          (result.IsPlayer ||
-                              result.HitObject.Name.IndexOf("crab", StringComparison.OrdinalIgnoreCase) >= 0 ||
-                              result.HitObject.Name.IndexOf("computer", StringComparison.OrdinalIgnoreCase) >= 0))
-                        {
-                            CanFire = true;
-                            ChangingRoute = false;
-                            // no obstacles in the way, fire!
-                            Fire(TargetVision);
-
-                        }
-                        else
-                        {
-                            CanFire = false;
-                        }
-
-                        if (result.Fraction < 0.3f && result.HitObject.Name.IndexOf("glass", StringComparison.OrdinalIgnoreCase) >= 0)
-                        {
-                            result.HitObject.Destroy();
-                        }
-                    }
-
-                }
-            }
-            public void FindPathToTarget(bool randomTarget = false)
-            {
-                PlayerTeam team = Team;
-                if (IsHacking(Team)) team = PlayerTeam.Independent;
-                List<IObject> targetList = GetTargetList(team, MainMotor.GetWorldPosition(), 2000, CanHitTurret(), HackingProtection);
-                IObject nearestTarget = null;
-                float distance = 2000;
-                for (int i = 0; i < targetList.Count; ++i)
-                {
-                    float dist = (targetList[i].GetWorldPosition() - MainMotor.GetWorldPosition()).Length();
-                    if (dist < distance)
-                    {
-                        nearestTarget = targetList[i];
-                        distance = dist;
-                    }
-                }
-                if (randomTarget)
-                {
-                    var index = GlobalRandom.Next(0, targetList.Count);
-                    nearestTarget = targetList[index];
-                }
-                if (nearestTarget == null) return;
-                Vector2 targetCell = GetNearestDroneMapCell(nearestTarget.GetWorldPosition(), PathSize);
-                Vector2 currentCell = MainMotor.GetWorldPosition() - DroneAreaBegin;
-                currentCell.X = (int)currentCell.X / 8;
-                currentCell.Y = (int)currentCell.Y / 8;
-                CurrentPath = FindDronePath(currentCell, targetCell, PathSize);
-            }
-            public void Movement()
-            {
-                if (!EnableMovement || CurrentPath.Count == 0)
-                {
-                    StopMovement();
-                    return;
-                }
-                Vector2 position = MainMotor.GetWorldPosition();
-                if ((position - CurrentPath[CurrentPath.Count - 1]).Length() <= 1 || RailJoint == null)
-                {
-                    CurrentPath.RemoveAt(CurrentPath.Count - 1);
-                    if (CurrentPath.Count == 0)
-                    {
-                        StopMovement();
-                        return;
-                    }
-                    else StopMovement(false);
-                    RailJoint = (IObjectRailJoint)GlobalGame.CreateObject("RailJoint", position);
-                    TargetObject = (IObjectTargetObjectJoint)GlobalGame.CreateObject("TargetObjectJoint", CurrentPath[CurrentPath.Count - 1]);
-                    RailAttachment = (IObjectRailAttachmentJoint)GlobalGame.CreateObject("RailAttachmentJoint", position);
-                    RailJoint.SetTargetObjectJoint(TargetObject);
-                    RailAttachment.SetRailJoint(RailJoint);
-                    RailAttachment.SetTargetObject(Hull);
-                    RailAttachment.SetMotorEnabled(true);
-                    RailAttachment.SetMaxMotorTorque(10);
-                    RailAttachment.SetMotorSpeed(Speed);
-                    Hull.SetBodyType(BodyType.Dynamic);
-                }
-            }
-            public void StopMovement(bool makeStatic = true)
-            {
-                if (RailJoint == null) return;
-                RailAttachment.SetTargetObject(null);
-                RailAttachment.SetRailJoint(null);
-                if (makeStatic) Hull.SetBodyType(BodyType.Static);
-                RailJoint.Remove();
-                TargetObject.Remove();
-                RailAttachment.Remove();
-                RailJoint = null;
-            }
-            public bool UpdateHealth()
-            {
-                for (int i = 0; i < DamagedObjects.Count; i++)
-                {
-                    if (DamagedObjects[i] == null)
-                    {
-                        Destroy();
-                        return true;
-                    }
-                    float ch = (DamagedObjectMaxHp[i] - DamagedObjects[i].GetHealth()) * DamageFactor;
-                    DamagedObjectHp[i] -= ch;
-                    DamagedObjects[i].SetHealth(DamagedObjectMaxHp[i]);
-
-                    Game.DrawText(DamagedObjectHp[i].ToString(), MainMotor.GetWorldPosition(), Color.Green);
-                    if (DamagedObjectHp[i] <= 0)
-                    {
-                        Destroy();
-                        return true;
-                    }
-                }
-                return false;
-            }
-            public void Destroy()
-            {
-                StopMovement();
-                GlobalGame.TriggerExplosion(MainMotor.GetWorldPosition());
-                for (int i = 0; i < DamagedObjects.Count; i++)
-                {
-                    DamagedObjects[i].Destroy();
-                }
-                for (int i = 0; i < OtherObjects.Count; i++)
-                {
-                    OtherObjects[i].Destroy();
-                }
-                DamagedObjects.Clear();
-                OtherObjects.Clear();
-            }
-            public void Remove()
-            {
-                for (int i = 0; i < DamagedObjects.Count; i++)
-                {
-                    DamagedObjects[i].Remove();
-                }
-                for (int i = 0; i < OtherObjects.Count; i++)
-                {
-                    OtherObjects[i].Remove();
-                }
-            }
-            public void UpdateWeapon()
-            {
-                for (int i = 0; i < WeaponList.Count; i++)
-                {
-                    if (WeaponList[i].CurrentReloading > 0) WeaponList[i].CurrentReloading--;
-                    if (WeaponList[i].FireDelay > 0)
-                    {
-                        WeaponList[i].FireDelay--;
-                        if (WeaponList[i].FireDelay == 0) WeaponList[i].BulletCount = WeaponList[i].MaxBulletCount;
-                    }
-                }
-            }
-            public void Fire(int type)
-            {
-                float dist = 2000;
-                if (Target != null) dist = (Target.GetWorldPosition() - MainMotor.GetWorldPosition()).Length();
-                for (int i = 0; i < WeaponList.Count; i++)
-                {
-                    if (WeaponList[i].CurrentReloading == 0 && WeaponList[i].Ammo > 0 && dist <= WeaponList[i].Distance && (type < 2 || (type == 2 && WeaponList[i].SuppressiveFire && WeaponList[i].BulletCount > 0)))
-                    {
-                        WeaponList[i].Ammo--;
-                        if (type == 2)
-                        {
-                            WeaponList[i].BulletCount--;
-                            if (WeaponList[i].BulletCount == 0)
-                            {
-                                WeaponList[i].FireDelay = WeaponList[i].MaxFireDelay;
-                            }
-                        }
-                        WeaponList[i].CurrentReloading = WeaponList[i].ReloadingTime;
-                        CreateProjectile(WeaponList[i]);
-                    }
-                }
-
-            }
-            public void CreateProjectile(TTurretWeapon weapon)
-            {
-                float angle = MainBlock.GetAngle() + MainBlockAngle + GlobalRandom.Next(-weapon.Scatter, weapon.Scatter + 1) / 180.0f * (float)Math.PI;
-                Vector2 pos = MainMotor.GetWorldPosition();
-                Vector2 dir = new Vector2((float)Math.Cos(angle) * 10, (float)Math.Sin(angle) * 10);
-                if (weapon.BulletType >= 0)
-                {
-                    GlobalGame.SpawnProjectile((ProjectileItem)weapon.BulletType, pos + dir, dir);
-                }
-                else if (weapon.BulletType == -1)
-                {
-                    GlobalGame.SpawnFireNode(pos + dir, dir * 2, FireNodeType.Flamethrower);
-                }
-                else if (weapon.BulletType == -2)
-                {
-                    ElectricExplosion(MainMotor.GetWorldPosition(), 45, 80);
-                }
-                else if (weapon.BulletType == -3)
-                {
-                    ForceImpulse(MainMotor.GetWorldPosition(), 10, 50);
-                }
-                GlobalGame.PlaySound(weapon.Sound, MainMotor.GetWorldPosition(), 1.0f);
-            }
-
-
-            private void ForceImpulse(Vector2 position, int damage, int range)
-            {
-                for (int i = 0; i < PlayerList.Count; i++)
-                {
-                    var player = PlayerList[i];
-                    if (player.User.GetPlayer() == null) continue;
-                    if (player.User.GetTeam() == Team) continue;
-                    float dist = (player.Position - position).Length();
-                    if (dist <= range)
-                    {
-                        Vector2 vel = player.User.GetPlayer().GetLinearVelocity() * 10 + new Vector2(MainMotor.GetFaceDirection() * 10, 10);
-                        float mass = 1f;
-                        player.User.GetPlayer().SetLinearVelocity(vel / mass);
-                        PlayerList[i].Hp -= damage;
-                        CreateEffect(PlayerList[i].User.GetPlayer(), "STM", 10, 10);
-                    }
-                }
-            }
-
-
-
-            public int TraceToObject(IObject obj)
-            {
-                float angle = TwoPointAngle(MainMotor.GetWorldPosition(), obj.GetWorldPosition());
-                Vector2 tracePoint = MainMotor.GetWorldPosition();
-                tracePoint.X += (float)Math.Cos(angle) * 20;
-                tracePoint.Y += (float)Math.Sin(angle) * 20;
-                PlayerTeam team = Team;
-                if (IsHacking(Team)) team = PlayerTeam.Independent;
-                Vector2 targetPos = obj.GetWorldPosition();
-                if (IsPlayer(obj.Name)) targetPos = GetPlayerCenter((IPlayer)obj);
-                return TracePath(tracePoint, targetPos, team);
-            }
-        }
-
-        public static void CreateTurret(int id, Vector2 position, int dir, PlayerTeam team)
-        {
-            TTurret turret = new TTurret(id, position, dir, team);
-            TurretList.Add(turret);
-        }
-
-        #endregion
-
-        #region Equipment Class
-        public class TEquipment
-        {
-            public int Id = 0;
-            public int AccessLevel = 0;
-            public int Cost = 0;
-            public int Level = 0;
-            public string Name = "";
-            public string Description = "";
-            public TEquipment(int id, int cost, int level, string name, string description, int accessLevel = 0)
-            {
-                Id = id;
-                Cost = cost;
-                Level = level;
-                Name = name;
-                Description = description;
-                AccessLevel = accessLevel;
-            }
-        }
-        #endregion
-
-        #region Level Class
-        public class TLevel
-        {
-            public string Name;
-            public int NeedExp;
-            public int AllowPoints;
-            public TLevel(string name, int needExp, int allowPoints)
-            {
-                Name = name;
-                NeedExp = needExp;
-                AllowPoints = allowPoints;
-            }
-        }
-
-        #endregion
+        /* CustomArmor.cs */
 
         #region Custom Armor Class
 
@@ -1559,8 +287,8 @@ namespace SFDScripts
 
         #endregion
 
-        
-/* CustomEquipment.cs */
+
+        /* CustomEquipment.cs */
 
         #region Custom Equipment Class
         public class TCustomEquipment
@@ -2321,7 +1049,7 @@ namespace SFDScripts
             {
                 Area area = GlobalGame.GetCameraArea();
                 float x = GlobalRandom.Next((int)(area.Left + area.Width / 5), (int)(area.Right - area.Width / 5));
-                float y = WorldTop;
+                float y = area.Top + 10;
                 CreateTurret(id, new Vector2(x, y), player.User.GetPlayer().FacingDirection, player.Team);
                 GlobalGame.PlayEffect("EXP", new Vector2(x, y));
                 GlobalGame.PlaySound("Explosion", new Vector2(x, y), 1.0f);
@@ -2442,8 +1170,8 @@ namespace SFDScripts
 
         #endregion
 
-        
-/* DataPersistance.cs */
+
+        /* DataPersistance.cs */
 
         #region Data Persistence
         public static void SaveData()
@@ -2529,8 +1257,8 @@ namespace SFDScripts
             return UseDebugStorage ? "HARDCOREDEBUG" : "HARDCORE";
         }
         #endregion
-        
-/* Debug.cs */
+
+        /* Debug.cs */
         #region Debug
         /// <summary>
         /// Is the debug mode enabled
@@ -2560,8 +1288,8 @@ namespace SFDScripts
         public static bool MakeAllPlayersReadyFromTheStart = false;
 
         #endregion
-        
-/* DebugLogger.cs */
+
+        /* DebugLogger.cs */
 
         #region Debug Logger Class
 
@@ -2595,8 +1323,8 @@ namespace SFDScripts
 
         #endregion
 
-        
-/* Effect.cs */
+
+        /* Effect.cs */
         #region Effect Class
         public class TEffect
         {
@@ -2629,8 +1357,8 @@ namespace SFDScripts
         }
         #endregion
 
-        
-/* Equipment.cs */
+
+        /* Equipment.cs */
 
         #region Equipment Class
         public class TEquipment
@@ -2653,8 +1381,8 @@ namespace SFDScripts
         }
         #endregion
 
-        
-/* EquipmentSlot.cs */
+
+        /* EquipmentSlot.cs */
 
         #region Equipment Slot Class
         public class TEquipmentSlot
@@ -2695,8 +1423,8 @@ namespace SFDScripts
         }
         #endregion
 
-        
-/* Fields.cs */
+
+        /* Fields.cs */
 
         #region Fields
         /// <summary>
@@ -2822,8 +1550,8 @@ namespace SFDScripts
         public static int GameState = 0;
         #endregion
 
-        
-/* GameCore.cs */
+
+        /* GameCore.cs */
 
         #region Game Core Methods
 
@@ -3737,8 +2465,8 @@ namespace SFDScripts
 
         #endregion
 
-        
-/* GameMechanicsSettings.cs */
+
+        /* GameMechanicsSettings.cs */
 
         #region Game Mechanics Settings
 
@@ -3770,8 +2498,8 @@ namespace SFDScripts
         public static List<string> AllowedMissile = new List<string>(new string[] { "WpnKnife", "WpnKatana", "WpnAxe", "WpnShurikenThrown" });
         #endregion
 
-        
-/* Helper.cs */
+
+        /* Helper.cs */
 
         #region Helper Class
         public static class CategoryBits
@@ -3805,8 +2533,8 @@ namespace SFDScripts
         }
         #endregion
 
-        
-/* Level.cs */
+
+        /* Level.cs */
 
         #region Level Class
         public class TLevel
@@ -3824,8 +2552,8 @@ namespace SFDScripts
 
         #endregion
 
-        
-/* Lifecycle.cs */
+
+        /* Lifecycle.cs */
 
         #region Lifecycle
         /// <summary>
@@ -4446,8 +3174,8 @@ namespace SFDScripts
         }
         #endregion
 
-        
-/* MapPart.cs */
+
+        /* MapPart.cs */
 
         #region Map Part Class
         public class TMapPart
@@ -4645,8 +3373,8 @@ namespace SFDScripts
 
         #endregion
 
-        
-/* Player.cs */
+
+        /* Player.cs */
 
         #region Player Class
         public class TPlayer
@@ -5465,227 +4193,22 @@ namespace SFDScripts
 
         #endregion
 
-        
-/* PlayerMenu.cs */
+
+        /* PlayerMenu.cs */
 
         #region Player Menu Class
         public class TPlayerMenu
         {
-            Game.StartupSequenceEnabled = false;
-            Game.DeathSequenceEnabled = false;
-            GlobalGame = Game;
-
-            // so all player's see the complete menu
-            GlobalGame.SetCurrentCameraMode(CameraMode.Static);
-
-            var menuCameraLedgeGrab = GlobalGame.GetSingleObjectByCustomId("MenuCameraPosition");
-            var menuCameraPosition = menuCameraLedgeGrab.GetWorldPosition();
-            CameraPosition.X = menuCameraPosition.X;
-            CameraPosition.Y = menuCameraPosition.Y;
-            CameraSpeed = 20000.0f;
-
-            UpdateCamera();
-            SpawnPlayers();
-
-            BeginTimer = (IObjectText)Game.GetSingleObjectByCustomId("BeginTimer");
-
-            #region Vision Objects
-
-            VisionObjects.Add("Concrete01A", 3);
-            VisionObjects.Add("Concrete01B", 3);
-            VisionObjects.Add("Concrete00A", 3);
-            VisionObjects.Add("Concrete00B", 3);
-            VisionObjects.Add("Concrete00C", 3);
-            VisionObjects.Add("Concrete01C", 3);
-            VisionObjects.Add("Concrete02B", 3);
-            VisionObjects.Add("Concrete02C", 3);
-            VisionObjects.Add("Concrete02K", 3);
-            VisionObjects.Add("Stone00C", 3);
-            VisionObjects.Add("Concrete02H", 3);
-            VisionObjects.Add("Dirt01A", 3);
-            VisionObjects.Add("Dirt01C", 3);
-            VisionObjects.Add("Dirt01D", 3);
-            VisionObjects.Add("Metal06A", 3);
-            VisionObjects.Add("Metal06B", 3);
-            VisionObjects.Add("Metal06C", 3);
-            VisionObjects.Add("Metal02A", 3);
-            VisionObjects.Add("Metal02B", 3);
-            VisionObjects.Add("Metal02C", 3);
-            VisionObjects.Add("HangingCrate00", 3);
-            VisionObjects.Add("CargoContainer00A", 3);
-
-            VisionObjects.Add("Crate00", 1);
-            VisionObjects.Add("Barrel00", 2);
-            VisionObjects.Add("BarrelExplosive", 1);
-            VisionObjects.Add("CashRegister00", 1);
-            VisionObjects.Add("SwivelChair02", 1);
-            VisionObjects.Add("Desk00", 2);
-            VisionObjects.Add("FileCab00", 2);
-            VisionObjects.Add("Chair00", 1);
-            VisionObjects.Add("MetalTable00", 1);
-            VisionObjects.Add("Safe00", 2);
-
-            #endregion
-
-            #region Weapon Item Names
-
-            WeaponItemNames.Add(WeaponItem.PISTOL, "WpnPistol");
-            WeaponItemNames.Add(WeaponItem.SILENCEDPISTOL, "WpnSilencedPistol");
-            WeaponItemNames.Add(WeaponItem.MAGNUM, "WpnMagnum");
-            WeaponItemNames.Add(WeaponItem.REVOLVER, "WpnRevolver");
-            WeaponItemNames.Add(WeaponItem.SHOTGUN, "WpnPumpShotgun");
-            WeaponItemNames.Add(WeaponItem.TOMMYGUN, "WpnTommygun");
-            WeaponItemNames.Add(WeaponItem.SMG, "WpnSMG");
-            WeaponItemNames.Add(WeaponItem.M60, "WpnM60");
-            WeaponItemNames.Add(WeaponItem.SAWED_OFF, "WpnSawedOff");
-            WeaponItemNames.Add(WeaponItem.UZI, "WpnUzi");
-            WeaponItemNames.Add(WeaponItem.SILENCEDUZI, "WpnSilencedUzi");
-            WeaponItemNames.Add(WeaponItem.BAZOOKA, "WpnBazooka");
-            WeaponItemNames.Add(WeaponItem.ASSAULT, "WpnAssaultRifle");
-            WeaponItemNames.Add(WeaponItem.SNIPER, "WpnSniperRifle");
-            WeaponItemNames.Add(WeaponItem.CARBINE, "WpnCarbine");
-            WeaponItemNames.Add(WeaponItem.FLAMETHROWER, "WpnFlamethrower");
-            WeaponItemNames.Add(WeaponItem.FLAREGUN, "WpnFlareGun");
-            WeaponItemNames.Add(WeaponItem.GRENADE_LAUNCHER, "WpnGrenadeLauncher");
-            WeaponItemNames.Add(WeaponItem.GRENADES, "WpnGrenades");
-            WeaponItemNames.Add(WeaponItem.MOLOTOVS, "WpnMolotovs");
-            WeaponItemNames.Add(WeaponItem.MINES, "WpnMines");
-            WeaponItemNames.Add(WeaponItem.SHURIKEN, "WpnShuriken");
-            WeaponItemNames.Add(WeaponItem.BOW, "WpnBow");
-            WeaponItemNames.Add(WeaponItem.SHOCK_BATON, "WpnShockBaton");
-
-            #endregion
-
-            #region Slots
-            TEquipmentSlot meleeWeaponSlot = AddEquipmentSlot("Melee Weapon");
-            TEquipmentSlot secondaryWeaponSlot = AddEquipmentSlot("Secondary Weapon");
-            TEquipmentSlot primaryWeaponSlot = AddEquipmentSlot("Primary Weapon");
-            TEquipmentSlot thrownWeaponSlot = AddEquipmentSlot("Thrown Weapon");
-            TEquipmentSlot weaponModSlot = AddEquipmentSlot("Weapon Mod");
-            TEquipmentSlot bodySlot = AddEquipmentSlot("Body");
-            TEquipmentSlot equipmentSlot = AddEquipmentSlot("Equipment");
-            #endregion
-
-            #region Adding Weapons and Equipment
-            meleeWeaponSlot.AddEquipment(8, 0, 0, "Machete", "A wonderful mexican machete."); //1
-            meleeWeaponSlot.AddEquipment(49, 25, 3, "Knife", "A knife that can be thrown.");
-            meleeWeaponSlot.AddEquipment(4, 0, 0, "Pipe", "A solid metal pipe."); //2
-            meleeWeaponSlot.AddEquipment(11, 0, 0, "Baseball Bat", "A wooden baseball bat."); //3
-            meleeWeaponSlot.AddEquipment(31, 0, 0, "Hammer", "A big hammer, don't use it to repair stuff."); //4
-            meleeWeaponSlot.AddEquipment(18, 25, 3, "Axe", "Big damage. Good way to end the fight. Can be thrown."); //5
-            meleeWeaponSlot.AddEquipment(41, 0, 0, "Baton", "Used in a lot of riots. Feel the unrest in your hands."); //6
-            meleeWeaponSlot.AddEquipment(3, 50, 5, "Katana", "Huge damage asian katana. Can be thrown."); //7
-            meleeWeaponSlot.AddEquipment(57, 50, 7, "Shock Baton", "Police officers love these."); //8
-
-            secondaryWeaponSlot.AddEquipment(24, 50, 0, "Pistol", "A normal 9mm pistol. 12 bullets mag size and 1 extra mag."); //1
-            secondaryWeaponSlot.AddEquipment(39, 50, 0, "Silenced Pistol", "A silenced 9mm pistol. 12 bullets mag size and 1 extra mag."); //2
-            secondaryWeaponSlot.AddEquipment(12, 75, 1, "Uzi", "Israeli Uzi pistol, 19mm bullets. 25 bullets mag size and 1 extra mag."); //3
-            secondaryWeaponSlot.AddEquipment(40, 75, 1, "Silenced Uzi", "Silenced Israeli Uzi pistol, 19mm bullets. 25 bullets mag size and 1 extra mag."); //4
-            secondaryWeaponSlot.AddEquipment(27, 50, 6, "Flare Gun", "A fire shooting flare gun. 1 bullet mag size and 2 extra mags. "); //5
-            secondaryWeaponSlot.AddEquipment(28, 200, 9, "Revolver", "That ol' cowboy revolver. 6 bullets mag size and 1 extra mag."); //6
-            secondaryWeaponSlot.AddEquipment(1, 225, 14, "Magnum", "Like a revolver but with higher damage and slower recharge. 6 bullets mag size and 1 extra mag."); //7
-
-            primaryWeaponSlot.AddEquipment(5, 100, 2, "Tommy Gun", "Having a rather high spread when compared to other automatic rifles, it should be used as a primary counterpart of the Uzi. 35 bullets mag size with 1 extra mag."); //1
-            primaryWeaponSlot.AddEquipment(10, 100, 0, "Sawed-Off Shotgun", "This shotgun shoots extremely fast, dealing tremendous damage at close range if all the bullets hit the target. The small clip compensates this, so it is best used when cover is available to reload. 2 shells with 6 extra shells"); //2
-            primaryWeaponSlot.AddEquipment(30, 100, 0, "SMG", "The Submachine Gun has a high rate of fire and good accuracy, however, it does little damage, and is less accurate than the Assault Rifle. 30 bullets mag with 1 extra mag."); //3
-            primaryWeaponSlot.AddEquipment(23, 100, 2, "Carbine", "Very accurate weapon with good damage, but low fire rate. 12 bullets mag size and 1 extra mag"); //4
-            primaryWeaponSlot.AddEquipment(19, 125, 5, "Assault Rifle", "Good damage and accuracy. Medium fire rate. 24 bullets mag and 1 extra mag."); //5
-            primaryWeaponSlot.AddEquipment(2, 125, 4, "Shotgun", "Great close and medium range. Extremely high damage. Slow reload. 6 shells with  6 extra shells.");   //6
-            primaryWeaponSlot.AddEquipment(26, 125, 8, "Flamethrower", "LET IT BURN!!!! 50 mag size with 0 extra mags."); //7
-            primaryWeaponSlot.AddEquipment(6, 150, 15, "M60", "Big damage and fire rate, but low accuracy. Too heavy, you can't sprint."); //9
-            primaryWeaponSlot.AddEquipment(9, 200, 13, "Sniper Rifle", "Best accurate weapon with huge damage. Too heavy, you can't sprint."); //10
-            primaryWeaponSlot.AddEquipment((int)WeaponItem.BOW, 200, 20, "Bow", "How 'bout this, with some fire arrows? huh?"); //11
-            primaryWeaponSlot.AddEquipment(17, 250, 12, "Bazooka", "The Bazooka fires a rocket off in a straight line, however the trajectory is not constantly straight, as it has the tendency to shift which can help avoid excessively long ranged kills. The random directional shift can partially be prevented with a Laser Sight attached to the Bazooka. 1 rocket mag and two extra mags."); //11
-            primaryWeaponSlot.AddEquipment(29, 300, 13, "Grenade Launcher", "When you account for the arc of the grenade, it can become much more accurate than a bazooka (without a laser sight). The grenade launcher also must reload after each shot fired. 1 grenade mag and two extra mags"); //8
-
-
-            thrownWeaponSlot.AddEquipment(1, 50, 6, "Grenades", "Everyone loves grenades, make them explode. These grenades can't touch people though. 3 grenades"); //1	
-            thrownWeaponSlot.AddEquipment(2, 25, 5, "Molotovs", "These little russian bottles we love. 3 in here for your pleasure."); //2
-            thrownWeaponSlot.AddEquipment(3, 50, 7, "Mines", "Mines have a priming 'timer' in which while it flashes it will not detonate. 3 mines."); //3
-            thrownWeaponSlot.AddEquipment(4, 100, 10, "Incendiary grenades", "Grenades that blast an expansive ring of fire when they explode."); //4
-            thrownWeaponSlot.AddEquipment(5, 25, 23, "Smoke grenades", ""); //5
-            thrownWeaponSlot.AddEquipment(6, 50, 24, "Flashbang", "This flash bangs will stun the enemies on its radius for some time depending on the enemy's distance. Walls and other elements can block the stun radius. "); //6
-            thrownWeaponSlot.AddEquipment(7, 50, 3, "Shuriken", "These shurikens are quick to throw. Three of this well placed may kill a soldier"); //7
-
-            weaponModSlot.AddEquipment(1, 25, 3, "Lazer Scope", "Helps to aim precisely."); //1
-            weaponModSlot.AddEquipment(2, 25, 4, "Extra Ammo", "Add extra ammo to your light weapon."); //2
-            weaponModSlot.AddEquipment(3, 50, 8, "Extra Explosives", "Add extra ammo to your explosive weapon."); //3
-            weaponModSlot.AddEquipment(4, 50, 10, "Extra Heavy Ammo", "Add extra ammo to your heavy weapon: Revolvers, Snipers, Magnums and M60s"); //4
-            weaponModSlot.AddEquipment(5, 25, 4, "DNA Scanner", "If the enemy tries to shoot from your gun, it will explode!"); //4
-            weaponModSlot.AddEquipment(6, 150, 17, "Bouncing ammo", "Bounce some ammo around"); //5
-            weaponModSlot.AddEquipment(7, 175, 25, "Fire ammo", "Fire? Who asked for it anyway!"); //5
-
-            //equipment
-            equipmentSlot.AddEquipment(1, 25, 1, "Small Medkit", "Allows one time stop the bleeding or revive teammate."); //1
-            equipmentSlot.AddEquipment(2, 50, 3, "Big Medkit", "Allows 3 times stop the bleeding or revive teammate."); //2
-            equipmentSlot.AddEquipment(3, 25, 1, "Airdrop", "Drops one supply crate with random weapon."); //3
-            equipmentSlot.AddEquipment(4, 100, 10, "Napalm Strike", "Strike of Napalm bombs on the whole map."); //4
-            equipmentSlot.AddEquipment(5, 100, 11, "Pinpoint Strike", "The missile tries to hit your enemy."); //5
-            equipmentSlot.AddEquipment(6, 125, 14, "Airstrike", "Attack aircraft tries to hit your enemy."); //6
-            equipmentSlot.AddEquipment(7, 50, 7, "Big Airdrop", "Drops three supply crates with random weapon."); //7
-            equipmentSlot.AddEquipment(8, 125, 13, "Artillery Strike", "150mm cannons bombards all the map."); //8
-            equipmentSlot.AddEquipment(9, 50, 8, "Mine Strike", "Mines are falling from the air all over the map."); //9
-            equipmentSlot.AddEquipment(10, 250, 15, "Reinforcement", "Revives all your dead teammates and drops them by parachute."); //10
-            equipmentSlot.AddEquipment(11, 25, 9, "Supply Jammer", "Your enemies can't call supply while jammer is working. Jammer works for 10 seconds."); //11
-            equipmentSlot.AddEquipment(12, 75, 11, "Supply Hacking", "Try to hack enemy supply. Who knows what will happen?"); //12
-            equipmentSlot.AddEquipment(13, 150, 11, "Light Turret", "Automatically shoots at enemies in range of the minigun");
-            equipmentSlot.AddEquipment(14, 175, 14, "Rocket Turret", "Automatically shoots at enemies in range of the rocket launcher");
-            equipmentSlot.AddEquipment(15, 200, 15, "Heavy Turret", "Automatically shoots at enemies in range. It have minigun and rocket launcher.");
-            equipmentSlot.AddEquipment(16, 275, 21, "Sniper Turret", "Automatically shoots at enemies in range of the sniper.");
-            equipmentSlot.AddEquipment(17, 50, 4, "Police Shield", "Protects you from some bullets.");
-            equipmentSlot.AddEquipment(18, 100, 3, "Adrenaline", "Gives temporary immunity to damage. You will receive all damage when adrenaline is over.");
-            // equipmentSlot.AddEquipment(19, 200, 15, "Shield Generator", "Creates an energy shield that protects from bullets and enemies.", 2);
-            equipmentSlot.AddEquipment(20, 100, 15, "Jet Pack", "Allows you to make jet jumps. And protect from falling.");
-            equipmentSlot.AddEquipment(21, 250, 17, "Streetsweeper", "Hate drones? Well try this shit."); // 21
-            equipmentSlot.AddEquipment(22, 475, 22, "Melee Drone", "You want a robot that actually kicks ass? Try this baby."); // 22
-            equipmentSlot.AddEquipment(23, 500, 26, "Zap Drone", "I know, streetsweepers are dumb. This one is also kind of dumb, but it has a tazer."); // 23
-            equipmentSlot.AddEquipment(24, 550, 27, "Fire Drone", "Now try this. A drone that actually moves, with a flame thrower."); // 24
-            equipmentSlot.AddEquipment(25, 600, 29, "Assault Drone", "Now try this. A drone that actually moves, with a machine gun."); // 25
-
-            //armor
-            bodySlot.AddEquipment(1, 50, 2, "Light Armor", "Decrease the damage a bit."); //1
-            bodySlot.AddEquipment(2, 50, 7, "Fire Suit", "Protects you from fire."); //2
-            bodySlot.AddEquipment(3, 25, 6, "Suicide Vest", "Leaves a small surprise after your death. "); //3
-            bodySlot.AddEquipment(4, 50, 12, "Personal Jammer", "You can't be a target for strikes."); //4
-            bodySlot.AddEquipment(5, 50, 10, "Blast Suit", "Decrease the explosion damage."); //5
-            bodySlot.AddEquipment(6, 200, 12, "Heavy Armor", "Decrease the damage greatly. Very heavy. You can't sprint and roll."); //6
-            bodySlot.AddEquipment(7, 75, 9, "Kevlar Armor", "Protects you from one-shot death."); //7
-
-            #endregion
-
-            #region Adding Levels
-            //human 0
-            AddLevel("Private", 0, 100); // 1
-            AddLevel("First Private", 100, 125); // 2
-            AddLevel("Private First Class", 150, 150); // 3
-            AddLevel("Specialist", 200, 175); // 4 
-            AddLevel("Corporal", 250, 200); // 5
-            AddLevel("Sergeant", 350, 200); // 6
-            AddLevel("Staff Sergeant", 400, 225); // 7
-            AddLevel("Sergeant First Class", 470, 225); // 8
-            AddLevel("Master Sergeant", 550, 250); // 9
-            AddLevel("First Sergeant", 620, 275); // 10
-            AddLevel("Sergeant Major", 690, 275); // 11
-            AddLevel("Command Sergeant Major", 800, 300); // 12
-            AddLevel("Sergeant Major \n of the Army", 900, 325); // 13
-            AddLevel("Chief Warrant Officer 2", 1000, 350); // 14
-            AddLevel("Chief Warrant Officer 3", 1200, 350); // 15
-            AddLevel("Chief Warrant Officer 4", 1500, 350); // 16
-            AddLevel("Chief Warrant Officer 5", 2000, 375); // 17 
-            AddLevel("Second Lieutenant", 2500, 400); // 18
-            AddLevel("First Lieutenant", 3000, 425); // 19 
-            AddLevel("Captain", 3500, 450); // 20
-            AddLevel("Major", 4000, 450); // 21
-            AddLevel("Lieutenant Colonel", 4500, 475); // 22
-            AddLevel("Colonel", 4500, 500); // 23
-            AddLevel("Brigadier General", 5000, 525); // 24
-            AddLevel("Major General", 6000, 550); // 25
-            AddLevel("Lieutenant General", 7000, 575); // 26
-            AddLevel("General", 8000, 600); // 27
-            AddLevel("General of the Army (GOA)", 9000, 625); // 28
-            AddLevel("Führer", 10000, 650); // 29
-            AddLevel("Marshal of the Russian Federation", 10000, 700); // 30
-
+            public IObjectText Menu;
+            public TPlayer Player = null;
+            public int CurrentPoints = 0;
+            public List<int> Equipment = new List<int>();
+            public int CurrentGroup = 0;
+            public int ActionTimer = 0;
+            public bool Ready = false;
+            public bool Change = true;
+            public bool IsDescription = false;
+            public int AccessLevel = 0;
 
 
             public void SetPlayer(TPlayer player)
@@ -6278,8 +4801,8 @@ namespace SFDScripts
 
         #endregion
 
-        
-/* Settings.cs */
+
+        /* Settings.cs */
 
         #region Settings
         /// <summary>
@@ -6302,8 +4825,8 @@ namespace SFDScripts
 
         #endregion
 
-        
-/* ShieldGenerator.cs */
+
+        /* ShieldGenerator.cs */
 
         #region Shield Generator Class
         public class TShieldGenerator
@@ -6575,8 +5098,8 @@ namespace SFDScripts
 
         #endregion
 
-        
-/* StrikeInfo.cs */
+
+        /* StrikeInfo.cs */
 
         #region Strikes Related Classes
         public class TStrikeInfo
@@ -6592,8 +5115,8 @@ namespace SFDScripts
         }
         #endregion
 
-        
-/* ThrownWeapon.cs */
+
+        /* ThrownWeapon.cs */
 
         #region Thrown Weapon Class
         public class TThrownWeapon
@@ -6890,8 +5413,8 @@ namespace SFDScripts
 
         #endregion
 
-        
-/* Timer.cs */
+
+        /* Timer.cs */
 
         #region Timer Methods
         public void OnBeginTimer(TriggerArgs args)
@@ -6995,8 +5518,8 @@ namespace SFDScripts
         }
         #endregion
 
-        
-/* Turret.cs */
+
+        /* Turret.cs */
 
         #region Turret Class
         public class TTurret
@@ -7801,8 +6324,8 @@ namespace SFDScripts
 
         #endregion
 
-        
-/* Weapon.cs */
+
+        /* Weapon.cs */
 
         #region Weapon Class
         public class TWeapon
@@ -7947,26 +6470,32 @@ namespace SFDScripts
             return weapon != null;
         }
 
-        public static Vector2 GetDroneMapPosition(int x, int y, int size)
+        public static void PreWeaponTrackingUpdate()
         {
-            if (size == 2)
+            string[] argArray = new string[WeaponItemNames.Count];
+            WeaponItemNames.Values.CopyTo(argArray, 0);
+            IObject[] list = GlobalGame.GetObjectsByName(argArray);
+            for (int i = 0; i < list.Length; i++)
             {
-                if (DroneMap1x1[x + 1][y] > 0 && DroneMap1x1[x + 1][y + 1] > 0 && DroneMap1x1[x][y + 1] > 0) return new Vector2(x * 8 + 8, y * 8 + 6) + DroneAreaBegin;
-                else if (DroneMap1x1[x + 1][y] > 0 && DroneMap1x1[x + 1][y - 1] > 0 && DroneMap1x1[x][y - 1] > 0) return new Vector2(x * 8 + 8, y * 8) + DroneAreaBegin;
-                else if (DroneMap1x1[x - 1][y] > 0 && DroneMap1x1[x - 1][y - 1] > 0 && DroneMap1x1[x][y - 1] > 0) return new Vector2(x * 8 - 2, y * 8) + DroneAreaBegin;
-                else if (DroneMap1x1[x - 1][y] > 0 && DroneMap1x1[x - 1][y + 1] > 0 && DroneMap1x1[x][y + 1] > 0) return new Vector2(x * 8 - 2, y * 8 + 6) + DroneAreaBegin;
+                IObject obj = list[i];
+                bool found = false;
+                for (int j = 0; j < WeaponTrackingList.Count; j++)
+                {
+                    if (WeaponTrackingList[j].Object == obj)
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if (found) continue;
+                TWeapon weapon = PlayerDropWeaponUpdate(obj.GetWorldPosition(), ((IObjectWeaponItem)obj).WeaponItem);
+                if (weapon == null)
+                {
+                    weapon = new TWeapon(((IObjectWeaponItem)obj).WeaponItem);
+                }
+                weapon.Object = obj;
+                WeaponTrackingList.Add(weapon);
             }
-            return new Vector2(x * 8, y * 8) + DroneAreaBegin;
-        }
-
-        public static void SpawnDrone(int id, PlayerTeam team)
-        {
-            Area area = GlobalGame.GetCameraArea();
-            float x = GlobalRandom.Next((int)(area.Left + area.Width / 5), (int)(area.Right - area.Width / 5));
-            float y = WorldTop;
-            CreateTurret(id, new Vector2(x, y), 1, team);
-            GlobalGame.PlayEffect("EXP", new Vector2(x, y));
-            GlobalGame.PlaySound("Explosion", new Vector2(x, y), 1.0f);
         }
 
         public static TWeapon PlayerPickUpWeaponUpdate(Vector2 pos, WeaponItem id)
@@ -8010,8 +6539,8 @@ namespace SFDScripts
 
         #endregion
 
-        
-/* _unused.cs */
+
+        /* _unused.cs */
 
         #region Not Used Methods
 
@@ -8022,7 +6551,7 @@ namespace SFDScripts
 
         #endregion
 
-        
+
         #endregion
     }
 }
