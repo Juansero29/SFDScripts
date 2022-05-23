@@ -9,6 +9,7 @@ namespace SFDScripts
 {
     class HardcoreSmallHill
     {
+        /* CLASS STARTS HERE - COPY BELOW INTO THE SCRIPT WINDOW */
         #region Map Dependant Data
         /// <summary>
         /// The number of map parts in this map. For each map part, an startup process
@@ -49,5 +50,6 @@ namespace SFDScripts
         public static int CameraWidth = 640;
         public static int CameraHeight = 480;
         #endregion
+        /* CLASS ENDS HERE - COPY ABOVE INTO THE SCRIPT WINDOW */
     }
 }

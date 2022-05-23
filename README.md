@@ -49,7 +49,40 @@ You're free to make comments, create issues and PRs! I'm open to suggestions.
 
 Check [CONTRIBUTING.MD](https://github.com/Juansero29/SFDScripts/blob/master/CONTRIBUTING.md) for very detailed information on how to start contributing.
 
-## PUSHING NEW MAPS
+
+
+## CLONING, COMPILING, AND PUSHING TO REPOSITORY
+
+
+
+### CLONING THE REPO
+1. `git clone https://github.com/Juansero29/SFDScripts.git`
+1. `git lfs fetch --all`
+
+### EDITING AND BUILDING CODE
+Thanks to @NotRustyBot, Hardcore and maybe other projects from this repo can be split into separated files to be easily edited and understood, and then will be merged into one by using a console utilitary done by @NotRustyBot
+
+It also allows to send the map into the Superfighters Deluxe program directly, avoiding to boilerplate process of copy/pasting the code into the Script Editor in SFD.
+
+> The utilitary that @NotRustyBot created that made this possible is also in this repository over `SFDScripts\Utilities\SfdScriptUtil`
+
+#### BUILD HARDCORE WITH SFD MAP EDITOR OPEN
+
+1. Edit the source code files inside `SFDScripts\SFDScripts\Internal\Hardcore\Source`
+1. Make sure Superfighters Deluxe Map Editor is open, and that the map you want to test is open too.
+1. Open the terminal, be sure to be at the root of the repo
+1. In the terminal, launch `.\ScriptUtil.exe -i SFDScripts\Internal\Hardcore\`**X**`.cs -d true`, where **X** is the name of the CSharp file of the map you want to launch.
+1. All of the modifications inside the `Source` folder will be sent to the `SFDScripts\SFDScripts\Internal\Hardcore\Hardcore.cs` file, and the map dependant date will be taken from the **X** map you precised.
+1. The map should start running with the updated code.
+
+#### BUILD WITH SFD MAP EDITOR CLOSED
+
+1. Edit the source code files inside `SFDScripts\SFDScripts\Internal\Hardcore\Source`
+1. Open the terminal, be sure to be at the root of the repo
+1. In the terminal, launch `.\ScriptUtil.exe -i SFDScripts\Internal\Hardcore\`**X**`.cs -d false`, where **X** is the name of the CSharp file of the map you want to launch.
+1. All of the modifications inside the `Source` folder will be sent to the `SFDScripts\SFDScripts\Internal\Hardcore\Hardcore.cs` file, and the map dependant date will be taken from the **X** map you precised.
+
+### PUSH COMMANDS
 
 1. `git add --renormalize .`
 1. `git lfs fetch --all origin your-branch-name`
