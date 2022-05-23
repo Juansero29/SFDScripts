@@ -53,7 +53,12 @@ Check [CONTRIBUTING.MD](https://github.com/Juansero29/SFDScripts/blob/master/CON
 
 ## CLONING, COMPILING, AND PUSHING TO REPOSITORY
 
+### Pre-requisites
+For cloning and working with this repo, you will ned Git LSF, since I use Github LSF storage to store `\*.sfdm` files. As a pre-requisite you will need to:
 
+1. Install Chocolatey - [Link](https://chocolatey.org/install)
+1. Install latest version of Git LSF - Run command `choco upgrade git-lfs.install` on Powershell after installing Chocolatey
+> If you get an error message of "choco" not being recognized, close the Powershell instance, and open a new one with admin rights, then run the command again
 
 ### CLONING THE REPO
 1. `git clone https://github.com/Juansero29/SFDScripts.git`
