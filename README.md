@@ -58,7 +58,10 @@ For cloning and working with this repo, you will ned Git LSF, since I use Github
 
 1. Install Chocolatey - [Link](https://chocolatey.org/install)
 1. Install latest version of Git LSF - Run command `choco upgrade git-lfs.install` on Powershell after installing Chocolatey
+
 > If you get an error message of "choco" not being recognized, close the Powershell instance, and open a new one with admin rights, then run the command again
+
+> If you get error messages when changing branches, creating branches or pushing, it is probably tied to a particular Git LSF version. Please re run  `choco upgrade git-lfs.install` even if you had already installed Git LSF in the past
 
 ### CLONING THE REPO
 1. `git clone https://github.com/Juansero29/SFDScripts.git`
