@@ -1,0 +1,4 @@
+sourcedir: SFDScripts\Internal\Hardcore\Source
+header: SFDScripts\Internal\Hardcore\Source\Extra\Header.txt
+footer: SFDScripts\Internal\Hardcore\Source\Extra\Footer.txt
+output: SFDScripts\Internal\Hardcore\Hardcore.cs

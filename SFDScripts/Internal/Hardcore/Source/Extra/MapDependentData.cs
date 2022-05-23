@@ -1,15 +1,20 @@
-﻿using SFDGameScriptInterface;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
+using System.Collections;
+using System.Collections.Generic;
 using System.Text;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
+using SFDGameScriptInterface;
 
-namespace SFDScripts
+
+namespace SFDScript
 {
-    class HardcoreClassicRemastered
+
+    public partial class GameScript : GameScriptInterface
     {
+
         /* CLASS STARTS HERE - COPY BELOW INTO THE SCRIPT WINDOW */
+
         #region Map Dependant Data
         /// <summary>
         /// The number of map parts in this map. For each map part, an startup process
@@ -34,22 +39,24 @@ namespace SFDScripts
         /// <summary>
         /// The world top position (where airstrikes get launched from)
         /// </summary>
-        public static int WorldTop = 750;
+        public static int WorldTop = 500;
 
         #region Drones
         /// <summary>
         /// Left bottom corner spot of the map. (x and  y coordinates)
         /// </summary>
-        public static Vector2 DroneAreaBegin = new Vector2(-1120, 2);
+        public static Vector2 DroneAreaBegin = new Vector2(442, 218);
         /// <summary>
         /// An area that covers each of the map parts (x = width, y = height)
         /// </summary>
-        public static Vector2 DroneAreaSize = new Vector2(3680, 904); 
+        public static Vector2 DroneAreaSize = new Vector2(600, 300);
         #endregion
 
-        public static int CameraWidth = 768;
-        public static int CameraHeight = 552;
+        public static int CameraWidth = 770;
+        public static int CameraHeight = 550;
         #endregion
+
         /* CLASS ENDS HERE - COPY ABOVE INTO THE SCRIPT WINDOW */
+
     }
 }
