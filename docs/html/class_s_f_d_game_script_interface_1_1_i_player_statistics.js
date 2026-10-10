@@ -1,0 +1,26 @@
+var class_s_f_d_game_script_interface_1_1_i_player_statistics =
+[
+    [ "TotalBlockedAttacks", "class_s_f_d_game_script_interface_1_1_i_player_statistics.html#a1c082154489803abaed81060f471f8fb", null ],
+    [ "TotalDamageTaken", "class_s_f_d_game_script_interface_1_1_i_player_statistics.html#a82f1d0013521b7f94c12d355dcb83ae8", null ],
+    [ "TotalDives", "class_s_f_d_game_script_interface_1_1_i_player_statistics.html#a24dbe9bd970f488819cd320470718900", null ],
+    [ "TotalEmptyGunsFireAttempts", "class_s_f_d_game_script_interface_1_1_i_player_statistics.html#a06d7584cd57ba0af010aaba5af7f74ce", null ],
+    [ "TotalExplosionDamageTaken", "class_s_f_d_game_script_interface_1_1_i_player_statistics.html#ab6bd67b5ce7f32d040c81af19246ada2", null ],
+    [ "TotalFallDamageTaken", "class_s_f_d_game_script_interface_1_1_i_player_statistics.html#ae26db4862108370f365edbd9394bcdd0", null ],
+    [ "TotalFireDamageTaken", "class_s_f_d_game_script_interface_1_1_i_player_statistics.html#a47bc32c2fb05259bca14767ad36b7aa5", null ],
+    [ "TotalGrabbedPlayers", "class_s_f_d_game_script_interface_1_1_i_player_statistics.html#a6d2e109d17060bb957331560489fda48", null ],
+    [ "TotalGrabCharges", "class_s_f_d_game_script_interface_1_1_i_player_statistics.html#a8a7cfe329104aaec936d68921e03c63e", null ],
+    [ "TotalItemsThrown", "class_s_f_d_game_script_interface_1_1_i_player_statistics.html#a1b1d13a47279f3369898df88b2014088", null ],
+    [ "TotalJumps", "class_s_f_d_game_script_interface_1_1_i_player_statistics.html#a90a5fa7ef817651be20aa5ee4bbda8eb", null ],
+    [ "TotalKickHits", "class_s_f_d_game_script_interface_1_1_i_player_statistics.html#a213b261cf6d4652878855bbf72f94b2b", null ],
+    [ "TotalKickSwings", "class_s_f_d_game_script_interface_1_1_i_player_statistics.html#a959c4ded6a8ff3ae3db218cd7953229c", null ],
+    [ "TotalMeleeAttackHits", "class_s_f_d_game_script_interface_1_1_i_player_statistics.html#abbc94516b9d6c0d06b311a83897f4256", null ],
+    [ "TotalMeleeAttackSwings", "class_s_f_d_game_script_interface_1_1_i_player_statistics.html#a3d543b97e724ca79462bbcb32d1388da", null ],
+    [ "TotalMeleeDamageTaken", "class_s_f_d_game_script_interface_1_1_i_player_statistics.html#aa7f172369d5d80ace2f01f059e46c1da", null ],
+    [ "TotalOtherDamageTaken", "class_s_f_d_game_script_interface_1_1_i_player_statistics.html#a4257841f3cccb925241131615f6ad039", null ],
+    [ "TotalPlayersThrown", "class_s_f_d_game_script_interface_1_1_i_player_statistics.html#aae8c807eb4f6a6e92ac7dbca312692ad", null ],
+    [ "TotalProjectileDamageTaken", "class_s_f_d_game_script_interface_1_1_i_player_statistics.html#a8c9dc4468e42932fcbc0529aadee5bbe", null ],
+    [ "TotalProjectilesHitBy", "class_s_f_d_game_script_interface_1_1_i_player_statistics.html#a79ba06f24d6e484b3238c304c20aa771", null ],
+    [ "TotalReloads", "class_s_f_d_game_script_interface_1_1_i_player_statistics.html#a34c4b0a6f684f72ad63ebd3d945518c9", null ],
+    [ "TotalRolls", "class_s_f_d_game_script_interface_1_1_i_player_statistics.html#ac8e7002b245a926528b27959d9b72efb", null ],
+    [ "TotalShotsFired", "class_s_f_d_game_script_interface_1_1_i_player_statistics.html#af7cbf793f692c3678b72137683a9ad52", null ]
+];

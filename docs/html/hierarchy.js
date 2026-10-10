@@ -1,0 +1,199 @@
+var hierarchy =
+[
+    [ "BaseObject", "class_s_f_d_game_script_interface_1_1_base_object.html", [
+      [ "IObject", "class_s_f_d_game_script_interface_1_1_i_object.html", [
+        [ "IObjectAlterCollisionTile", "class_s_f_d_game_script_interface_1_1_i_object_alter_collision_tile.html", null ],
+        [ "IObjectConveyorBelt", "class_s_f_d_game_script_interface_1_1_i_object_conveyor_belt.html", null ],
+        [ "IObjectDestroyTargets", "class_s_f_d_game_script_interface_1_1_i_object_destroy_targets.html", null ],
+        [ "IObjectDistanceJoint", "class_s_f_d_game_script_interface_1_1_i_object_distance_joint.html", null ],
+        [ "IObjectElevatorAttachmentJoint", "class_s_f_d_game_script_interface_1_1_i_object_elevator_attachment_joint.html", null ],
+        [ "IObjectElevatorPathJoint", "class_s_f_d_game_script_interface_1_1_i_object_elevator_path_joint.html", null ],
+        [ "IObjectFaceAtObject", "class_s_f_d_game_script_interface_1_1_i_object_face_at_object.html", null ],
+        [ "IObjectGrenadeThrown", "class_s_f_d_game_script_interface_1_1_i_object_grenade_thrown.html", null ],
+        [ "IObjectMineThrown", "class_s_f_d_game_script_interface_1_1_i_object_mine_thrown.html", null ],
+        [ "IObjectPathNode", "class_s_f_d_game_script_interface_1_1_i_object_path_node.html", null ],
+        [ "IObjectPathNodeConnection", "class_s_f_d_game_script_interface_1_1_i_object_path_node_connection.html", null ],
+        [ "IObjectPathZone", "class_s_f_d_game_script_interface_1_1_i_object_path_zone.html", null ],
+        [ "IObjectPlayerModifierInfo", "class_s_f_d_game_script_interface_1_1_i_object_player_modifier_info.html", null ],
+        [ "IObjectPlayerPortrait", "class_s_f_d_game_script_interface_1_1_i_object_player_portrait.html", null ],
+        [ "IObjectPlayerProfileInfo", "class_s_f_d_game_script_interface_1_1_i_object_player_profile_info.html", null ],
+        [ "IObjectPlayerSpawnArea", "class_s_f_d_game_script_interface_1_1_i_object_player_spawn_area.html", null ],
+        [ "IObjectPortal", "class_s_f_d_game_script_interface_1_1_i_object_portal.html", null ],
+        [ "IObjectPulleyEndJoint", "class_s_f_d_game_script_interface_1_1_i_object_pulley_end_joint.html", null ],
+        [ "IObjectPulleyJoint", "class_s_f_d_game_script_interface_1_1_i_object_pulley_joint.html", null ],
+        [ "IObjectPullJoint", "class_s_f_d_game_script_interface_1_1_i_object_pull_joint.html", null ],
+        [ "IObjectRailAttachmentJoint", "class_s_f_d_game_script_interface_1_1_i_object_rail_attachment_joint.html", null ],
+        [ "IObjectRailJoint", "class_s_f_d_game_script_interface_1_1_i_object_rail_joint.html", null ],
+        [ "IObjectRevoluteJoint", "class_s_f_d_game_script_interface_1_1_i_object_revolute_joint.html", null ],
+        [ "IObjectSoundArea", "class_s_f_d_game_script_interface_1_1_i_object_sound_area.html", null ],
+        [ "IObjectSpawnTarget", "class_s_f_d_game_script_interface_1_1_i_object_spawn_target.html", null ],
+        [ "IObjectSpawnWeaponArea", "class_s_f_d_game_script_interface_1_1_i_object_spawn_weapon_area.html", null ],
+        [ "IObjectStreetsweeper", "class_s_f_d_game_script_interface_1_1_i_object_streetsweeper.html", null ],
+        [ "IObjectSupplyCrate", "class_s_f_d_game_script_interface_1_1_i_object_supply_crate.html", null ],
+        [ "IObjectTargetObjectJoint", "class_s_f_d_game_script_interface_1_1_i_object_target_object_joint.html", null ],
+        [ "IObjectText", "class_s_f_d_game_script_interface_1_1_i_object_text.html", null ],
+        [ "IObjectTrigger", "class_s_f_d_game_script_interface_1_1_i_object_trigger.html", [
+          [ "IObjectActivateTrigger", "class_s_f_d_game_script_interface_1_1_i_object_activate_trigger.html", [
+            [ "IObjectAmmoStashTrigger", "class_s_f_d_game_script_interface_1_1_i_object_ammo_stash_trigger.html", null ],
+            [ "IObjectButtonTrigger", "class_s_f_d_game_script_interface_1_1_i_object_button_trigger.html", null ],
+            [ "IObjectMedicalCabinetTrigger", "class_s_f_d_game_script_interface_1_1_i_object_medical_cabinet_trigger.html", null ]
+          ] ],
+          [ "IObjectAlternatingTrigger", "class_s_f_d_game_script_interface_1_1_i_object_alternating_trigger.html", null ],
+          [ "IObjectAreaTrigger", "class_s_f_d_game_script_interface_1_1_i_object_area_trigger.html", null ],
+          [ "IObjectCameraAreaTrigger", "class_s_f_d_game_script_interface_1_1_i_object_camera_area_trigger.html", null ],
+          [ "IObjectChangeBodyTypeTrigger", "class_s_f_d_game_script_interface_1_1_i_object_change_body_type_trigger.html", null ],
+          [ "IObjectCheckAliveTrigger", "class_s_f_d_game_script_interface_1_1_i_object_check_alive_trigger.html", null ],
+          [ "IObjectCheckMapWaveTrigger", "class_s_f_d_game_script_interface_1_1_i_object_check_map_wave_trigger.html", null ],
+          [ "IObjectCheckTeamAliveTrigger", "class_s_f_d_game_script_interface_1_1_i_object_check_team_alive_trigger.html", null ],
+          [ "IObjectConveyorBeltValueTrigger", "class_s_f_d_game_script_interface_1_1_i_object_conveyor_belt_value_trigger.html", null ],
+          [ "IObjectDestroyTrigger", "class_s_f_d_game_script_interface_1_1_i_object_destroy_trigger.html", null ],
+          [ "IObjectDialogueTrigger", "class_s_f_d_game_script_interface_1_1_i_object_dialogue_trigger.html", null ],
+          [ "IObjectDisableTrigger", "class_s_f_d_game_script_interface_1_1_i_object_disable_trigger.html", null ],
+          [ "IObjectDoOnceTrigger", "class_s_f_d_game_script_interface_1_1_i_object_do_once_trigger.html", null ],
+          [ "IObjectElevatorAttachmentJointValueTrigger", "class_s_f_d_game_script_interface_1_1_i_object_elevator_attachment_joint_value_trigger.html", null ],
+          [ "IObjectEnableTrigger", "class_s_f_d_game_script_interface_1_1_i_object_enable_trigger.html", null ],
+          [ "IObjectExplosionTrigger", "class_s_f_d_game_script_interface_1_1_i_object_explosion_trigger.html", null ],
+          [ "IObjectGameOverTrigger", "class_s_f_d_game_script_interface_1_1_i_object_game_over_trigger.html", null ],
+          [ "IObjectGroupMarker", "class_s_f_d_game_script_interface_1_1_i_object_group_marker.html", null ],
+          [ "IObjectMusicTrigger", "class_s_f_d_game_script_interface_1_1_i_object_music_trigger.html", null ],
+          [ "IObjectOnDestroyedTrigger", "class_s_f_d_game_script_interface_1_1_i_object_on_destroyed_trigger.html", null ],
+          [ "IObjectOnGameOverTrigger", "class_s_f_d_game_script_interface_1_1_i_object_on_game_over_trigger.html", null ],
+          [ "IObjectOnPlayerDamageTrigger", "class_s_f_d_game_script_interface_1_1_i_object_on_player_damage_trigger.html", null ],
+          [ "IObjectOnPlayerDeathTrigger", "class_s_f_d_game_script_interface_1_1_i_object_on_player_death_trigger.html", null ],
+          [ "IObjectOnUpdateTrigger", "class_s_f_d_game_script_interface_1_1_i_object_on_update_trigger.html", null ],
+          [ "IObjectPathNodeEnableTrigger", "class_s_f_d_game_script_interface_1_1_i_object_path_node_enable_trigger.html", null ],
+          [ "IObjectPlayerBaseCommandTrigger", "class_s_f_d_game_script_interface_1_1_i_object_player_base_command_trigger.html", [
+            [ "IObjectPlayerCommandTrigger", "class_s_f_d_game_script_interface_1_1_i_object_player_command_trigger.html", null ]
+          ] ],
+          [ "IObjectPlayerCommandClearTrigger", "class_s_f_d_game_script_interface_1_1_i_object_player_command_clear_trigger.html", null ],
+          [ "IObjectPlayerInputEnableTrigger", "class_s_f_d_game_script_interface_1_1_i_object_player_input_enable_trigger.html", null ],
+          [ "IObjectPlayerSpawnTrigger", "class_s_f_d_game_script_interface_1_1_i_object_player_spawn_trigger.html", null ],
+          [ "IObjectPlayerTerminateTrigger", "class_s_f_d_game_script_interface_1_1_i_object_player_terminate_trigger.html", null ],
+          [ "IObjectPlaySoundTrigger", "class_s_f_d_game_script_interface_1_1_i_object_play_sound_trigger.html", null ],
+          [ "IObjectPopupMessageTrigger", "class_s_f_d_game_script_interface_1_1_i_object_popup_message_trigger.html", null ],
+          [ "IObjectRailAttachmentJointValueTrigger", "class_s_f_d_game_script_interface_1_1_i_object_rail_attachment_joint_value_trigger.html", null ],
+          [ "IObjectRallyPointTrigger", "class_s_f_d_game_script_interface_1_1_i_object_rally_point_trigger.html", null ],
+          [ "IObjectRandomTrigger", "class_s_f_d_game_script_interface_1_1_i_object_random_trigger.html", null ],
+          [ "IObjectRemoveAreaTrigger", "class_s_f_d_game_script_interface_1_1_i_object_remove_area_trigger.html", null ],
+          [ "IObjectRevoluteJointValueTrigger", "class_s_f_d_game_script_interface_1_1_i_object_revolute_joint_value_trigger.html", null ],
+          [ "IObjectScriptTrigger", "class_s_f_d_game_script_interface_1_1_i_object_script_trigger.html", null ],
+          [ "IObjectSetFrameTrigger", "class_s_f_d_game_script_interface_1_1_i_object_set_frame_trigger.html", null ],
+          [ "IObjectSetMapPartTrigger", "class_s_f_d_game_script_interface_1_1_i_object_set_map_part_trigger.html", null ],
+          [ "IObjectSetStickyFeetTrigger", "class_s_f_d_game_script_interface_1_1_i_object_set_sticky_feet_trigger.html", null ],
+          [ "IObjectSpawnFireCircleTrigger", "class_s_f_d_game_script_interface_1_1_i_object_spawn_fire_circle_trigger.html", null ],
+          [ "IObjectSpawnFireNodeTrigger", "class_s_f_d_game_script_interface_1_1_i_object_spawn_fire_node_trigger.html", null ],
+          [ "IObjectSpawnObjectTrigger", "class_s_f_d_game_script_interface_1_1_i_object_spawn_object_trigger.html", null ],
+          [ "IObjectStartupTrigger", "class_s_f_d_game_script_interface_1_1_i_object_startup_trigger.html", null ],
+          [ "IObjectStreetsweeperCrate", "class_s_f_d_game_script_interface_1_1_i_object_streetsweeper_crate.html", null ],
+          [ "IObjectTeleportTrigger", "class_s_f_d_game_script_interface_1_1_i_object_teleport_trigger.html", null ],
+          [ "IObjectTimerTrigger", "class_s_f_d_game_script_interface_1_1_i_object_timer_trigger.html", null ]
+        ] ],
+        [ "IObjectWeaponItem", "class_s_f_d_game_script_interface_1_1_i_object_weapon_item.html", null ],
+        [ "IObjectWeldJoint", "class_s_f_d_game_script_interface_1_1_i_object_weld_joint.html", null ],
+        [ "IPlayer", "class_s_f_d_game_script_interface_1_1_i_player.html", null ]
+      ] ],
+      [ "IPlayerStatistics", "class_s_f_d_game_script_interface_1_1_i_player_statistics.html", null ]
+    ] ],
+    [ "EffectName", "class_s_f_d_game_script_interface_1_1_effect_name.html", null ],
+    [ "ElevatorHandlerHelper", "class_s_f_d_game_script_interface_1_1_elevator_handler_helper.html", null ],
+    [ "Events", "class_s_f_d_game_script_interface_1_1_events.html", null ],
+    [ "ExplosionData", "struct_s_f_d_game_script_interface_1_1_explosion_data.html", null ],
+    [ "ExplosionHitArg", "struct_s_f_d_game_script_interface_1_1_explosion_hit_arg.html", null ],
+    [ "FireNode", "struct_s_f_d_game_script_interface_1_1_fire_node.html", null ],
+    [ "HandgunWeaponItem", "struct_s_f_d_game_script_interface_1_1_handgun_weapon_item.html", null ],
+    [ "ICloneable", null, [
+      [ "BotBehavior", "class_s_f_d_game_script_interface_1_1_bot_behavior.html", null ],
+      [ "BotBehaviorSet", "class_s_f_d_game_script_interface_1_1_bot_behavior_set.html", null ],
+      [ "StatsToKeep", "class_s_f_d_game_script_interface_1_1_stats_to_keep.html", null ]
+    ] ],
+    [ "ICopyable< T >", "interface_s_f_d_game_script_interface_1_1_i_copyable.html", null ],
+    [ "ICopyable< BotBehavior >", "interface_s_f_d_game_script_interface_1_1_i_copyable.html", [
+      [ "BotBehavior", "class_s_f_d_game_script_interface_1_1_bot_behavior.html", null ]
+    ] ],
+    [ "ICopyable< BotBehaviorSet >", "interface_s_f_d_game_script_interface_1_1_i_copyable.html", [
+      [ "BotBehaviorSet", "class_s_f_d_game_script_interface_1_1_bot_behavior_set.html", null ]
+    ] ],
+    [ "ICopyable< ColorPackage >", "interface_s_f_d_game_script_interface_1_1_i_copyable.html", [
+      [ "ColorPackage", "class_s_f_d_game_script_interface_1_1_color_package.html", null ]
+    ] ],
+    [ "ICopyable< ColorPalette >", "interface_s_f_d_game_script_interface_1_1_i_copyable.html", [
+      [ "ColorPalette", "class_s_f_d_game_script_interface_1_1_color_palette.html", null ]
+    ] ],
+    [ "ICopyable< IProfile >", "interface_s_f_d_game_script_interface_1_1_i_copyable.html", [
+      [ "IProfile", "class_s_f_d_game_script_interface_1_1_i_profile.html", null ]
+    ] ],
+    [ "ICopyable< IProfileClothingItem >", "interface_s_f_d_game_script_interface_1_1_i_copyable.html", [
+      [ "IProfileClothingItem", "class_s_f_d_game_script_interface_1_1_i_profile_clothing_item.html", null ]
+    ] ],
+    [ "ICopyable< PlayerModifiers >", "interface_s_f_d_game_script_interface_1_1_i_copyable.html", [
+      [ "PlayerModifiers", "class_s_f_d_game_script_interface_1_1_player_modifiers.html", null ]
+    ] ],
+    [ "ICopyable< StatsToKeep >", "interface_s_f_d_game_script_interface_1_1_i_copyable.html", [
+      [ "StatsToKeep", "class_s_f_d_game_script_interface_1_1_stats_to_keep.html", null ]
+    ] ],
+    [ "IDialogue", "class_s_f_d_game_script_interface_1_1_i_dialogue.html", null ],
+    [ "IDisposable", null, [
+      [ "Events.CallbackDelegate", "class_s_f_d_game_script_interface_1_1_events_1_1_callback_delegate.html", [
+        [ "Events.ExplosionHitCallback", "class_s_f_d_game_script_interface_1_1_events_1_1_explosion_hit_callback.html", null ],
+        [ "Events.ObjectCreatedCallback", "class_s_f_d_game_script_interface_1_1_events_1_1_object_created_callback.html", null ],
+        [ "Events.ObjectDamageCallback", "class_s_f_d_game_script_interface_1_1_events_1_1_object_damage_callback.html", null ],
+        [ "Events.ObjectTerminatedCallback", "class_s_f_d_game_script_interface_1_1_events_1_1_object_terminated_callback.html", null ],
+        [ "Events.PlayerCreatedCallback", "class_s_f_d_game_script_interface_1_1_events_1_1_player_created_callback.html", null ],
+        [ "Events.PlayerDamageCallback", "class_s_f_d_game_script_interface_1_1_events_1_1_player_damage_callback.html", null ],
+        [ "Events.PlayerDeathCallback", "class_s_f_d_game_script_interface_1_1_events_1_1_player_death_callback.html", null ],
+        [ "Events.PlayerKeyInputCallback", "class_s_f_d_game_script_interface_1_1_events_1_1_player_key_input_callback.html", null ],
+        [ "Events.PlayerMeleeActionCallback", "class_s_f_d_game_script_interface_1_1_events_1_1_player_melee_action_callback.html", null ],
+        [ "Events.PlayerWeaponAddedActionCallback", "class_s_f_d_game_script_interface_1_1_events_1_1_player_weapon_added_action_callback.html", null ],
+        [ "Events.PlayerWeaponRemovedActionCallback", "class_s_f_d_game_script_interface_1_1_events_1_1_player_weapon_removed_action_callback.html", null ],
+        [ "Events.ProjectileCreatedCallback", "class_s_f_d_game_script_interface_1_1_events_1_1_projectile_created_callback.html", null ],
+        [ "Events.ProjectileHitCallback", "class_s_f_d_game_script_interface_1_1_events_1_1_projectile_hit_callback.html", null ],
+        [ "Events.UpdateCallback", "class_s_f_d_game_script_interface_1_1_events_1_1_update_callback.html", null ],
+        [ "Events.UserJoinCallback", "class_s_f_d_game_script_interface_1_1_events_1_1_user_join_callback.html", null ],
+        [ "Events.UserLeaveCallback", "class_s_f_d_game_script_interface_1_1_events_1_1_user_leave_callback.html", null ],
+        [ "Events.UserMessageCallback", "class_s_f_d_game_script_interface_1_1_events_1_1_user_message_callback.html", null ]
+      ] ],
+      [ "GameScriptInterface", "class_s_f_d_game_script_interface_1_1_game_script_interface.html", null ],
+      [ "IGame", "class_s_f_d_game_script_interface_1_1_i_game.html", null ],
+      [ "IGameEventsHandler", "class_s_f_d_game_script_interface_1_1_i_game_events_handler.html", null ]
+    ] ],
+    [ "IEquatable", null, [
+      [ "Area", "struct_s_f_d_game_script_interface_1_1_area.html", null ],
+      [ "BotBehavior", "class_s_f_d_game_script_interface_1_1_bot_behavior.html", null ],
+      [ "BotBehaviorSet", "class_s_f_d_game_script_interface_1_1_bot_behavior_set.html", null ],
+      [ "BotMeleeActions", "struct_s_f_d_game_script_interface_1_1_bot_melee_actions.html", null ],
+      [ "CollisionFilter", "struct_s_f_d_game_script_interface_1_1_collision_filter.html", null ],
+      [ "Color", "struct_s_f_d_game_script_interface_1_1_color.html", null ],
+      [ "ObjectAITargetData", "struct_s_f_d_game_script_interface_1_1_object_a_i_target_data.html", null ],
+      [ "PlayerCommand", "struct_s_f_d_game_script_interface_1_1_player_command.html", null ],
+      [ "PlayerModifiers", "class_s_f_d_game_script_interface_1_1_player_modifiers.html", null ],
+      [ "Point", "struct_s_f_d_game_script_interface_1_1_point.html", null ],
+      [ "StatsToKeep", "class_s_f_d_game_script_interface_1_1_stats_to_keep.html", null ],
+      [ "Vector2", "struct_s_f_d_game_script_interface_1_1_vector2.html", null ]
+    ] ],
+    [ "IGameHelpers", "class_s_f_d_game_script_interface_1_1_i_game_helpers.html", null ],
+    [ "InstantPickupWeaponItem", "struct_s_f_d_game_script_interface_1_1_instant_pickup_weapon_item.html", null ],
+    [ "IProjectile", "class_s_f_d_game_script_interface_1_1_i_projectile.html", null ],
+    [ "IScriptStorage", "class_s_f_d_game_script_interface_1_1_i_script_storage.html", null ],
+    [ "IUser", "class_s_f_d_game_script_interface_1_1_i_user.html", null ],
+    [ "MathHelper", "class_s_f_d_game_script_interface_1_1_math_helper.html", null ],
+    [ "MeleeWeaponItem", "struct_s_f_d_game_script_interface_1_1_melee_weapon_item.html", null ],
+    [ "ObjectDamageArgs", "struct_s_f_d_game_script_interface_1_1_object_damage_args.html", null ],
+    [ "PlayerDamageArgs", "struct_s_f_d_game_script_interface_1_1_player_damage_args.html", null ],
+    [ "PlayerDeathArgs", "struct_s_f_d_game_script_interface_1_1_player_death_args.html", null ],
+    [ "PlayerMeleeHitArg", "struct_s_f_d_game_script_interface_1_1_player_melee_hit_arg.html", null ],
+    [ "PlayerWeaponAddedArg", "struct_s_f_d_game_script_interface_1_1_player_weapon_added_arg.html", null ],
+    [ "PlayerWeaponRemovedArg", "struct_s_f_d_game_script_interface_1_1_player_weapon_removed_arg.html", null ],
+    [ "PowerupWeaponItem", "struct_s_f_d_game_script_interface_1_1_powerup_weapon_item.html", null ],
+    [ "ProjectileHitArgs", "struct_s_f_d_game_script_interface_1_1_projectile_hit_args.html", null ],
+    [ "ProjectileProperties", "struct_s_f_d_game_script_interface_1_1_projectile_properties.html", null ],
+    [ "RangedWeaponItem", "struct_s_f_d_game_script_interface_1_1_ranged_weapon_item.html", null ],
+    [ "RayCastInput", "struct_s_f_d_game_script_interface_1_1_ray_cast_input.html", null ],
+    [ "RayCastResult", "struct_s_f_d_game_script_interface_1_1_ray_cast_result.html", null ],
+    [ "RifleWeaponItem", "struct_s_f_d_game_script_interface_1_1_rifle_weapon_item.html", null ],
+    [ "ThrownWeaponItem", "struct_s_f_d_game_script_interface_1_1_thrown_weapon_item.html", null ],
+    [ "TriggerArgs", "class_s_f_d_game_script_interface_1_1_trigger_args.html", [
+      [ "CreateTriggerArgs", "class_s_f_d_game_script_interface_1_1_create_trigger_args.html", null ]
+    ] ],
+    [ "UserMessageCallbackArgs", "class_s_f_d_game_script_interface_1_1_user_message_callback_args.html", null ],
+    [ "VirtualKeyInfo", "struct_s_f_d_game_script_interface_1_1_virtual_key_info.html", null ]
+];
