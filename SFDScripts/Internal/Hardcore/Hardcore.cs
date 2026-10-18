@@ -1173,6 +1173,12 @@ namespace SFDScripts
         /* DataPersistance.cs */
 
         #region Data Persistence
+        /// <summary>
+        /// A semaphore used for saved data file access.
+        /// Declared before SaveData and LoadData. The game compiler only treats a name as a variable after it has seen the field.
+        /// </summary>
+        private static readonly System.Threading.Mutex Mutex = new System.Threading.Mutex();
+
         public static void SaveData()
         {
 
@@ -1426,11 +1432,6 @@ namespace SFDScripts
         /* Fields.cs */
 
         #region Fields
-        /// <summary>
-        /// A semaphore used for saved data file access
-        /// </summary>
-        private static readonly System.Threading.Mutex Mutex = new System.Threading.Mutex();
-
         public static Dictionary<string, int> UserAccessList = new Dictionary<string, int>();
 
         /// <summary>
@@ -2849,10 +2850,6 @@ namespace SFDScripts
                     {
                         DebugLogger.DebugOnlyDialogLog("CAUSED BY REFRESHPLAYERMENUS" + e.StackTrace, CameraPosition);
                         DebugLogger.DebugOnlyDialogLog(e.Message, CameraPosition);
-                        var st = new System.Diagnostics.StackTrace(e, true);
-                        var frame = st.GetFrame(0);
-                        var line = frame.GetFileLineNumber();
-                        DebugLogger.DebugOnlyDialogLog("METHOD: " + e.TargetSite.Name + " LINE: " + line, CameraPosition);
                     }
 
                     foreach (var p in PlayerList)
@@ -3135,10 +3132,6 @@ namespace SFDScripts
             {
                 DebugLogger.DebugOnlyDialogLog(e.StackTrace, CameraPosition);
                 DebugLogger.DebugOnlyDialogLog(e.Message, CameraPosition);
-                var st = new System.Diagnostics.StackTrace(e, true);
-                var frame = st.GetFrame(0);
-                var line = frame.GetFileLineNumber();
-                DebugLogger.DebugOnlyDialogLog("METHOD: " + e.TargetSite.Name + " LINE: " + line, CameraPosition);
             }
 
         }

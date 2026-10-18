@@ -9,6 +9,12 @@ namespace SFDScript
         /* CLASS STARTS HERE - COPY BELOW INTO THE SCRIPT WINDOW */
 
         #region Data Persistence
+        /// <summary>
+        /// A semaphore used for saved data file access.
+        /// Declared before SaveData and LoadData. The game compiler only treats a name as a variable after it has seen the field.
+        /// </summary>
+        private static readonly System.Threading.Mutex Mutex = new System.Threading.Mutex();
+
         public static void SaveData()
         {
 

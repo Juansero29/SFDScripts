@@ -303,10 +303,6 @@ namespace SFDScript
                     {
                         DebugLogger.DebugOnlyDialogLog("CAUSED BY REFRESHPLAYERMENUS" + e.StackTrace, CameraPosition);
                         DebugLogger.DebugOnlyDialogLog(e.Message, CameraPosition);
-                        var st = new System.Diagnostics.StackTrace(e, true);
-                        var frame = st.GetFrame(0);
-                        var line = frame.GetFileLineNumber();
-                        DebugLogger.DebugOnlyDialogLog("METHOD: " + e.TargetSite.Name + " LINE: " + line, CameraPosition);
                     }
 
                     foreach (var p in PlayerList)
@@ -589,10 +585,6 @@ namespace SFDScript
             {
                 DebugLogger.DebugOnlyDialogLog(e.StackTrace, CameraPosition);
                 DebugLogger.DebugOnlyDialogLog(e.Message, CameraPosition);
-                var st = new System.Diagnostics.StackTrace(e, true);
-                var frame = st.GetFrame(0);
-                var line = frame.GetFileLineNumber();
-                DebugLogger.DebugOnlyDialogLog("METHOD: " + e.TargetSite.Name + " LINE: " + line, CameraPosition);
             }
 
         }

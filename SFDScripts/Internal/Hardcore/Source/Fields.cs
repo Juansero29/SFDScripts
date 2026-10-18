@@ -9,11 +9,6 @@ namespace SFDScript
         /* CLASS STARTS HERE - COPY BELOW INTO THE SCRIPT WINDOW */
 
         #region Fields
-        /// <summary>
-        /// A semaphore used for saved data file access
-        /// </summary>
-        private static readonly System.Threading.Mutex Mutex = new System.Threading.Mutex();
-
         public static Dictionary<string, int> UserAccessList = new Dictionary<string, int>();
 
         /// <summary>

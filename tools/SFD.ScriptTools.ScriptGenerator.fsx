@@ -8,6 +8,7 @@ open Microsoft.CodeAnalysis
 open Microsoft.CodeAnalysis.CSharp
 open Microsoft.CodeAnalysis.CSharp.Syntax
 open Microsoft.CodeAnalysis.Formatting
+open Microsoft.CodeAnalysis.Text
 
 // Constants
 
@@ -150,6 +151,24 @@ let dedentOneLevel (text: string) : string =
                 else l.TrimStart ' ')
             |> String.concat "\n"
 
+// #endregion after the last member is trivia on the class's closing brace,
+// not on the member. ToFullString() drops it, which leaves every file's
+// final region unclosed in the welded script.
+let membersAndTrailing (c: ClassDeclarationSyntax) : string =
+    let memberText = c.Members |> Seq.map (fun m -> m.ToFullString()) |> String.concat ""
+
+    if c.Members.Count = 0 then
+        memberText
+    else
+        let last = c.Members |> Seq.last
+        let start = last.FullSpan.End
+        let finish = c.CloseBraceToken.SpanStart
+
+        if finish > start then
+            memberText + c.SyntaxTree.GetText().ToString(TextSpan.FromBounds(start, finish))
+        else
+            memberText
+
 let workspace = new AdhocWorkspace()
 
 /// Wraps a raw member block in a throwaway class purely so Roslyn has valid
@@ -173,11 +192,7 @@ let formatMemberBlock (rawBody: string) : string =
     | None ->
         eprintfn "Warning: formatting step failed unexpectedly for one file; using unformatted output."
         rawBody
-    | Some c ->
-        c.Members
-        |> Seq.map (fun m -> m.ToFullString())
-        |> String.concat ""
-        |> dedentOneLevel
+    | Some c -> membersAndTrailing c |> dedentOneLevel
 
 /// Either an individual token or an interpolated string kept byte-for-byte.
 type private MinSegment =
@@ -354,9 +369,7 @@ let tryExtractGameScriptBody (filePath: string) : string option =
         | None ->
             eprintfn "Warning: no '%s' class found in %s, skipping." GameScriptClassName filePath
             None
-        | Some c ->
-            let body = c.Members |> Seq.map (fun m -> m.ToFullString()) |> String.concat ""
-            Some body
+        | Some c -> Some(membersAndTrailing c)
 
 let weldedSections =
     parsed.Files
