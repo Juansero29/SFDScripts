@@ -1,16 +1,8 @@
-﻿using System;
-using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.RegularExpressions;
-using SFDGameScriptInterface;
 
-namespace SFDScripts.Internal
+namespace SFDScripts.PirateWars
 {
-    class PirateWars : GameScriptInterface
+    public partial class GameScript : GameScriptInterfaceExtended
     {
-        public PirateWars() : base(null) { }
 
         #region Script To Copy
         private readonly string[] _Classes = new string[] { "s", "d", "f", "g", "h" };
@@ -412,7 +404,7 @@ namespace SFDScripts.Internal
 
         public void Start(TriggerArgs args)
         {
-            Events.PlayerDeathCallback.Start(Death);
+            Game.Events.StartPlayerDeathCallback(Death);
             ConnectedPlayersTick(args);
             RefreshCounter(vBluKills, "BlueT");
             RefreshCounter(vRedKills, "RedT");

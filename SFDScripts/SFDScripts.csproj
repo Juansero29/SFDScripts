@@ -1,130 +1,41 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{E9179D05-5E82-445E-8EFE-2DF9373D1B40}</ProjectGuid>
     <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
     <RootNamespace>SFDScripts</RootNamespace>
-    <LangVersion>5.0</LangVersion>
-    <AssemblyName>SFDScripts</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Generator>$(MSBuildThisFileDirectory)..\tools\SFD.ScriptTools.ScriptGenerator.fsx</Generator>
+    <Nullable>disable</Nullable>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <LangVersion>latest</LangVersion>
+    <PlatformTarget>x64</PlatformTarget>
+    <RequiredGameSdkVersion>1.0.0+931860ddfb9ec5710696655123edd7732ada60c2</RequiredGameSdkVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SFD.GameScriptInterface, Version=1.0.0.0, Culture=neutral, PublicKeyToken=038228f5b8ae548c, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\References\SFD.GameScriptInterface.dll</HintPath>
+    <Reference Include="SFD.GameScriptInterface">
+      <HintPath>..\lib\SFD.GameScriptInterface.dll</HintPath>
+      <Private>true</Private>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="External\#B.cs" />
-    <Compile Include="External\#F.cs" />
-    <Compile Include="Internal\Hardcore\Hardcore.cs" />
-    <Compile Include="Internal\Hardcore\HardcoreClassic.cs" />
-    <Compile Include="Internal\Hardcore\HardcoreClassicEditionDetentionTower.cs" />
-    <Compile Include="Internal\Hardcore\HardcoreClassicRemastered.cs" />
-    <Compile Include="Internal\Hardcore\HardcoreDefinitiveEditionDetentionTower.cs" />
-    <Compile Include="Internal\Hardcore\HardcorePrecinct9.cs" />
-    <Compile Include="Internal\Hardcore\HardcoreColdWar.cs" />
-    <Compile Include="Internal\Hardcore\HardcoreDeepCliff.cs" />
-    <Compile Include="Internal\Hardcore\HardcorePoliceStation.cs" />
-    <Compile Include="Internal\Hardcore\HardcoreSmallHill.cs" />
-    <Compile Include="Internal\Hardcore\HardcoreSummitOfEvil.cs" />
-    <Compile Include="Internal\Hardcore\HardcoreTemplate.cs" />
-    <Compile Include="External\#UK.cs" />
-    <Compile Include="External\#UOP.cs" />
-    <Compile Include="External\#UT.cs" />
-    <Compile Include="External\#W.cs" />
-    <Compile Include="Internal\Battle Of Teams\BOT3dot0.cs" />
-    <Compile Include="Internal\Battle Of Teams\BOT4dot0.cs" />
-    <Compile Include="Internal\Battle Of Teams\BOT5dot0.cs" />
-    <Content Include="Internal\Hardcore\Source\Extra\Footer.txt" />
-    <Content Include="Internal\Hardcore\Source\Extra\Header.txt" />
-    <Compile Include="Internal\Hardcore\Source\Camera.cs" />
-    <Compile Include="Internal\Hardcore\Source\CapturePoint.cs" />
-    <Compile Include="Internal\Hardcore\Source\CustomArmor.cs" />
-    <Compile Include="Internal\Hardcore\Source\CustomEquipment.cs" />
-    <Compile Include="Internal\Hardcore\Source\DataPersistance.cs" />
-    <Compile Include="Internal\Hardcore\Source\Debug.cs" />
-    <Compile Include="Internal\Hardcore\Source\DebugLogger.cs" />
-    <Compile Include="Internal\Hardcore\Source\Effect.cs" />
-    <Compile Include="Internal\Hardcore\Source\Equipment.cs" />
-    <Compile Include="Internal\Hardcore\Source\EquipmentSlot.cs" />
-    <Compile Include="Internal\Hardcore\Source\Fields.cs" />
-    <Compile Include="Internal\Hardcore\Source\GameCore.cs" />
-    <Compile Include="Internal\Hardcore\Source\GameMechanicsSettings.cs" />
-    <Compile Include="Internal\Hardcore\Source\Helper.cs" />
-    <Compile Include="Internal\Hardcore\Source\Level.cs" />
-    <Compile Include="Internal\Hardcore\Source\Lifecycle.cs" />
-    <Compile Include="Internal\Hardcore\Source\Extra\MapDependentData.cs" />
-    <Compile Include="Internal\Hardcore\Source\MapPart.cs" />
-    <Compile Include="Internal\Hardcore\Source\Player.cs" />
-    <Compile Include="Internal\Hardcore\Source\PlayerMenu.cs" />
-    <Compile Include="Internal\Hardcore\Source\Settings.cs" />
-    <Compile Include="Internal\Hardcore\Source\ShieldGenerator.cs" />
-    <Compile Include="Internal\Hardcore\Source\StrikeInfo.cs" />
-    <Compile Include="Internal\Hardcore\Source\ThrownWeapon.cs" />
-    <Compile Include="Internal\Hardcore\Source\Timer.cs" />
-    <Compile Include="Internal\Hardcore\Source\Turret.cs" />
-    <Compile Include="Internal\Hardcore\Source\Weapon.cs" />
-    <Compile Include="Internal\Hardcore\Source\_unused.cs" />
-    <Compile Include="Startup.cs" />
-    <Compile Include="Tests\DataStorageTest\DataStorageTest.cs" />
-    <Compile Include="Internal\Mario Panadero\MarioPanadero.cs" />
-    <Compile Include="Internal\Battle Of Teams\NoGrav.cs" />
-    <Compile Include="Internal\Battle Of Teams\PirateWars.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tests\#Per.cs" />
-    <Compile Include="Tests\CleanSlate.cs" />
-  </ItemGroup>
+  <Target Name="GenerateScript" DependsOnTargets="Build">
+    <ItemGroup>
+      <ScriptFile Include="$(ScriptFiles)" />
+    </ItemGroup>
+    <Error Condition="'@(ScriptFile)' == '' Or '$(ScriptOutput)' == ''" Text="Pass -p:ScriptFiles=&quot;file1.cs;file2.cs&quot; -p:ScriptOutput=path.txt" />
+    <Exec Command="dotnet fsi &quot;$(Generator)&quot; @(ScriptFile->'&quot;%(FullPath)&quot;', ' ') -o &quot;$(ScriptOutput)&quot;" />
+  </Target>
+
+  <Target Name="GenerateHardcoreScript" DependsOnTargets="Build">
+    <ItemGroup>
+      <HardcoreSource Include="Internal\Hardcore\Source\**\*.cs" />
+    </ItemGroup>
+    <Exec Command="dotnet fsi &quot;$(Generator)&quot; @(HardcoreSource->'&quot;%(FullPath)&quot;', ' ') -o &quot;$(OutputPath)Hardcore.txt&quot;" />
+  </Target>
+
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Internal\Hardcore\Maps\Hardcore Classic Edition Detention Tower.sfdm" />
-    <None Include="Internal\Hardcore\Maps\Hardcore Classic Remastered.sfdm" />
-    <None Include="Internal\Hardcore\Maps\Hardcore Classic.sfdm" />
-    <None Include="Internal\Hardcore\Maps\Hardcore Cold War.sfdm" />
-    <None Include="Internal\Hardcore\Maps\Hardcore Deep Cliff.sfdm" />
-    <None Include="Internal\Hardcore\Maps\Hardcore Definitive Edition Detention Tower.sfdm" />
-    <None Include="Internal\Hardcore\Maps\Hardcore Police Station.sfdm" />
-    <None Include="Internal\Hardcore\Maps\Hardcore Precinct 9.sfdm" />
-    <None Include="Internal\Hardcore\Maps\Hardcore Small Hill.sfdm" />
-    <None Include="Internal\Hardcore\Maps\Hardcore Summit Of Evil.sfdm" />
-    <None Include="Internal\Hardcore\Maps\Hardcore Template.sfdm" />
+    <None Include="Internal\Hardcore\Maps\*.sfdm" />
+    <None Include="Internal\Hardcore\Source\Extra\*.txt" />
     <None Include="LICENSE" />
   </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

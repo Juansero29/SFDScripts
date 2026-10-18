@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using SFDGameScriptInterface;
 
 
-namespace SFDScripts
+namespace SFDScripts.MarioPanadero
 {
-    class MarioPanadero : GameScriptInterface
+    public partial class GameScript : GameScriptInterfaceExtended
     {
-        public MarioPanadero() : base(null) { }
 
         #region Script To Copy
 
@@ -188,8 +184,8 @@ namespace SFDScripts
         public void OnStartup()
         {
             // This is the recommended place to hook up any events. To register an update loop:
-            Events.UpdateCallback.Start(OnUpdate, 200);
-            Events.PlayerDeathCallback.Start(Death);
+            Game.Events.StartUpdateCallback(OnUpdate, 200);
+            Game.Events.StartPlayerDeathCallback(Death);
 
 
             // can't use nameof(Method)

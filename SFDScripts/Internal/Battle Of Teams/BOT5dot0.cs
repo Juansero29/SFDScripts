@@ -1,14 +1,10 @@
-using System;
-using System.Collections.Generic;
-using SFDGameScriptInterface;
 
 
-namespace SFDScripts
+namespace SFDScripts.BOT5
 {
-    class BOT5dot0 : GameScriptInterface
+    public partial class GameScript : GameScriptInterfaceExtended
     {
 
-        public BOT5dot0() : base(null) { }
 
         #region Script To Copy
 

@@ -1,16 +1,9 @@
-﻿using SFDGameScriptInterface;
-using System;
-using System.Collections.Generic;
 
-namespace SFDScripts
+namespace SFDScripts.NoGrav
 {
 
-    class NoGrav : GameScriptInterface
+    public partial class GameScript : GameScriptInterfaceExtended
     {
-        /// <summary>
-        /// Placeholder constructor that's not to be included in the ScriptWindow!
-        /// </summary>
-        public NoGrav() : base(null) { }
 
 
         #region Script To Copy

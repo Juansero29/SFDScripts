@@ -1,15 +1,8 @@
-﻿using SFDGameScriptInterface;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace SFDScripts.Tests
+namespace SFDScripts.CleanSlate
 {
-    class CleanSlate : GameScriptInterface
+    public partial class GameScript : GameScriptInterfaceExtended
     {
-        public CleanSlate() : base(null) { }
 
         #region Script To Copy
         /// <summary>
@@ -20,8 +13,8 @@ namespace SFDScripts.Tests
         /// </remarks>
         public void OnStartup()
         {
-            Events.UpdateCallback.Start(OnUpdate, 200);
-            Events.PlayerDeathCallback.Start(Death);
+            Game.Events.StartUpdateCallback(OnUpdate, 200);
+            Game.Events.StartPlayerDeathCallback(Death);
             // ...
         }
 

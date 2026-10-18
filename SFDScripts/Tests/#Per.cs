@@ -1,17 +1,9 @@
-using System;
-using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.RegularExpressions;
-using SFDGameScriptInterface;
 
-namespace SFDScripts
+namespace SFDScripts.Persistance
 {
 
-    class Persistance : GameScriptInterface
+    public partial class GameScript : GameScriptInterfaceExtended
     {
-        public Persistance() : base(null) { }
 
         #region CodeForScript
         private int GamesPlayed = 0;

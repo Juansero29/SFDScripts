@@ -1,16 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.RegularExpressions;
-using SFDGameScriptInterface;
 
 
 namespace SFDScript
 {
 
-    public partial class GameScript : GameScriptInterface
+    public partial class GameScript : GameScriptInterfaceExtended
     {
 
         /* CLASS STARTS HERE - COPY BELOW INTO THE SCRIPT WINDOW */

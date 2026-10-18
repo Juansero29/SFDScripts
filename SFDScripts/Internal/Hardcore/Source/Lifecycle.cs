@@ -1,16 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.RegularExpressions;
-using SFDGameScriptInterface;
 
 
 namespace SFDScript
 {
 
-    public partial class GameScript : GameScriptInterface
+    public partial class GameScript : GameScriptInterfaceExtended
     {
 
         /* CLASS STARTS HERE - COPY BELOW INTO THE SCRIPT WINDOW */
@@ -271,7 +264,7 @@ namespace SFDScript
 
             CameraSpeed = 2.0f;
 
-            Events.UpdateCallback.Start(OnUpdate, 1);
+            Game.Events.StartUpdateCallback(OnUpdate, 1);
 
 
             BeginTimerTrigger = (IObjectTimerTrigger)Game.CreateObject("TimerTrigger", new Vector2(0, 0), 0);

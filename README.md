@@ -17,22 +17,28 @@ This repo is here solely as a collection of modified scripts. I, in no case, dec
 
 ```text
 •
-├── Backup (a backup of a collection of maps a used 3 years ago on the server I hosted)
+├── Backup (a backup of a collection of maps used on the server I hosted)
 │
-├── SFDScripts (folder containing the actual scripts project)
+├── SFDScripts (the script project, net8.0)
 │   │
-│   ├── EXTERNAL (fodler containing external scripts: scripts that you can activate on any map, not map dependant)
+│   ├── External (scripts that can run on any map)
 │   │
-│   ├── INTERNAL (folder containing internal scripts: scripts that are map dependant, and need to be the script inside the map they're supposed to use)
+│   ├── Internal (scripts that belong inside a specific map)
 │   │
-│   └── TESTS (some tests I have made, not too many ^^)
+│   └── Tests
 │
-├── docs (folder containing a backup of the script documentation, also used for a webhook available here: https://juansero29.github.io/SFDScripts/)
+├── tools (SFD.ScriptTools: link the game DLL and weld a script into a .txt)
+│
+├── lib (local symlink to SFD.GameScriptInterface.dll; not committed)
+│
+├── docs (script API backup, plus the 10 October 2026 migration note)
 │
 ├── LICENSE (the LGPL-2.1 License for this repo)
 │
-└── SFDScripts.sln (the Visual Studio 2019 solution)
+└── SFDScripts.sln
 ```
+
+The 10 October 2026 migration onto the current Superfighters Deluxe script compiler is written up in [docs/2026-10-10-modern-sfd-migration.md](docs/2026-10-10-modern-sfd-migration.md).
 
 ## PROJECTS
 
@@ -51,44 +57,81 @@ Check [CONTRIBUTING.MD](https://github.com/Juansero29/SFDScripts/blob/master/CON
 
 
 
-## CLONING, COMPILING, AND PUSHING TO REPOSITORY
+## CLONING, BUILDING, AND DEPLOYING
 
-### Pre-requisites
-For cloning and working with this repo, you will ned Git LSF, since I use Github LSF storage to store `\*.sfdm` files. As a pre-requisite you will need to:
+### Prerequisites
 
-1. Install Chocolatey - [Link](https://chocolatey.org/install)
-1. Install latest version of Git LSF - Run command `choco upgrade git-lfs.install` on Powershell after installing Chocolatey
+- Git, and Git LFS. Map files (`*.sfdm`) are stored with Git LFS.
+- The [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0).
+- Superfighters Deluxe, installed through Steam. The script API DLL ships with the game and is not in this repository.
+- `SFDScriptInjector` on `PATH` when you want to write a script into a `.sfdm`. That tool lives in its own repository.
 
-> If you get an error message of "choco" not being recognized, close the Powershell instance, and open a new one with admin rights, then run the command again
+Git LFS, if you install it with Chocolatey:
 
-> If you get error messages when changing branches, creating branches or pushing, it is probably tied to a particular Git LSF version. Please re run  `choco upgrade git-lfs.install` even if you had already installed Git LSF in the past
+1. Install Chocolatey from <https://chocolatey.org/install>.
+1. In an administrator PowerShell, run `choco upgrade git-lfs.install`.
 
-### CLONING THE REPO
-1. `git clone https://github.com/Juansero29/SFDScripts.git`
-1. `git lfs fetch --all`
+If `choco` is not recognized, close PowerShell and open a new administrator window. If branch checkout or push fails around LFS, run that upgrade again.
 
-### EDITING AND BUILDING CODE
-Thanks to @NotRustyBot, Hardcore and maybe other projects from this repo can be split into separated files to be easily edited and understood, and then will be merged into one by using a console utilitary done by @NotRustyBot
+### Clone
 
-It also allows to send the map into the Superfighters Deluxe program directly, avoiding to boilerplate process of copy/pasting the code into the Script Editor in SFD.
+From a terminal:
 
-> The utilitary that @NotRustyBot created that made this possible is also in this repository over `SFDScripts\Utilities\SfdScriptUtil`
+```powershell
+git clone https://github.com/Juansero29/SFDScripts.git
+cd SFDScripts
+git lfs fetch --all
+dotnet fsi tools/SFD.ScriptTools.LibrarySetup.fsx
+```
 
-#### BUILD HARDCORE WITH SFD MAP EDITOR OPEN
+`LibrarySetup` symlinks `lib/SFD.GameScriptInterface.dll` to the Steam copy and refuses to let that file be committed. Re-run it on every fresh clone. If the game is not in the default Steam folder, pass `-f` with the full path to the DLL.
 
-1. Edit the source code files inside `SFDScripts\SFDScripts\Internal\Hardcore\Source`
-1. Make sure Superfighters Deluxe Map Editor is open, and that the map you want to test is open too.
-1. Open the terminal, be sure to be at the root of the repo
-1. In the terminal, launch `.\ScriptUtil.exe -i SFDScripts\Internal\Hardcore\`**X**`.cs -d true`, where **X** is the name of the CSharp file of the map you want to launch.
-1. All of the modifications inside the `Source` folder will be sent to the `SFDScripts\SFDScripts\Internal\Hardcore\Hardcore.cs` file, and the map dependant date will be taken from the **X** map you precised.
-1. The map should start running with the updated code.
+### Build
 
-#### BUILD WITH SFD MAP EDITOR CLOSED
+```powershell
+dotnet build SFDScripts.sln
+```
 
-1. Edit the source code files inside `SFDScripts\SFDScripts\Internal\Hardcore\Source`
-1. Open the terminal, be sure to be at the root of the repo
-1. In the terminal, launch `.\ScriptUtil.exe -i SFDScripts\Internal\Hardcore\`**X**`.cs -d false`, where **X** is the name of the CSharp file of the map you want to launch.
-1. All of the modifications inside the `Source` folder will be sent to the `SFDScripts\SFDScripts\Internal\Hardcore\Hardcore.cs` file, and the map dependant date will be taken from the **X** map you precised.
+The solution targets `net8.0` and `x64`, matching the game DLL. `Game` is null in this build. It is a stand-in so the scripts compile. The game supplies the real `Game` when it compiles the pasted script.
+
+### Generate a script
+
+The game compiler wraps whatever you paste in its own `GameScript` class. Generate the members only.
+
+Hardcore, from the repository root:
+
+```powershell
+dotnet msbuild SFDScripts\SFDScripts.csproj -t:GenerateHardcoreScript
+```
+
+The welded body is written to `SFDScripts\bin\Debug\net8.0\Hardcore.txt`.
+
+Any other script, naming the files that belong to that one `GameScript`:
+
+```powershell
+dotnet msbuild SFDScripts\SFDScripts.csproj -t:GenerateScript -p:ScriptFiles="External\#B.cs" -p:ScriptOutput="bin\Debug\net8.0\Battle.txt"
+```
+
+Paste the `.txt` into the map's Script Editor, or deploy Hardcore with the injector as below. Do not paste `GameScriptInterfaceExtended`, `GlobalUsings.cs`, or `Header.txt`.
+
+### Deploy Hardcore into the Custom maps folder
+
+`injectScriptToAllMaps.ps1` generates the Hardcore body, leaves out the template map data, and lets `SFDScriptInjector` merge each map's own `#region Map Dependant Data`. It then copies the `.sfdm` files into the Superfighters Deluxe Custom maps folder (OneDrive Documents, then Documents).
+
+```powershell
+.\injectScriptToAllMaps.ps1
+.\injectScriptToAllMaps.ps1 -Destination "D:\Some\Other\Maps\Custom"
+```
+
+### ScriptUtil.exe
+
+`ScriptUtil.exe` is the older tool from `Utilities\SfdScriptUtil`. It was not rebuilt in the October 2026 migration. With the Map Editor open it can still paste the `CLASS STARTS HERE` regions into the Script Editor:
+
+```powershell
+.\ScriptUtil.exe -i SFDScripts\Internal\Hardcore\HardcoreClassic.cs -d false
+```
+
+`-d false` pastes and presses F5. The header it writes into `Hardcore.cs` is for Visual Studio only and is not pasted into the game. Prefer `GenerateHardcoreScript` and `injectScriptToAllMaps.ps1` when you want the maps on disk updated from `Source`.
 
 ### PUSH COMMANDS
 

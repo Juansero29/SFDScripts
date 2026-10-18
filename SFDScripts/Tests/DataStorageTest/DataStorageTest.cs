@@ -1,15 +1,8 @@
-﻿using SFDGameScriptInterface;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace SFDScripts.Internal
+namespace SFDScripts.DataStorageTest
 {
-    public class DataStorageTest : GameScriptInterface
+    public partial class GameScript : GameScriptInterfaceExtended
     {
-        public DataStorageTest() : base(null) { }
 
         #region Script To Copy
 
@@ -77,7 +70,7 @@ namespace SFDScripts.Internal
             SetPlayerToMarioOne(mCallerPlayer);
             GivePlayerWeapon(mCallerPlayer, WeaponItem.PISTOL);
 
-            Events.UpdateCallback.Start((x) =>
+            Game.Events.StartUpdateCallback((x) =>
             {
                 mCurrentSessionShotsFiredCount = mCallerPlayer.Statistics.TotalShotsFired;
                 mShotsFiredCountLabel.SetText((mTotalShotsFiredCount + mCurrentSessionShotsFiredCount).ToString());

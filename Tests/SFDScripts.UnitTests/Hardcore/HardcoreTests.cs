@@ -16,7 +16,7 @@ namespace SFDScripts.UnitTests
         {
             //GameMock = new Mock<IGame>();
             //GameMock.Setup(m => m.GetSingleObjectByCustomId(It.IsAny<string>())).Returns(() => new IObjectDestroyTargets()());
-            HardcoreGameInstance = new Hardcore(GameMock.Object);
+            HardcoreGameInstance = new Hardcore();
         }
 
         [TestMethod]

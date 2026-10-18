@@ -1,15 +1,8 @@
-﻿using SFDGameScriptInterface;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace SFDScripts.Internal
+namespace SFDScripts.BOT3
 {
-    class BOT3dot0 : GameScriptInterface
+    public partial class GameScript : GameScriptInterfaceExtended
     {
-        public BOT3dot0() : base(Game) { }
 
 		#region Script To Copy
 		//===========================================================//

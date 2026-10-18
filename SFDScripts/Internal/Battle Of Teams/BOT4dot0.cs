@@ -1,15 +1,8 @@
-﻿using SFDGameScriptInterface;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace SFDScripts.Internal
+namespace SFDScripts.BOT4
 {
-    public class BOT4dot0 : GameScriptInterface
+    public partial class GameScript : GameScriptInterfaceExtended
 	{
-		public BOT4dot0() : base(null) { }
 
         #region Script To Copy
 
@@ -53,6 +46,7 @@ namespace SFDScripts.Internal
             }
 
             public PlayerData() { }
+
         }
 
         public void OnStartup()

@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 
 namespace SFDScripts
 {
-    public class Hardcore : GameScriptInterface
+    public class Hardcore : GameScriptInterfaceExtended
     {
-        public Hardcore(IGame game = null) : base(game) { }
 
         #region Map Dependant Data
 
@@ -2811,7 +2810,7 @@ namespace SFDScripts
 
             CameraSpeed = 2.0f;
 
-            Events.UpdateCallback.Start(OnUpdate, 1);
+            Game.Events.StartUpdateCallback(OnUpdate, 1);
 
 
             BeginTimerTrigger = (IObjectTimerTrigger)Game.CreateObject("TimerTrigger", new Vector2(0, 0), 0);

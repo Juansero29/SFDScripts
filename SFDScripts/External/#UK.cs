@@ -1,19 +1,11 @@
-using System;
-using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.RegularExpressions;
-using SFDGameScriptInterface;
 
-namespace SFDScripts
+namespace SFDScripts.UberKick
 {
 
-    class UberKick : GameScriptInterface
+    public partial class GameScript : GameScriptInterfaceExtended
     {
 
 
-        public UberKick() : base(null) { }
 
         #region Script To Copy
 

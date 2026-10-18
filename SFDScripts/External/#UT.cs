@@ -1,21 +1,10 @@
-using System;
-using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.RegularExpressions;
-using SFDGameScriptInterface;
 
-namespace SFDScripts
+namespace SFDScripts.UberThrow
 {
 
-    class UberThrow : GameScriptInterface
+    public partial class GameScript : GameScriptInterfaceExtended
     {
 
-        /// <summary>
-        /// Placeholder constructor that's not to be included in the ScriptWindow!
-        /// </summary>
-        public UberThrow() : base(null) { }
 
         #region Script To Copy
 

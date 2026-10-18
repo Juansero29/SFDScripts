@@ -1,22 +1,11 @@
 
-using System;
-using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.RegularExpressions;
-using SFDGameScriptInterface;
 
-namespace SFDScripts
+namespace SFDScripts.Wizards
 {
 
-    class Wizards : GameScriptInterface
+    public partial class GameScript : GameScriptInterfaceExtended
     {
 
-        /// <summary>
-        /// Placeholder constructor that's not to be included in the ScriptWindow!
-        /// </summary>
-        public Wizards() : base(null) { }
 
 
         #region Script To Copy
@@ -135,6 +124,8 @@ namespace SFDScripts
                 }
             }
 
+            public PlayerData() { }
+
             public PlayerData(IUser user, IPlayer ply, float mana)
             {
                 this.User = user;
@@ -143,7 +134,6 @@ namespace SFDScripts
                 this.Team = ply.GetTeam();
             }
 
-            public PlayerData() { }
         }
 
         // used to remove spawned tiles and objects

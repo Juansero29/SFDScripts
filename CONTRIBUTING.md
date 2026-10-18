@@ -116,29 +116,50 @@ This section will help you to get started contributing to these repo.
 
 ### Prerequisites
 
-These repo contains Superfighters Deluxe scripts, which means you should have a copy of the game in order to start testing. The preferred tool for developing and testing these scripts is Visual Studio.
+These scripts run inside Superfighters Deluxe, so you need a copy of the game to test them. Visual Studio is the editor. The solution itself targets .NET 8.
 
-You need to have downloaded:
+You need:
 
-* Git - [Download Link](https://git-scm.com/downloads)
+* Git and Git LFS - [Git](https://git-scm.com/downloads)
+* The .NET 8 SDK - [Download](https://dotnet.microsoft.com/download/dotnet/8.0)
 * Superfighters Deluxe - [Buy here](https://store.steampowered.com/app/855860/Superfighters_Deluxe/)
-* Visual Studio - [Download Link](https://www.google.com/search?q=download+visual+studio+community).
+* Visual Studio 2022 or newer, with the .NET desktop / .NET 8 workload
+
+On a fresh clone, from the repository root, link the game's script API (it is not committed):
+
+```powershell
+git lfs fetch --all
+dotnet fsi tools/SFD.ScriptTools.LibrarySetup.fsx
+dotnet build SFDScripts.sln
+```
+
+The full clone, build, and deploy steps are in the [README](README.md). The reason the project looks like this is in [docs/2026-10-10-modern-sfd-migration.md](docs/2026-10-10-modern-sfd-migration.md).
 
 ### Starting Up
 
-1. Startup the solution file "*.sln" at the root of this repo. This should open Visual Studio along with all the scripts.
+1. Open `SFDScripts.sln` at the root of this repo.
 2. Navigate to the file you want to edit using the Solution Explorer.
-3. You can start reading the code and getting familiar with it.
+3. Read the code from there.
 
-> This topic in the Official Forums will help you get started on developing with Visual Studio for the game if you have any problems at this stage [Developing a script for SFD in Visual Studio](https://www.mythologicinteractiveforums.com/viewtopic.php?t=1588).
+> This topic on the official forums is still the right introduction: [Developing a script for SFD in Visual Studio](https://www.mythologicinteractiveforums.com/viewtopic.php?t=1588).
 
 ### Developing
 
-Once your file is open and you know what you want to do, it is time to start coding!
+Once your file is open and you know what you want to do, it is time to start coding.
 
-> The C# API for the game is accesible from the map editor.  Click on "Script" at the top-right corner next to "Common", then press `F1` or click on  `Script API`. You can also find a version online of the documentation tied to this repo [by clicking here](https://juansero29.github.io/SFDScripts/).
+A script that the game will compile is `public partial class GameScript : GameScriptInterfaceExtended`. Call `Game` the same way the map editor does. That field is a Visual Studio stand-in here and is null until the game compiles the pasted script.
 
-Check again the Code of Conduct for the coding rules to keep them in mind while coding, but also have fun :) This is the only fun part of all this mess ^^
+Keep these rules, or the weld step will reject the file or the game compiler will reject the pasted text:
+
+* Do not add `using` lines to a file that contains `class GameScript`. The game header already imports the usual namespaces. `GlobalUsings.cs` does the same for this solution.
+* Do not add a constructor to `GameScript`. The game's wrapper already has `GameScript(IGame game)`.
+* Do not paste `GameScriptInterfaceExtended` or `Header.txt` into the Script Editor. Generate the members with `GenerateScript` or `GenerateHardcoreScript`, then paste that `.txt`.
+* Hardcore is edited under `SFDScripts/Internal/Hardcore/Source`. Those files share one `GameScript`. Other scripts each have their own namespace so they are not merged together.
+* Regions are still how a long script stays readable. The injector also looks for `#region Script To Copy` and, for Hardcore maps, `#region Map Dependant Data`.
+
+> The C# API for the game is accessible from the map editor. Click on "Script" at the top-right corner next to "Common", then press `F1` or click on `Script API`. A copy of that documentation is published at <https://juansero29.github.io/SFDScripts/>.
+
+Check the Code of Conduct again while coding, and have fun. This is the only fun part of all this mess.
 
 ### Debugging
 
@@ -149,7 +170,7 @@ Here's a recap of what is in said post:
 
 1. Set the DEVENV in `config.ini` file to your Visual Studio `.exe`
     * `config.ini` is located by default in your `Documents` folder. (e.g `C:\Users\username\Documents\Superfighters Deluxe` or `C:\Users\username\OneDrive\Documents\Superfighters Deluxe`)
-    * Your `devenv.exe` is located by default at `C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\devenv.exe`
+    * `devenv.exe` for Visual Studio 2022 Community is, by default, `C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\devenv.exe`
 2. Make Sure Superfighters Deluxe and Visual Studio are both booted up.
 3. From Visual Studio, attach the Superfighters Deluxe process.
     * Use CTRL + ALT + P or search "Attach to Process..." from the search bar to open the window
@@ -171,20 +192,17 @@ It means you have confirmed that the bug/feature you have worked on is having th
 
 #### How to test?
 
-To test your script:
+1. `dotnet build SFDScripts.sln` must succeed. That only proves the script compiles against the stand-in `Game`.
+2. Generate the script body (`GenerateHardcoreScript`, or `GenerateScript` for a single file). Paste that `.txt` into the map's Script Editor, or run `.\injectScriptToAllMaps.ps1` for the Hardcore maps.
+3. In the Map Editor, compile with `F5` or the compile button.
+4. Close the editor and run the map with `F5` or the play button.
+5. Watch for errors and check the behavior you changed.
 
-1. Copy the code in the script (inside the `Script To Copy` and paste it in the Script Editor inside the Map Editor of SFD (This is a pain in the ass, but that's how it's done)
-2. Compile by pressing `F5` or clicking the compile button to check there's no errors in your script.
-3. Close the editor and Test the map by pressing `F5` again or click the `▶` button in the top-left corner of the Map Editor.
-4. Look-out for errors and check that everything works as expected.
+> You can use `F6` or `Test > Test Options` to add more players to the map you are testing. That is very useful for Hardcore.
 
-> You can use `F6` or `Test > Test Options` to add more players to the map you are testing. (very useful for Hardcore)
-<!---->
-> Internal scripts should have an associated "Template Map" that will allow you to test them by putting your code inside them.
+> Internal scripts should have an associated template map.
 
-**For the moment no unit test are done in this repo.**
-
-This sucks, but that's how it is for the moment, I haven't got the time to include them. Maybe in the future it will also be necessary to include a unit test to show that the feature/bug you solved, is actually solved. Or, if you're kind enough, you can start adding Unit Tests with a PR!
+`Tests/SFDScripts.UnitTests` is a small MSTest project. `Game` is never assigned there, so a unit test cannot stand in for playing the map. Behavior still has to be checked inside Superfighters Deluxe. Add a unit test when it can show the change without a live `IGame`.
 
 ## Other Useful Links & Info
 
